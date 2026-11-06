@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Portal del Coronel</title>
+  <link rel="icon" type="image/svg+xml" href="img/favicon.svg" />
+  <link rel="stylesheet" href="css/portal.css" />
+  <script src="js/auth.js" defer></script>
+</head>
+<body>
+  <div id="gate">
+    <div class="card gate-card">
+      <img src="img/logo.svg" alt="Escudo" />
+      <h1>Portal del Coronel</h1>
+      <p class="muted">Acceso privado · GitHub Pages</p>
+      <form id="gate-form">
+        <label for="gate-pw" class="muted tiny" style="text-align:left">Contraseña</label>
+        <input id="gate-pw" type="password" autocomplete="current-password" required autofocus />
+        <button class="btn" type="submit" style="width:100%">Entrar</button>
+        <p id="gate-err" class="err"></p>
+      </form>
+    </div>
+  </div>
+
+  <div id="app" class="wrap" hidden>
+    <header class="topbar">
+      <a class="brand" href="index.html">
+        <img class="brand-logo" src="img/logo.svg" alt="Logo" />
+        <span class="brand-text">Portal <span>Coronel</span></span>
+      </a>
+      <nav class="nav">
+        <a href="index.html" class="active">Gabinete</a>
+        <a href="musica.html">Música</a>
+        <button type="button" class="linkish" id="btn-salir">Salir</button>
+      </nav>
+    </header>
+
+    <div class="card">
+      <h1>Gabinete</h1>
+      <p class="muted">Sus sitios públicos y el laboratorio local. Sin datos personales en esta página.</p>
+      <p>
+        <span class="pill">Séptimo Ángel</span>
+        <span class="pill">GitHub Pages</span>
+      </p>
+    </div>
+
+    <div class="card">
+      <h2>Sitios en vivo</h2>
+      <div class="grid-links">
+        <a class="link-card" href="https://d-lang-gif.github.io/durango-geointeligencia/" target="_blank" rel="noopener">
+          <strong>GeoInteligencia Durango</strong>
+          <span>Mapas y geointel · Pages</span>
+        </a>
+        <a class="link-card" href="https://d-lang-gif.github.io/nodo-vah/" target="_blank" rel="noopener">
+          <strong>Nodo VAH</strong>
+          <span>Planos · acceso con contraseña</span>
+        </a>
+        <a class="link-card" href="https://d-lang-gif.github.io/rmv-capital-sistema/" target="_blank" rel="noopener">
+          <strong>RMV Capital</strong>
+          <span>Sistema soberano · Pages</span>
+        </a>
+        <a class="link-card" href="https://d-lang-gif.github.io/instituto-arte-cultura/" target="_blank" rel="noopener">
+          <strong>Instituto Arte y Cultura</strong>
+          <span>Sitio institucional</span>
+        </a>
+        <a class="link-card" href="https://github.com/D-lang-gif/mi-ia-local" target="_blank" rel="noopener">
+          <strong>mi-ia-local (repo)</strong>
+          <span>Laboratorio privado en GitHub</span>
+        </a>
+        <a class="link-card" href="musica.html">
+          <strong>Músico de bolsillo</strong>
+          <span>Arranger live · Web MIDI + FluidR3</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Solo en su máquina</h2>
+      <p class="muted">Estas funciones necesitan Ollama / RAG / datos locales. No se publican aquí.</p>
+      <div class="grid-links">
+        <div class="link-card">
+          <strong>IA · Consultar / RAG</strong>
+          <span>Corre local en <code>http://127.0.0.1:8787</code></span>
+        </div>
+        <div class="link-card">
+          <strong>Diagnóstico</strong>
+          <span>Corre local en <code>http://127.0.0.1:8787</code></span>
+        </div>
+      </div>
+    </div>
+
+    <footer class="footer">Portal del Coronel · v0.4.0 · 100% estático en Pages</footer>
+  </div>
+  <script>
+    document.getElementById("btn-salir")?.addEventListener("click", () => {
+      sessionStorage.removeItem("portal_coronel_ok_v1");
+      location.reload();
+    });
+  </script>
+</body>
+</html>

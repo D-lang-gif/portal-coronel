@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Música — Portal del Coronel</title>
+  <link rel="icon" type="image/svg+xml" href="img/favicon.svg" />
+  <link rel="stylesheet" href="css/portal.css" />
+  <link rel="stylesheet" href="css/musica.css" />
+  <script src="js/auth.js" defer></script>
+  <script src="js/soundfont-player.min.js" defer></script>
+  <script src="js/musica.js" defer></script>
+</head>
+<body>
+  <div id="gate">
+    <div class="card gate-card">
+      <img src="img/logo.svg" alt="Escudo" />
+      <h1>Portal del Coronel</h1>
+      <p class="muted">Acceso privado · Música</p>
+      <form id="gate-form">
+        <input id="gate-pw" type="password" autocomplete="current-password" required autofocus placeholder="Contraseña" />
+        <button class="btn" type="submit" style="width:100%">Entrar</button>
+        <p id="gate-err" class="err"></p>
+      </form>
+    </div>
+  </div>
+
+  <div id="app" class="wrap" hidden>
+    <header class="topbar">
+      <a class="brand" href="index.html">
+        <img class="brand-logo" src="img/logo.svg" alt="Logo" />
+        <span class="brand-text">Portal <span>Coronel</span></span>
+      </a>
+      <nav class="nav">
+        <a href="index.html">Gabinete</a>
+        <a href="musica.html" class="active">Música</a>
+        <button type="button" class="linkish" id="btn-salir">Salir</button>
+      </nav>
+    </header>
+
+    <div class="card musica-hero">
+      <h1>Músico de bolsillo</h1>
+      <p class="muted">Arranger live · MK-900 (Web MIDI) + FluidR3 · aprendizaje en este navegador (localStorage).</p>
+      <p><span class="pill" id="musica-status">Cargando…</span></p>
+    </div>
+
+    <div class="card">
+      <h2>Estilo</h2>
+      <div id="style-btns" class="style-grid"></div>
+      <label class="mi-estilo-toggle">
+        <input type="checkbox" id="mi-estilo" />
+        <strong>Mi estilo</strong> — usa valoraciones guardadas aquí
+      </label>
+      <p class="muted tiny" id="profile-summary">Perfil: local en este navegador.</p>
+    </div>
+
+    <div class="card transport">
+      <div class="row">
+        <button type="button" id="btn-play" class="btn play">▶ Play</button>
+        <span id="bar-pos" class="pill">Compás —</span>
+      </div>
+      <div class="sec-grid">
+        <button type="button" class="sec-btn" data-section="intro">Intro</button>
+        <button type="button" class="sec-btn" data-section="A">Main A</button>
+        <button type="button" class="sec-btn" data-section="B">Main B</button>
+        <button type="button" class="sec-btn" data-section="fill">Fill</button>
+        <button type="button" class="sec-btn" data-section="ending">Ending</button>
+      </div>
+      <p class="muted tiny">Cambios de sección al <strong>siguiente compás</strong>.</p>
+    </div>
+
+    <div class="card">
+      <h2>Tempo · Tono · Volumen</h2>
+      <label>BPM <strong id="bpm-val">108</strong>
+        <input id="bpm" type="range" min="70" max="180" value="108" />
+      </label>
+      <label>Transpose <strong id="transpose-val">0</strong>
+        <input id="transpose" type="range" min="-12" max="12" value="0" />
+      </label>
+      <label>Master
+        <input id="master" type="range" min="0" max="100" value="90" />
+      </label>
+      <div id="part-vols" class="part-vols"></div>
+    </div>
+
+    <div class="card">
+      <h2>Salida</h2>
+      <label>Modo
+        <select id="output-mode">
+          <option value="both" selected>Navegador + MIDI</option>
+          <option value="browser">Solo navegador (FluidR3)</option>
+          <option value="midi">Solo Web MIDI → MK-900</option>
+        </select>
+      </label>
+      <label>Puerto MIDI OUT
+        <select id="midi-out"><option value="">(buscando…)</option></select>
+      </label>
+    </div>
+
+    <div class="card">
+      <h2>Aprendizaje · variaciones</h2>
+      <div class="row gap">
+        <button type="button" id="btn-gen-estilo" class="btn">Generar variación «Mi estilo»</button>
+        <button type="button" id="btn-refresh-vars" class="btn secondary">Actualizar lista</button>
+      </div>
+      <div id="variations-list" class="var-list muted tiny">Sin variaciones aún.</div>
+    </div>
+
+    <div class="card">
+      <h2>Entrenar</h2>
+      <button type="button" id="btn-train" class="btn secondary">Modo entrenar</button>
+      <div id="train-panel" hidden>
+        <label>Parte <select id="train-part"><option>brass</option><option>trumpet</option><option>bass</option></select></label>
+        <label>Nota <input id="train-note" type="number" value="72" min="36" max="96" /></label>
+        <label>Vel <input id="train-vel" type="number" value="100" min="1" max="127" /></label>
+        <label>Modo <select id="train-mode"><option value="merge">merge</option><option value="replace">replace</option></select></label>
+        <label>Nombre <input id="train-name" type="text" placeholder="mi_fill" /></label>
+        <div id="train-pad" class="train-pad">Toque aquí</div>
+        <p id="train-log" class="muted tiny">0 eventos</p>
+        <button type="button" id="btn-train-save" class="btn">Guardar</button>
+        <button type="button" id="btn-train-clear" class="btn secondary">Limpiar</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Pregunta a tu IA musical</h2>
+      <p class="muted tiny">En Pages solo hay aviso: la IA corre en local.</p>
+      <textarea id="ai-pregunta" rows="2" placeholder="¿Qué fill me recomiendas para cumbión?"></textarea>
+      <button type="button" id="btn-ai-ask" class="btn">Preguntar</button>
+      <pre id="ai-respuesta" class="muted tiny"></pre>
+    </div>
+
+    <footer class="footer">Músico de bolsillo · Pages · IA/RAG en http://127.0.0.1:8787</footer>
+  </div>
+  <script>
+    document.getElementById("btn-salir")?.addEventListener("click", () => {
+      sessionStorage.removeItem("portal_coronel_ok_v1");
+      location.href = "index.html";
+    });
+  </script>
+</body>
+</html>
