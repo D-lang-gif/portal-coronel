@@ -1,0 +1,98 @@
+.musica-hero h1 { letter-spacing: 0.02em; }
+.style-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.6rem;
+}
+.style-btn {
+  text-align: left;
+  background: var(--bg-card);
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  padding: 0.75rem 0.85rem;
+  cursor: pointer;
+  color: var(--ink);
+}
+.style-btn strong { display: block; font-size: 1.05rem; }
+.style-btn span { display: block; color: var(--muted); font-size: 0.8rem; margin-top: 0.2rem; }
+.style-btn.active {
+  border-color: var(--accent);
+  background: linear-gradient(135deg, #fff6ee, #f0d5c0);
+  box-shadow: var(--shadow);
+}
+.transport .row { display: flex; gap: 0.75rem; align-items: center; margin-bottom: 0.75rem; }
+.btn.play {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 999px;
+  padding: 0.65rem 1.4rem;
+  font-size: 1.05rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+.btn.play.playing { background: var(--err); }
+.sec-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0.4rem;
+}
+.sec-btn {
+  border: 1px solid var(--border);
+  background: #fff;
+  border-radius: 10px;
+  padding: 0.55rem 0.2rem;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+.sec-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+.sec-btn.queued { outline: 2px dashed var(--accent); }
+.part-vols { display: grid; grid-template-columns: 1fr 1fr; gap: 0.4rem 1rem; margin-top: 0.5rem; }
+.part-vol { font-size: 0.85rem; font-weight: 600; }
+.part-vol span { text-transform: capitalize; }
+.tiny { font-size: 0.82rem; }
+.train-pad {
+  display: block;
+  width: 100%;
+  margin: 0.75rem 0;
+  padding: 1.4rem;
+  font-size: 1.1rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  border: none;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #2c241b, #c45c26);
+  color: #fff;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+#btn-train.active { background: var(--ok); color: #fff; border-color: var(--ok); }
+@media (max-width: 520px) {
+  .sec-grid { grid-template-columns: repeat(3, 1fr); }
+  .style-grid { grid-template-columns: 1fr; }
+}
+
+.mi-estilo-toggle {
+  display: flex; align-items: center; gap: 0.55rem;
+  margin-top: 0.85rem; font-weight: 600; cursor: pointer;
+}
+.mi-estilo-toggle input { width: 1.15rem; height: 1.15rem; }
+.row.gap { display:flex; flex-wrap:wrap; gap:0.5rem; margin-bottom:0.6rem; }
+.var-list { display:flex; flex-direction:column; gap:0.45rem; margin-top:0.5rem; }
+.var-item {
+  display:flex; flex-wrap:wrap; align-items:center; gap:0.4rem;
+  background:#fff; border:1px solid var(--border); border-radius:10px;
+  padding:0.45rem 0.6rem; color:var(--ink); font-size:0.86rem;
+}
+.var-item .name { font-weight:700; flex:1 1 120px; }
+.var-item button {
+  border:1px solid var(--border); background:var(--bg-card);
+  border-radius:999px; padding:0.2rem 0.55rem; cursor:pointer; font-size:0.8rem;
+}
+.var-item button.liked { background:#d8f0e2; border-color:var(--ok); }
+.var-item button.disliked { background:#f7d6d6; border-color:var(--err); }
+.ai-box {
+  margin-top:0.7rem; padding:0.75rem; border-radius:10px;
+  background:#fff; border:1px dashed var(--border); white-space:pre-wrap;
+  color:var(--ink); min-height:3rem;
+}
