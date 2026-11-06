@@ -1,0 +1,2948 @@
+{
+  "id": "norteno",
+  "name": "Norteño",
+  "bpmDefault": 118,
+  "timeSig": [
+    2,
+    4
+  ],
+  "swing": 0.03,
+  "parts": {
+    "drums": {
+      "channel": 9,
+      "program": 0,
+      "instrument": null,
+      "volume": 108
+    },
+    "bass": {
+      "channel": 1,
+      "program": 32,
+      "instrument": "acoustic_bass",
+      "volume": 108
+    },
+    "accordion": {
+      "channel": 2,
+      "program": 21,
+      "instrument": "accordion",
+      "volume": 92
+    },
+    "requinto": {
+      "channel": 3,
+      "program": 24,
+      "instrument": "acoustic_guitar_nylon",
+      "volume": 88
+    }
+  },
+  "sections": {
+    "intro": {
+      "bars": 4,
+      "loop": false,
+      "events": [
+        {
+          "t": 0.0,
+          "dur": 0.12,
+          "notes": [
+            36
+          ],
+          "vel": 112,
+          "part": "drums"
+        },
+        {
+          "t": 1.0,
+          "dur": 0.12,
+          "notes": [
+            38
+          ],
+          "vel": 104,
+          "part": "drums"
+        },
+        {
+          "t": 0.5,
+          "dur": 0.05,
+          "notes": [
+            38
+          ],
+          "vel": 32,
+          "part": "drums"
+        },
+        {
+          "t": 0.0,
+          "dur": 0.08,
+          "notes": [
+            42
+          ],
+          "vel": 70,
+          "part": "drums"
+        },
+        {
+          "t": 0.5,
+          "dur": 0.08,
+          "notes": [
+            42
+          ],
+          "vel": 44,
+          "part": "drums"
+        },
+        {
+          "t": 1.0,
+          "dur": 0.08,
+          "notes": [
+            42
+          ],
+          "vel": 64,
+          "part": "drums"
+        },
+        {
+          "t": 1.5,
+          "dur": 0.08,
+          "notes": [
+            42
+          ],
+          "vel": 46,
+          "part": "drums"
+        },
+        {
+          "t": 0.5,
+          "dur": 0.12,
+          "notes": [
+            54
+          ],
+          "vel": 58,
+          "part": "drums"
+        },
+        {
+          "t": 1.5,
+          "dur": 0.12,
+          "notes": [
+            54
+          ],
+          "vel": 64,
+          "part": "drums"
+        },
+        {
+          "t": 0.0,
+          "dur": 0.7,
+          "notes": [
+            38
+          ],
+          "vel": 108,
+          "part": "bass"
+        },
+        {
+          "t": 1.0,
+          "dur": 0.65,
+          "notes": [
+            50
+          ],
+          "vel": 94,
+          "part": "bass"
+        },
+        {
+          "t": 0.0,
+          "dur": 0.35,
+          "notes": [
+            50
+          ],
+          "vel": 72,
+          "part": "accordion"
+        },
+        {
+          "t": 1.0,
+          "dur": 0.3,
+          "notes": [
+            62
+          ],
+          "vel": 78,
+          "part": "accordion"
+        },
+        {
+          "t": 0.0,
+          "dur": 0.35,
+          "notes": [
+            54
+          ],
+          "vel": 72,
+          "part": "accordion"
+        },
+        {
+          "t": 1.0,
+          "dur": 0.3,
+          "notes": [
+            66
+          ],
+          "vel": 78,
+          "part": "accordion"
+        },
+        {
+          "t": 0.0,
+          "dur": 0.35,
+          "notes": [
+            57
+          ],
+          "vel": 72,
+          "part": "accordion"
+        },
+        {
+          "t": 1.0,
+          "dur": 0.3,
+          "notes": [
+            69
+          ],
+          "vel": 78,
+          "part": "accordion"
+        },
+        {
+          "t": 0.0,
+          "dur": 0.35,
+          "notes": [
+            74
+          ],
+          "vel": 86,
+          "part": "requinto"
+        },
+        {
+          "t": 0.5,
+          "dur": 0.35,
+          "notes": [
+            78
+          ],
+          "vel": 86,
+          "part": "requinto"
+        },
+        {
+          "t": 1.0,
+          "dur": 0.35,
+          "notes": [
+            81
+          ],
+          "vel": 86,
+          "part": "requinto"
+        },
+        {
+          "t": 1.5,
+          "dur": 0.35,
+          "notes": [
+            78
+          ],
+          "vel": 86,
+          "part": "requinto"
+        },
+        {
+          "t": 2.0,
+          "dur": 0.12,
+          "notes": [
+            36
+          ],
+          "vel": 112,
+          "part": "drums"
+        },
+        {
+          "t": 3.0,
+          "dur": 0.12,
+          "notes": [
+            38
+          ],
+          "vel": 104,
+          "part": "drums"
+        },
+        {
+          "t": 2.5,
+          "dur": 0.05,
+          "notes": [
+            38
+          ],
+          "vel": 32,
+          "part": "drums"
+        },
+        {
+          "t": 2.0,
+          "dur": 0.08,
+          "notes": [
+            42
+          ],
+          "vel": 70,
+          "part": "drums"
+        },
+        {
+          "t": 2.5,
+          "dur": 0.08,
+          "notes": [
+            42
+          ],
+          "vel": 44,
+          "part": "drums"
+        },
+        {
+          "t": 3.0,
+          "dur": 0.08,
+          "notes": [
+            42
+          ],
+          "vel": 64,
+          "part": "drums"
+        },
+        {
+          "t": 3.5,
+          "dur": 0.08,
+          "notes": [
+            42
+          ],
+          "vel": 46,
+          "part": "drums"
+        },
+        {
+          "t": 2.5,
+          "dur": 0.12,
+          "notes": [
+            54
+          ],
+          "vel": 58,
+          "part": "drums"
+        },
+        {
+          "t": 3.5,
+          "dur": 0.12,
+          "notes": [
+            54
+          ],
+          "vel": 64,
+          "part": "drums"
+        },
+        {
+          "t": 2.0,
+          "dur": 0.7,
+          "notes": [
+            43
+          ],
+          "vel": 108,
+          "part": "bass"
+        },
+        {
+          "t": 3.0,
+          "dur": 0.65,
+          "notes": [
+            55
+          ],
+          "vel": 94,
+          "part": "bass"
+        },
+        {
+          "t": 2.0,
+          "dur": 0.35,
+          "notes": [
+            55
+          ],
+          "vel": 72,
+          "part": "accordion"
+        },
+        {
+          "t": 3.0,
+          "dur": 0.3,
+          "notes": [
+            67
+          ],
+          "vel": 78,
+          "part": "accordion"
+        },
+        {
+          "t": 2.0,
+          "dur": 0.35,
+          "notes": [
+            59
+          ],
+          "vel": 72,
+          "part": "accordion"
+        },
+        {
+          "t": 3.0,
+          "dur": 0.3,
+          "notes": [
+            71
+          ],
+          "vel": 78,
+          "part": "accordion"
+        },
+        {
+          "t": 2.0,
+          "dur": 0.35,
+          "notes": [
+            62
+          ],
+          "vel": 72,
+          "part": "accordion"
+        },
+        {
+          "t": 3.0,
+          "dur": 0.3,
+          "notes": [
+            74
+          ],
+          "vel": 78,
+          "part": "accordion"
+        },
+        {
+          "t": 2.0,
+          "dur": 0.35,
+          "notes": [
+            79
+          ],
+          "vel": 86,
+          "part": "requinto"
+        },
+        {
+          "t": 2.5,
+          "dur": 0.35,
+          "notes": [
+            83
+          ],
+          "vel": 86,
+          "part": "requinto"
+        },
+        {
+          "t": 3.0,
+          "dur": 0.35,
+          "notes": [
+            86
+          ],
+          "vel": 86,
+          "part": "requinto"
+        },
+        {
+          "t": 3.5,
+          "dur": 0.35,
+          "notes": [
+            83
+          ],
+          "vel": 86,
+          "part": "requinto"
+        },
+        {
+          "t": 4.0,
+          "dur": 0.12,
+          "notes": [
+            36
+          ],
+          "vel": 112,
+          "part": "drums"
+        },
+        {
+          "t": 5.0,
+          "dur": 0.12,
+          "notes": [
+            38
+          ],
+          "vel": 104,
+          "part": "drums"
+        },
+        {
+          "t": 4.5,
+          "dur": 0.05,
+          "notes": [
+            38
+          ],
+          "vel": 32,
+          "part": "drums"
+        },
+        {
+          "t": 4.0,
+          "dur": 0.08,
+          "notes": [
+            42
+          ],
+          "vel": 70,
+          "part": "drums"
+        },
+        {
+          "t": 4.5,
+          "dur": 0.08,
+          "notes": [
+            42
+          ],
+          "vel": 44,
+          "part": "drums"
+        },
+        {
+          "t": 5.0,
+          "dur": 0.08,
+          "notes": [
+            42
+          ],
+          "vel": 64,
+          "part": "drums"
+        },
+        {
+          "t": 5.5,
+          "dur": 0.08,
+          "notes": [
+            42
+          ],
+          "vel": 46,
+          "part": "drums"
+        },
+        {
+          "t": 4.5,
+          "dur": 0.12,
+          "notes": [
+            54
+          ],
+          "vel": 58,
+          "part": "drums"
+        },
+        {
+          "t": 5.5,
+          "dur": 0.12,
+          "notes": [
+            54
+          ],
+          "vel": 64,
+          "part": "drums"
+        },
+        {
+          "t": 4.0,
+          "dur": 0.7,
+          "notes": [
+            38
+          ],
+          "vel": 108,
+          "part": "bass"
+        },
+        {
+          "t": 5.0,
+          "dur": 0.65,
+          "notes": [
+            50
+          ],
+          "vel": 94,
+          "part": "bass"
+        },
+        {
+          "t": 4.0,
+          "dur": 0.35,
+          "notes": [
+            50
+          ],
+          "vel": 72,
+          "part": "accordion"
+        },
+        {
+          "t": 5.0,
+          "dur": 0.3,
+          "notes": [
+            62
+          ],
+          "vel": 78,
+          "part": "accordion"
+        },
+        {
+          "t": 4.0,
+          "dur": 0.35,
+          "notes": [
+            54
+          ],
+          "vel": 72,
+          "part": "accordion"
+        },
+        {
+          "t": 5.0,
+          "dur": 0.3,
+          "notes": [
+            66
+          ],
+          "vel": 78,
+          "part": "accordion"
+        },
+        {
+          "t": 4.0,
+          "dur": 0.35,
+          "notes": [
+            57
+          ],
+          "vel": 72,
+          "part": "accordion"
+        },
+        {
+          "t": 5.0,
+          "dur": 0.3,
+          "notes": [
+            69
+          ],
+          "vel": 78,
+          "part": "accordion"
+        },
+        {
+          "t": 4.0,
+          "dur": 0.35,
+          "notes": [
+            74
+          ],
+          "vel": 86,
+          "part": "requinto"
+        },
+        {
+          "t": 4.5,
+          "dur": 0.35,
+          "notes": [
+            78
+          ],
+          "vel": 86,
+          "part": "requinto"
+        },
+        {
+          "t": 5.0,
+          "dur": 0.35,
+          "notes": [
+            81
+          ],
+          "vel": 86,
+          "part": "requinto"
+        },
+        {
+          "t": 5.5,
+          "dur": 0.35,
+          "notes": [
+            78
+          ],
+          "vel": 86,
+          "part": "requinto"
+        },
+        {
+          "t": 6.0,
+          "dur": 0.12,
+          "notes": [
+            36
+          ],
+          "vel": 112,
+          "part": "drums"
+        },
+        {
+          "t": 7.0,
+          "dur": 0.12,
+          "notes": [
+            38
+          ],
+          "vel": 104,
+          "part": "drums"
+        },
+        {
+          "t": 6.5,
+          "dur": 0.05,
+          "notes": [
+            38
+          ],
+          "vel": 32,
+          "part": "drums"
+        },
+        {
+          "t": 6.0,
+          "dur": 0.08,
+          "notes": [
+            42
+          ],
+          "vel": 70,
+          "part": "drums"
+        },
+        {
+          "t": 6.5,
+          "dur": 0.08,
+          "notes": [
+            42
+          ],
+          "vel": 44,
+          "part": "drums"
+        },
+        {
+          "t": 7.0,
+          "dur": 0.08,
+          "notes": [
+            42
+          ],
+          "vel": 64,
+          "part": "drums"
+        },
+        {
+          "t": 7.5,
+          "dur": 0.08,
+          "notes": [
+            42
+          ],
+          "vel": 46,
+          "part": "drums"
+        },
+        {
+          "t": 6.5,
+          "dur": 0.12,
+          "notes": [
+            54
+          ],
+          "vel": 58,
+          "part": "drums"
+        },
+        {
+          "t": 7.5,
+          "dur": 0.12,
+          "notes": [
+            54
+          ],
+          "vel": 64,
+          "part": "drums"
+        },
+        {
+          "t": 6.0,
+          "dur": 0.7,
+          "notes": [
+            45
+          ],
+          "vel": 108,
+          "part": "bass"
+        },
+        {
+          "t": 7.0,
+          "dur": 0.65,
+          "notes": [
+            57
+          ],
+          "vel": 94,
+          "part": "bass"
+        },
+        {
+          "t": 6.0,
+          "dur": 0.35,
+          "notes": [
+            57
+          ],
+          "vel": 72,
+          "part": "accordion"
+        },
+        {
+          "t": 7.0,
+          "dur": 0.3,
+          "notes": [
+            69
+          ],
+          "vel": 78,
+          "part": "accordion"
+        },
+        {
+          "t": 6.0,
+          "dur": 0.35,
+          "notes": [
+            61
+          ],
+          "vel": 72,
+          "part": "accordion"
+        },
+        {
+          "t": 7.0,
+          "dur": 0.3,
+          "notes": [
+            73
+          ],
+          "vel": 78,
+          "part": "accordion"
+        },
+        {
+          "t": 6.0,
+          "dur": 0.35,
+          "notes": [
+            64
+          ],
+          "vel": 72,
+          "part": "accordion"
+        },
+        {
+          "t": 7.0,
+          "dur": 0.3,
+          "notes": [
+            76
+          ],
+          "vel": 78,
+          "part": "accordion"
+        },
+        {
+          "t": 6.0,
+          "dur": 0.35,
+          "notes": [
+            81
+          ],
+          "vel": 86,
+          "part": "requinto"
+        },
+        {
+          "t": 6.5,
+          "dur": 0.35,
+          "notes": [
+            85
+          ],
+          "vel": 86,
+          "part": "requinto"
+        },
+        {
+          "t": 7.0,
+          "dur": 0.35,
+          "notes": [
+            88
+          ],
+          "vel": 86,
+          "part": "requinto"
+        },
+        {
+          "t": 7.5,
+          "dur": 0.35,
+          "notes": [
+            85
+          ],
+          "vel": 86,
+          "part": "requinto"
+        }
+      ]
+    },
+    "A": {
+      "bars": 4,
+      "loop": true,
+      "events": [
+        {
+          "t": 0.0,
+          "dur": 0.12,
+          "notes": [
+            36
+          ],
+          "vel": 112,
+          "part": "drums"
+        },
+        {
+          "t": 1.0,
+          "dur": 0.12,
+          "notes": [
+            38
+          ],
+          "vel": 104,
+          "part": "drums"
+        },
+        {
+          "t": 0.5,
+          "dur": 0.05,
+          "notes": [
+            38
+          ],
+          "vel": 32,
+          "part": "drums"
+        },
+        {
+          "t": 0.0,
+          "dur": 0.08,
+          "notes": [
+            42
+          ],
+          "vel": 70,
+          "part": "drums"
+        },
+        {
+          "t": 0.5,
+          "dur": 0.08,
+          "notes": [
+            42
+          ],
+          "vel": 44,
+          "part": "drums"
+        },
+        {
+          "t": 1.0,
+          "dur": 0.08,
+          "notes": [
+            42
+          ],
+          "vel": 64,
+          "part": "drums"
+        },
+        {
+          "t": 1.5,
+          "dur": 0.08,
+          "notes": [
+            42
+          ],
+          "vel": 46,
+          "part": "drums"
+        },
+        {
+          "t": 0.5,
+          "dur": 0.12,
+          "notes": [
+            54
+          ],
+          "vel": 58,
+          "part": "drums"
+        },
+        {
+          "t": 1.5,
+          "dur": 0.12,
+          "notes": [
+            54
+          ],
+          "vel": 64,
+          "part": "drums"
+        },
+        {
+          "t": 0.0,
+          "dur": 0.7,
+          "notes": [
+            38
+          ],
+          "vel": 108,
+          "part": "bass"
+        },
+        {
+          "t": 1.0,
+          "dur": 0.65,
+          "notes": [
+            50
+          ],
+          "vel": 94,
+          "part": "bass"
+        },
+        {
+          "t": 0.0,
+          "dur": 0.35,
+          "notes": [
+            50
+          ],
+          "vel": 72,
+          "part": "accordion"
+        },
+        {
+          "t": 1.0,
+          "dur": 0.3,
+          "notes": [
+            62
+          ],
+          "vel": 78,
+          "part": "accordion"
+        },
+        {
+          "t": 0.0,
+          "dur": 0.35,
+          "notes": [
+            54
+          ],
+          "vel": 72,
+          "part": "accordion"
+        },
+        {
+          "t": 1.0,
+          "dur": 0.3,
+          "notes": [
+            66
+          ],
+          "vel": 78,
+          "part": "accordion"
+        },
+        {
+          "t": 0.0,
+          "dur": 0.35,
+          "notes": [
+            57
+          ],
+          "vel": 72,
+          "part": "accordion"
+        },
+        {
+          "t": 1.0,
+          "dur": 0.3,
+          "notes": [
+            69
+          ],
+          "vel": 78,
+          "part": "accordion"
+        },
+        {
+          "t": 0.0,
+          "dur": 0.35,
+          "notes": [
+            74
+          ],
+          "vel": 86,
+          "part": "requinto"
+        },
+        {
+          "t": 0.5,
+          "dur": 0.35,
+          "notes": [
+            78
+          ],
+          "vel": 86,
+          "part": "requinto"
+        },
+        {
+          "t": 1.0,
+          "dur": 0.35,
+          "notes": [
+            81
+          ],
+          "vel": 86,
+          "part": "requinto"
+        },
+        {
+          "t": 1.5,
+          "dur": 0.35,
+          "notes": [
+            78
+          ],
+          "vel": 86,
+          "part": "requinto"
+        },
+        {
+          "t": 2.0,
+          "dur": 0.12,
+          "notes": [
+            36
+          ],
+          "vel": 112,
+          "part": "drums"
+        },
+        {
+          "t": 3.0,
+          "dur": 0.12,
+          "notes": [
+            38
+          ],
+          "vel": 104,
+          "part": "drums"
+        },
+        {
+          "t": 2.5,
+          "dur": 0.05,
+          "notes": [
+            38
+          ],
+          "vel": 32,
+          "part": "drums"
+        },
+        {
+          "t": 2.0,
+          "dur": 0.08,
+          "notes": [
+            42
+          ],
+          "vel": 70,
+          "part": "drums"
+        },
+        {
+          "t": 2.5,
+          "dur": 0.08,
+          "notes": [
+            42
+          ],
+          "vel": 44,
+          "part": "drums"
+        },
+        {
+          "t": 3.0,
+          "dur": 0.08,
+          "notes": [
+            42
+          ],
+          "vel": 64,
+          "part": "drums"
+        },
+        {
+          "t": 3.5,
+          "dur": 0.08,
+          "notes": [
+            42
+          ],
+          "vel": 46,
+          "part": "drums"
+        },
+        {
+          "t": 2.5,
+          "dur": 0.12,
+          "notes": [
+            54
+          ],
+          "vel": 58,
+          "part": "drums"
+        },
+        {
+          "t": 3.5,
+          "dur": 0.12,
+          "notes": [
+            54
+          ],
+          "vel": 64,
+          "part": "drums"
+        },
+        {
+          "t": 2.0,
+          "dur": 0.7,
+          "notes": [
+            43
+          ],
+          "vel": 108,
+          "part": "bass"
+        },
+        {
+          "t": 3.0,
+          "dur": 0.65,
+          "notes": [
+            55
+          ],
+          "vel": 94,
+          "part": "bass"
+        },
+        {
+          "t": 2.0,
+          "dur": 0.35,
+          "notes": [
+            55
+          ],
+          "vel": 72,
+          "part": "accordion"
+        },
+        {
+          "t": 3.0,
+          "dur": 0.3,
+          "notes": [
+            67
+          ],
+          "vel": 78,
+          "part": "accordion"
+        },
+        {
+          "t": 2.0,
+          "dur": 0.35,
+          "notes": [
+            59
+          ],
+          "vel": 72,
+          "part": "accordion"
+        },
+        {
+          "t": 3.0,
+          "dur": 0.3,
+          "notes": [
+            71
+          ],
+          "vel": 78,
+          "part": "accordion"
+        },
+        {
+          "t": 2.0,
+          "dur": 0.35,
+          "notes": [
+            62
+          ],
+          "vel": 72,
+          "part": "accordion"
+        },
+        {
+          "t": 3.0,
+          "dur": 0.3,
+          "notes": [
+            74
+          ],
+          "vel": 78,
+          "part": "accordion"
+        },
+        {
+          "t": 2.0,
+          "dur": 0.35,
+          "notes": [
+            79
+          ],
+          "vel": 86,
+          "part": "requinto"
+        },
+        {
+          "t": 2.5,
+          "dur": 0.35,
+          "notes": [
+            83
+          ],
+          "vel": 86,
+          "part": "requinto"
+        },
+        {
+          "t": 3.0,
+          "dur": 0.35,
+          "notes": [
+            86
+          ],
+          "vel": 86,
+          "part": "requinto"
+        },
+        {
+          "t": 3.5,
+          "dur": 0.35,
+          "notes": [
+            83
+          ],
+          "vel": 86,
+          "part": "requinto"
+        },
+        {
+          "t": 4.0,
+          "dur": 0.12,
+          "notes": [
+            36
+          ],
+          "vel": 112,
+          "part": "drums"
+        },
+        {
+          "t": 5.0,
+          "dur": 0.12,
+          "notes": [
+            38
+          ],
+          "vel": 104,
+          "part": "drums"
+        },
+        {
+          "t": 4.5,
+          "dur": 0.05,
+          "notes": [
+            38
+          ],
+          "vel": 32,
+          "part": "drums"
+        },
+        {
+          "t": 4.0,
+          "dur": 0.08,
+          "notes": [
+            42
+          ],
+          "vel": 70,
+          "part": "drums"
+        },
+        {
+          "t": 4.5,
+          "dur": 0.08,
+          "notes": [
+            42
+          ],
+          "vel": 44,
+          "part": "drums"
+        },
+        {
+          "t": 5.0,
+          "dur": 0.08,
+          "notes": [
+            42
+          ],
+          "vel": 64,
+          "part": "drums"
+        },
+        {
+          "t": 5.5,
+          "dur": 0.08,
+          "notes": [
+            42
+          ],
+          "vel": 46,
+          "part": "drums"
+        },
+        {
+          "t": 4.5,
+          "dur": 0.12,
+          "notes": [
+            54
+          ],
+          "vel": 58,
+          "part": "drums"
+        },
+        {
+          "t": 5.5,
+          "dur": 0.12,
+          "notes": [
+            54
+          ],
+          "vel": 64,
+          "part": "drums"
+        },
+        {
+          "t": 4.0,
+          "dur": 0.7,
+          "notes": [
+            38
+          ],
+          "vel": 108,
+          "part": "bass"
+        },
+        {
+          "t": 5.0,
+          "dur": 0.65,
+          "notes": [
+            50
+          ],
+          "vel": 94,
+          "part": "bass"
+        },
+        {
+          "t": 4.0,
+          "dur": 0.35,
+          "notes": [
+            50
+          ],
+          "vel": 72,
+          "part": "accordion"
+        },
+        {
+          "t": 5.0,
+          "dur": 0.3,
+          "notes": [
+            62
+          ],
+          "vel": 78,
+          "part": "accordion"
+        },
+        {
+          "t": 4.0,
+          "dur": 0.35,
+          "notes": [
+            54
+          ],
+          "vel": 72,
+          "part": "accordion"
+        },
+        {
+          "t": 5.0,
+          "dur": 0.3,
+          "notes": [
+            66
+          ],
+          "vel": 78,
+          "part": "accordion"
+        },
+        {
+          "t": 4.0,
+          "dur": 0.35,
+          "notes": [
+            57
+          ],
+          "vel": 72,
+          "part": "accordion"
+        },
+        {
+          "t": 5.0,
+          "dur": 0.3,
+          "notes": [
+            69
+          ],
+          "vel": 78,
+          "part": "accordion"
+        },
+        {
+          "t": 4.0,
+          "dur": 0.35,
+          "notes": [
+            74
+          ],
+          "vel": 86,
+          "part": "requinto"
+        },
+        {
+          "t": 4.5,
+          "dur": 0.35,
+          "notes": [
+            78
+          ],
+          "vel": 86,
+          "part": "requinto"
+        },
+        {
+          "t": 5.0,
+          "dur": 0.35,
+          "notes": [
+            81
+          ],
+          "vel": 86,
+          "part": "requinto"
+        },
+        {
+          "t": 5.5,
+          "dur": 0.35,
+          "notes": [
+            78
+          ],
+          "vel": 86,
+          "part": "requinto"
+        },
+        {
+          "t": 6.0,
+          "dur": 0.12,
+          "notes": [
+            36
+          ],
+          "vel": 112,
+          "part": "drums"
+        },
+        {
+          "t": 7.0,
+          "dur": 0.12,
+          "notes": [
+            38
+          ],
+          "vel": 104,
+          "part": "drums"
+        },
+        {
+          "t": 6.5,
+          "dur": 0.05,
+          "notes": [
+            38
+          ],
+          "vel": 32,
+          "part": "drums"
+        },
+        {
+          "t": 6.0,
+          "dur": 0.08,
+          "notes": [
+            42
+          ],
+          "vel": 70,
+          "part": "drums"
+        },
+        {
+          "t": 6.5,
+          "dur": 0.08,
+          "notes": [
+            42
+          ],
+          "vel": 44,
+          "part": "drums"
+        },
+        {
+          "t": 7.0,
+          "dur": 0.08,
+          "notes": [
+            42
+          ],
+          "vel": 64,
+          "part": "drums"
+        },
+        {
+          "t": 7.5,
+          "dur": 0.08,
+          "notes": [
+            42
+          ],
+          "vel": 46,
+          "part": "drums"
+        },
+        {
+          "t": 6.5,
+          "dur": 0.12,
+          "notes": [
+            54
+          ],
+          "vel": 58,
+          "part": "drums"
+        },
+        {
+          "t": 7.5,
+          "dur": 0.12,
+          "notes": [
+            54
+          ],
+          "vel": 64,
+          "part": "drums"
+        },
+        {
+          "t": 6.0,
+          "dur": 0.7,
+          "notes": [
+            45
+          ],
+          "vel": 108,
+          "part": "bass"
+        },
+        {
+          "t": 7.0,
+          "dur": 0.65,
+          "notes": [
+            57
+          ],
+          "vel": 94,
+          "part": "bass"
+        },
+        {
+          "t": 6.0,
+          "dur": 0.35,
+          "notes": [
+            57
+          ],
+          "vel": 72,
+          "part": "accordion"
+        },
+        {
+          "t": 7.0,
+          "dur": 0.3,
+          "notes": [
+            69
+          ],
+          "vel": 78,
+          "part": "accordion"
+        },
+        {
+          "t": 6.0,
+          "dur": 0.35,
+          "notes": [
+            61
+          ],
+          "vel": 72,
+          "part": "accordion"
+        },
+        {
+          "t": 7.0,
+          "dur": 0.3,
+          "notes": [
+            73
+          ],
+          "vel": 78,
+          "part": "accordion"
+        },
+        {
+          "t": 6.0,
+          "dur": 0.35,
+          "notes": [
+            64
+          ],
+          "vel": 72,
+          "part": "accordion"
+        },
+        {
+          "t": 7.0,
+          "dur": 0.3,
+          "notes": [
+            76
+          ],
+          "vel": 78,
+          "part": "accordion"
+        },
+        {
+          "t": 6.0,
+          "dur": 0.35,
+          "notes": [
+            81
+          ],
+          "vel": 86,
+          "part": "requinto"
+        },
+        {
+          "t": 6.5,
+          "dur": 0.35,
+          "notes": [
+            85
+          ],
+          "vel": 86,
+          "part": "requinto"
+        },
+        {
+          "t": 7.0,
+          "dur": 0.35,
+          "notes": [
+            88
+          ],
+          "vel": 86,
+          "part": "requinto"
+        },
+        {
+          "t": 7.5,
+          "dur": 0.35,
+          "notes": [
+            85
+          ],
+          "vel": 86,
+          "part": "requinto"
+        }
+      ]
+    },
+    "B": {
+      "bars": 4,
+      "loop": true,
+      "events": [
+        {
+          "t": 0.0,
+          "dur": 0.12,
+          "notes": [
+            36
+          ],
+          "vel": 112,
+          "part": "drums"
+        },
+        {
+          "t": 1.0,
+          "dur": 0.12,
+          "notes": [
+            38
+          ],
+          "vel": 104,
+          "part": "drums"
+        },
+        {
+          "t": 0.5,
+          "dur": 0.05,
+          "notes": [
+            38
+          ],
+          "vel": 32,
+          "part": "drums"
+        },
+        {
+          "t": 0.0,
+          "dur": 0.08,
+          "notes": [
+            42
+          ],
+          "vel": 70,
+          "part": "drums"
+        },
+        {
+          "t": 0.5,
+          "dur": 0.08,
+          "notes": [
+            42
+          ],
+          "vel": 44,
+          "part": "drums"
+        },
+        {
+          "t": 1.0,
+          "dur": 0.08,
+          "notes": [
+            42
+          ],
+          "vel": 64,
+          "part": "drums"
+        },
+        {
+          "t": 1.5,
+          "dur": 0.08,
+          "notes": [
+            42
+          ],
+          "vel": 46,
+          "part": "drums"
+        },
+        {
+          "t": 0.5,
+          "dur": 0.12,
+          "notes": [
+            54
+          ],
+          "vel": 58,
+          "part": "drums"
+        },
+        {
+          "t": 1.5,
+          "dur": 0.12,
+          "notes": [
+            54
+          ],
+          "vel": 64,
+          "part": "drums"
+        },
+        {
+          "t": 0.0,
+          "dur": 0.7,
+          "notes": [
+            38
+          ],
+          "vel": 108,
+          "part": "bass"
+        },
+        {
+          "t": 1.0,
+          "dur": 0.65,
+          "notes": [
+            50
+          ],
+          "vel": 94,
+          "part": "bass"
+        },
+        {
+          "t": 1.5,
+          "dur": 0.2,
+          "notes": [
+            45
+          ],
+          "vel": 70,
+          "part": "bass"
+        },
+        {
+          "t": 0.0,
+          "dur": 0.35,
+          "notes": [
+            50
+          ],
+          "vel": 72,
+          "part": "accordion"
+        },
+        {
+          "t": 1.0,
+          "dur": 0.3,
+          "notes": [
+            62
+          ],
+          "vel": 78,
+          "part": "accordion"
+        },
+        {
+          "t": 0.0,
+          "dur": 0.35,
+          "notes": [
+            54
+          ],
+          "vel": 72,
+          "part": "accordion"
+        },
+        {
+          "t": 1.0,
+          "dur": 0.3,
+          "notes": [
+            66
+          ],
+          "vel": 78,
+          "part": "accordion"
+        },
+        {
+          "t": 0.0,
+          "dur": 0.35,
+          "notes": [
+            57
+          ],
+          "vel": 72,
+          "part": "accordion"
+        },
+        {
+          "t": 1.0,
+          "dur": 0.3,
+          "notes": [
+            69
+          ],
+          "vel": 78,
+          "part": "accordion"
+        },
+        {
+          "t": 0.0,
+          "dur": 0.35,
+          "notes": [
+            81
+          ],
+          "vel": 86,
+          "part": "requinto"
+        },
+        {
+          "t": 0.5,
+          "dur": 0.35,
+          "notes": [
+            78
+          ],
+          "vel": 86,
+          "part": "requinto"
+        },
+        {
+          "t": 1.0,
+          "dur": 0.35,
+          "notes": [
+            76
+          ],
+          "vel": 86,
+          "part": "requinto"
+        },
+        {
+          "t": 1.5,
+          "dur": 0.35,
+          "notes": [
+            78
+          ],
+          "vel": 86,
+          "part": "requinto"
+        },
+        {
+          "t": 2.0,
+          "dur": 0.12,
+          "notes": [
+            36
+          ],
+          "vel": 112,
+          "part": "drums"
+        },
+        {
+          "t": 3.0,
+          "dur": 0.12,
+          "notes": [
+            38
+          ],
+          "vel": 104,
+          "part": "drums"
+        },
+        {
+          "t": 2.5,
+          "dur": 0.05,
+          "notes": [
+            38
+          ],
+          "vel": 32,
+          "part": "drums"
+        },
+        {
+          "t": 2.0,
+          "dur": 0.08,
+          "notes": [
+            42
+          ],
+          "vel": 70,
+          "part": "drums"
+        },
+        {
+          "t": 2.5,
+          "dur": 0.08,
+          "notes": [
+            42
+          ],
+          "vel": 44,
+          "part": "drums"
+        },
+        {
+          "t": 3.0,
+          "dur": 0.08,
+          "notes": [
+            42
+          ],
+          "vel": 64,
+          "part": "drums"
+        },
+        {
+          "t": 3.5,
+          "dur": 0.08,
+          "notes": [
+            42
+          ],
+          "vel": 46,
+          "part": "drums"
+        },
+        {
+          "t": 2.5,
+          "dur": 0.12,
+          "notes": [
+            54
+          ],
+          "vel": 58,
+          "part": "drums"
+        },
+        {
+          "t": 3.5,
+          "dur": 0.12,
+          "notes": [
+            54
+          ],
+          "vel": 64,
+          "part": "drums"
+        },
+        {
+          "t": 2.0,
+          "dur": 0.7,
+          "notes": [
+            43
+          ],
+          "vel": 108,
+          "part": "bass"
+        },
+        {
+          "t": 3.0,
+          "dur": 0.65,
+          "notes": [
+            55
+          ],
+          "vel": 94,
+          "part": "bass"
+        },
+        {
+          "t": 3.5,
+          "dur": 0.2,
+          "notes": [
+            50
+          ],
+          "vel": 70,
+          "part": "bass"
+        },
+        {
+          "t": 2.0,
+          "dur": 0.35,
+          "notes": [
+            55
+          ],
+          "vel": 72,
+          "part": "accordion"
+        },
+        {
+          "t": 3.0,
+          "dur": 0.3,
+          "notes": [
+            67
+          ],
+          "vel": 78,
+          "part": "accordion"
+        },
+        {
+          "t": 2.0,
+          "dur": 0.35,
+          "notes": [
+            59
+          ],
+          "vel": 72,
+          "part": "accordion"
+        },
+        {
+          "t": 3.0,
+          "dur": 0.3,
+          "notes": [
+            71
+          ],
+          "vel": 78,
+          "part": "accordion"
+        },
+        {
+          "t": 2.0,
+          "dur": 0.35,
+          "notes": [
+            62
+          ],
+          "vel": 72,
+          "part": "accordion"
+        },
+        {
+          "t": 3.0,
+          "dur": 0.3,
+          "notes": [
+            74
+          ],
+          "vel": 78,
+          "part": "accordion"
+        },
+        {
+          "t": 2.0,
+          "dur": 0.35,
+          "notes": [
+            86
+          ],
+          "vel": 86,
+          "part": "requinto"
+        },
+        {
+          "t": 2.5,
+          "dur": 0.35,
+          "notes": [
+            83
+          ],
+          "vel": 86,
+          "part": "requinto"
+        },
+        {
+          "t": 3.0,
+          "dur": 0.35,
+          "notes": [
+            81
+          ],
+          "vel": 86,
+          "part": "requinto"
+        },
+        {
+          "t": 3.5,
+          "dur": 0.35,
+          "notes": [
+            83
+          ],
+          "vel": 86,
+          "part": "requinto"
+        },
+        {
+          "t": 4.0,
+          "dur": 0.12,
+          "notes": [
+            36
+          ],
+          "vel": 112,
+          "part": "drums"
+        },
+        {
+          "t": 5.0,
+          "dur": 0.12,
+          "notes": [
+            38
+          ],
+          "vel": 104,
+          "part": "drums"
+        },
+        {
+          "t": 4.5,
+          "dur": 0.05,
+          "notes": [
+            38
+          ],
+          "vel": 32,
+          "part": "drums"
+        },
+        {
+          "t": 4.0,
+          "dur": 0.08,
+          "notes": [
+            42
+          ],
+          "vel": 70,
+          "part": "drums"
+        },
+        {
+          "t": 4.5,
+          "dur": 0.08,
+          "notes": [
+            42
+          ],
+          "vel": 44,
+          "part": "drums"
+        },
+        {
+          "t": 5.0,
+          "dur": 0.08,
+          "notes": [
+            42
+          ],
+          "vel": 64,
+          "part": "drums"
+        },
+        {
+          "t": 5.5,
+          "dur": 0.08,
+          "notes": [
+            42
+          ],
+          "vel": 46,
+          "part": "drums"
+        },
+        {
+          "t": 4.5,
+          "dur": 0.12,
+          "notes": [
+            54
+          ],
+          "vel": 58,
+          "part": "drums"
+        },
+        {
+          "t": 5.5,
+          "dur": 0.12,
+          "notes": [
+            54
+          ],
+          "vel": 64,
+          "part": "drums"
+        },
+        {
+          "t": 4.0,
+          "dur": 0.7,
+          "notes": [
+            38
+          ],
+          "vel": 108,
+          "part": "bass"
+        },
+        {
+          "t": 5.0,
+          "dur": 0.65,
+          "notes": [
+            50
+          ],
+          "vel": 94,
+          "part": "bass"
+        },
+        {
+          "t": 5.5,
+          "dur": 0.2,
+          "notes": [
+            45
+          ],
+          "vel": 70,
+          "part": "bass"
+        },
+        {
+          "t": 4.0,
+          "dur": 0.35,
+          "notes": [
+            50
+          ],
+          "vel": 72,
+          "part": "accordion"
+        },
+        {
+          "t": 5.0,
+          "dur": 0.3,
+          "notes": [
+            62
+          ],
+          "vel": 78,
+          "part": "accordion"
+        },
+        {
+          "t": 4.0,
+          "dur": 0.35,
+          "notes": [
+            54
+          ],
+          "vel": 72,
+          "part": "accordion"
+        },
+        {
+          "t": 5.0,
+          "dur": 0.3,
+          "notes": [
+            66
+          ],
+          "vel": 78,
+          "part": "accordion"
+        },
+        {
+          "t": 4.0,
+          "dur": 0.35,
+          "notes": [
+            57
+          ],
+          "vel": 72,
+          "part": "accordion"
+        },
+        {
+          "t": 5.0,
+          "dur": 0.3,
+          "notes": [
+            69
+          ],
+          "vel": 78,
+          "part": "accordion"
+        },
+        {
+          "t": 4.0,
+          "dur": 0.35,
+          "notes": [
+            81
+          ],
+          "vel": 86,
+          "part": "requinto"
+        },
+        {
+          "t": 4.5,
+          "dur": 0.35,
+          "notes": [
+            78
+          ],
+          "vel": 86,
+          "part": "requinto"
+        },
+        {
+          "t": 5.0,
+          "dur": 0.35,
+          "notes": [
+            76
+          ],
+          "vel": 86,
+          "part": "requinto"
+        },
+        {
+          "t": 5.5,
+          "dur": 0.35,
+          "notes": [
+            78
+          ],
+          "vel": 86,
+          "part": "requinto"
+        },
+        {
+          "t": 6.0,
+          "dur": 0.12,
+          "notes": [
+            36
+          ],
+          "vel": 112,
+          "part": "drums"
+        },
+        {
+          "t": 7.0,
+          "dur": 0.12,
+          "notes": [
+            38
+          ],
+          "vel": 104,
+          "part": "drums"
+        },
+        {
+          "t": 6.5,
+          "dur": 0.05,
+          "notes": [
+            38
+          ],
+          "vel": 32,
+          "part": "drums"
+        },
+        {
+          "t": 6.0,
+          "dur": 0.08,
+          "notes": [
+            42
+          ],
+          "vel": 70,
+          "part": "drums"
+        },
+        {
+          "t": 6.5,
+          "dur": 0.08,
+          "notes": [
+            42
+          ],
+          "vel": 44,
+          "part": "drums"
+        },
+        {
+          "t": 7.0,
+          "dur": 0.08,
+          "notes": [
+            42
+          ],
+          "vel": 64,
+          "part": "drums"
+        },
+        {
+          "t": 7.5,
+          "dur": 0.08,
+          "notes": [
+            42
+          ],
+          "vel": 46,
+          "part": "drums"
+        },
+        {
+          "t": 6.5,
+          "dur": 0.12,
+          "notes": [
+            54
+          ],
+          "vel": 58,
+          "part": "drums"
+        },
+        {
+          "t": 7.5,
+          "dur": 0.12,
+          "notes": [
+            54
+          ],
+          "vel": 64,
+          "part": "drums"
+        },
+        {
+          "t": 6.0,
+          "dur": 0.7,
+          "notes": [
+            45
+          ],
+          "vel": 108,
+          "part": "bass"
+        },
+        {
+          "t": 7.0,
+          "dur": 0.65,
+          "notes": [
+            57
+          ],
+          "vel": 94,
+          "part": "bass"
+        },
+        {
+          "t": 7.5,
+          "dur": 0.2,
+          "notes": [
+            52
+          ],
+          "vel": 70,
+          "part": "bass"
+        },
+        {
+          "t": 6.0,
+          "dur": 0.35,
+          "notes": [
+            57
+          ],
+          "vel": 72,
+          "part": "accordion"
+        },
+        {
+          "t": 7.0,
+          "dur": 0.3,
+          "notes": [
+            69
+          ],
+          "vel": 78,
+          "part": "accordion"
+        },
+        {
+          "t": 6.0,
+          "dur": 0.35,
+          "notes": [
+            61
+          ],
+          "vel": 72,
+          "part": "accordion"
+        },
+        {
+          "t": 7.0,
+          "dur": 0.3,
+          "notes": [
+            73
+          ],
+          "vel": 78,
+          "part": "accordion"
+        },
+        {
+          "t": 6.0,
+          "dur": 0.35,
+          "notes": [
+            64
+          ],
+          "vel": 72,
+          "part": "accordion"
+        },
+        {
+          "t": 7.0,
+          "dur": 0.3,
+          "notes": [
+            76
+          ],
+          "vel": 78,
+          "part": "accordion"
+        },
+        {
+          "t": 6.0,
+          "dur": 0.35,
+          "notes": [
+            88
+          ],
+          "vel": 86,
+          "part": "requinto"
+        },
+        {
+          "t": 6.5,
+          "dur": 0.35,
+          "notes": [
+            85
+          ],
+          "vel": 86,
+          "part": "requinto"
+        },
+        {
+          "t": 7.0,
+          "dur": 0.35,
+          "notes": [
+            83
+          ],
+          "vel": 86,
+          "part": "requinto"
+        },
+        {
+          "t": 7.5,
+          "dur": 0.35,
+          "notes": [
+            85
+          ],
+          "vel": 86,
+          "part": "requinto"
+        }
+      ]
+    },
+    "fill": {
+      "bars": 2,
+      "loop": false,
+      "events": [
+        {
+          "t": 0.0,
+          "dur": 0.12,
+          "notes": [
+            36
+          ],
+          "vel": 112,
+          "part": "drums"
+        },
+        {
+          "t": 1.0,
+          "dur": 0.12,
+          "notes": [
+            38
+          ],
+          "vel": 104,
+          "part": "drums"
+        },
+        {
+          "t": 0.5,
+          "dur": 0.05,
+          "notes": [
+            38
+          ],
+          "vel": 32,
+          "part": "drums"
+        },
+        {
+          "t": 0.0,
+          "dur": 0.08,
+          "notes": [
+            42
+          ],
+          "vel": 70,
+          "part": "drums"
+        },
+        {
+          "t": 0.5,
+          "dur": 0.08,
+          "notes": [
+            42
+          ],
+          "vel": 44,
+          "part": "drums"
+        },
+        {
+          "t": 1.0,
+          "dur": 0.08,
+          "notes": [
+            42
+          ],
+          "vel": 64,
+          "part": "drums"
+        },
+        {
+          "t": 1.5,
+          "dur": 0.08,
+          "notes": [
+            42
+          ],
+          "vel": 46,
+          "part": "drums"
+        },
+        {
+          "t": 0.5,
+          "dur": 0.12,
+          "notes": [
+            54
+          ],
+          "vel": 58,
+          "part": "drums"
+        },
+        {
+          "t": 1.5,
+          "dur": 0.12,
+          "notes": [
+            54
+          ],
+          "vel": 64,
+          "part": "drums"
+        },
+        {
+          "t": 0.0,
+          "dur": 0.12,
+          "notes": [
+            50
+          ],
+          "vel": 100,
+          "part": "drums"
+        },
+        {
+          "t": 0.4,
+          "dur": 0.12,
+          "notes": [
+            47
+          ],
+          "vel": 100,
+          "part": "drums"
+        },
+        {
+          "t": 0.8,
+          "dur": 0.12,
+          "notes": [
+            45
+          ],
+          "vel": 100,
+          "part": "drums"
+        },
+        {
+          "t": 1.2,
+          "dur": 0.12,
+          "notes": [
+            38
+          ],
+          "vel": 100,
+          "part": "drums"
+        },
+        {
+          "t": 1.6,
+          "dur": 0.12,
+          "notes": [
+            49
+          ],
+          "vel": 100,
+          "part": "drums"
+        },
+        {
+          "t": 0.0,
+          "dur": 0.7,
+          "notes": [
+            38
+          ],
+          "vel": 108,
+          "part": "bass"
+        },
+        {
+          "t": 1.0,
+          "dur": 0.65,
+          "notes": [
+            50
+          ],
+          "vel": 94,
+          "part": "bass"
+        },
+        {
+          "t": 0.0,
+          "dur": 0.35,
+          "notes": [
+            50
+          ],
+          "vel": 72,
+          "part": "accordion"
+        },
+        {
+          "t": 1.0,
+          "dur": 0.3,
+          "notes": [
+            62
+          ],
+          "vel": 78,
+          "part": "accordion"
+        },
+        {
+          "t": 0.0,
+          "dur": 0.35,
+          "notes": [
+            54
+          ],
+          "vel": 72,
+          "part": "accordion"
+        },
+        {
+          "t": 1.0,
+          "dur": 0.3,
+          "notes": [
+            66
+          ],
+          "vel": 78,
+          "part": "accordion"
+        },
+        {
+          "t": 0.0,
+          "dur": 0.35,
+          "notes": [
+            57
+          ],
+          "vel": 72,
+          "part": "accordion"
+        },
+        {
+          "t": 1.0,
+          "dur": 0.3,
+          "notes": [
+            69
+          ],
+          "vel": 78,
+          "part": "accordion"
+        },
+        {
+          "t": 2.0,
+          "dur": 0.12,
+          "notes": [
+            36
+          ],
+          "vel": 112,
+          "part": "drums"
+        },
+        {
+          "t": 3.0,
+          "dur": 0.12,
+          "notes": [
+            38
+          ],
+          "vel": 104,
+          "part": "drums"
+        },
+        {
+          "t": 2.5,
+          "dur": 0.05,
+          "notes": [
+            38
+          ],
+          "vel": 32,
+          "part": "drums"
+        },
+        {
+          "t": 2.0,
+          "dur": 0.08,
+          "notes": [
+            42
+          ],
+          "vel": 70,
+          "part": "drums"
+        },
+        {
+          "t": 2.5,
+          "dur": 0.08,
+          "notes": [
+            42
+          ],
+          "vel": 44,
+          "part": "drums"
+        },
+        {
+          "t": 3.0,
+          "dur": 0.08,
+          "notes": [
+            42
+          ],
+          "vel": 64,
+          "part": "drums"
+        },
+        {
+          "t": 3.5,
+          "dur": 0.08,
+          "notes": [
+            42
+          ],
+          "vel": 46,
+          "part": "drums"
+        },
+        {
+          "t": 2.5,
+          "dur": 0.12,
+          "notes": [
+            54
+          ],
+          "vel": 58,
+          "part": "drums"
+        },
+        {
+          "t": 3.5,
+          "dur": 0.12,
+          "notes": [
+            54
+          ],
+          "vel": 64,
+          "part": "drums"
+        },
+        {
+          "t": 2.0,
+          "dur": 0.12,
+          "notes": [
+            50
+          ],
+          "vel": 100,
+          "part": "drums"
+        },
+        {
+          "t": 2.4,
+          "dur": 0.12,
+          "notes": [
+            47
+          ],
+          "vel": 100,
+          "part": "drums"
+        },
+        {
+          "t": 2.8,
+          "dur": 0.12,
+          "notes": [
+            45
+          ],
+          "vel": 100,
+          "part": "drums"
+        },
+        {
+          "t": 3.2,
+          "dur": 0.12,
+          "notes": [
+            38
+          ],
+          "vel": 100,
+          "part": "drums"
+        },
+        {
+          "t": 3.6,
+          "dur": 0.12,
+          "notes": [
+            49
+          ],
+          "vel": 100,
+          "part": "drums"
+        },
+        {
+          "t": 2.0,
+          "dur": 0.7,
+          "notes": [
+            43
+          ],
+          "vel": 108,
+          "part": "bass"
+        },
+        {
+          "t": 3.0,
+          "dur": 0.65,
+          "notes": [
+            55
+          ],
+          "vel": 94,
+          "part": "bass"
+        },
+        {
+          "t": 2.0,
+          "dur": 0.35,
+          "notes": [
+            55
+          ],
+          "vel": 72,
+          "part": "accordion"
+        },
+        {
+          "t": 3.0,
+          "dur": 0.3,
+          "notes": [
+            67
+          ],
+          "vel": 78,
+          "part": "accordion"
+        },
+        {
+          "t": 2.0,
+          "dur": 0.35,
+          "notes": [
+            59
+          ],
+          "vel": 72,
+          "part": "accordion"
+        },
+        {
+          "t": 3.0,
+          "dur": 0.3,
+          "notes": [
+            71
+          ],
+          "vel": 78,
+          "part": "accordion"
+        },
+        {
+          "t": 2.0,
+          "dur": 0.35,
+          "notes": [
+            62
+          ],
+          "vel": 72,
+          "part": "accordion"
+        },
+        {
+          "t": 3.0,
+          "dur": 0.3,
+          "notes": [
+            74
+          ],
+          "vel": 78,
+          "part": "accordion"
+        }
+      ]
+    },
+    "ending": {
+      "bars": 2,
+      "loop": false,
+      "events": [
+        {
+          "t": 0.0,
+          "dur": 0.12,
+          "notes": [
+            36
+          ],
+          "vel": 112,
+          "part": "drums"
+        },
+        {
+          "t": 1.0,
+          "dur": 0.12,
+          "notes": [
+            38
+          ],
+          "vel": 104,
+          "part": "drums"
+        },
+        {
+          "t": 0.5,
+          "dur": 0.05,
+          "notes": [
+            38
+          ],
+          "vel": 32,
+          "part": "drums"
+        },
+        {
+          "t": 0.0,
+          "dur": 0.08,
+          "notes": [
+            42
+          ],
+          "vel": 70,
+          "part": "drums"
+        },
+        {
+          "t": 0.5,
+          "dur": 0.08,
+          "notes": [
+            42
+          ],
+          "vel": 44,
+          "part": "drums"
+        },
+        {
+          "t": 1.0,
+          "dur": 0.08,
+          "notes": [
+            42
+          ],
+          "vel": 64,
+          "part": "drums"
+        },
+        {
+          "t": 1.5,
+          "dur": 0.08,
+          "notes": [
+            42
+          ],
+          "vel": 46,
+          "part": "drums"
+        },
+        {
+          "t": 0.5,
+          "dur": 0.12,
+          "notes": [
+            54
+          ],
+          "vel": 58,
+          "part": "drums"
+        },
+        {
+          "t": 1.5,
+          "dur": 0.12,
+          "notes": [
+            54
+          ],
+          "vel": 64,
+          "part": "drums"
+        },
+        {
+          "t": 0.0,
+          "dur": 0.7,
+          "notes": [
+            38
+          ],
+          "vel": 108,
+          "part": "bass"
+        },
+        {
+          "t": 1.0,
+          "dur": 0.65,
+          "notes": [
+            50
+          ],
+          "vel": 94,
+          "part": "bass"
+        },
+        {
+          "t": 0.0,
+          "dur": 0.35,
+          "notes": [
+            50
+          ],
+          "vel": 72,
+          "part": "accordion"
+        },
+        {
+          "t": 1.0,
+          "dur": 0.3,
+          "notes": [
+            62
+          ],
+          "vel": 78,
+          "part": "accordion"
+        },
+        {
+          "t": 0.0,
+          "dur": 0.35,
+          "notes": [
+            54
+          ],
+          "vel": 72,
+          "part": "accordion"
+        },
+        {
+          "t": 1.0,
+          "dur": 0.3,
+          "notes": [
+            66
+          ],
+          "vel": 78,
+          "part": "accordion"
+        },
+        {
+          "t": 0.0,
+          "dur": 0.35,
+          "notes": [
+            57
+          ],
+          "vel": 72,
+          "part": "accordion"
+        },
+        {
+          "t": 1.0,
+          "dur": 0.3,
+          "notes": [
+            69
+          ],
+          "vel": 78,
+          "part": "accordion"
+        },
+        {
+          "t": 2.0,
+          "dur": 0.4,
+          "notes": [
+            49
+          ],
+          "vel": 118,
+          "part": "drums"
+        },
+        {
+          "t": 2.0,
+          "dur": 0.12,
+          "notes": [
+            36
+          ],
+          "vel": 120,
+          "part": "drums"
+        },
+        {
+          "t": 2.0,
+          "dur": 1.6,
+          "notes": [
+            43
+          ],
+          "vel": 112,
+          "part": "bass"
+        }
+      ]
+    }
+  }
+}
