@@ -1,0 +1,34 @@
+{
+  "version": 2,
+  "styles": [
+    {
+      "id": "banda",
+      "file": "banda.json",
+      "label": "Banda",
+      "blurb": "Recodo-modern · stabs"
+    },
+    {
+      "id": "cumbia",
+      "file": "cumbia.json",
+      "label": "Cumbión",
+      "blurb": "Apache-feel groove"
+    },
+    {
+      "id": "norteno",
+      "file": "norteno.json",
+      "label": "Norteño",
+      "blurb": "Polka · bajeo octaviado"
+    },
+    {
+      "id": "corrido_tumbado",
+      "file": "corrido_tumbado.json",
+      "label": "Corrido Tumbado",
+      "blurb": "6/8 · requinto+tuba"
+    }
+  ],
+  "soundfonts": {
+    "baseUrl": "soundfonts/FluidR3_GM",
+    "format": "mp3",
+    "library": "FluidR3_GM"
+  }
+}
