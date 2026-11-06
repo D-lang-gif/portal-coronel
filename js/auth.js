@@ -1,7 +1,7 @@
 /** Client-side gate: PBKDF2-SHA256 hash only (no plaintext in repo). */
 (function () {
-  const SALT_HEX = "95e1f5c7f420f3947bc7978fbd9c7433";
-  const HASH_HEX = "4b083c3b8051f268dd7246e0e99aa069518536f534544e9e10d4a19266d07d2e";
+  const SALT_HEX = "f5683dd503d323855db92b852f5f1ff4";
+  const HASH_HEX = "7e5a33ce72990d7df64c18c5b9bf4dbfd945eb8111148b2deb4240f967688cf8";
   const KEY = "portal_coronel_ok_v1";
   const ITER = 120000;
 
