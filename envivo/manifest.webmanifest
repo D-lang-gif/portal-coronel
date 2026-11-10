@@ -1,0 +1,20 @@
+{
+  "name": "Coronel En Vivo",
+  "short_name": "Coronel Vivo",
+  "description": "Consola de voz en vivo: afinación, coros, vibrato, reverb, ritmos y auto-mezcla.",
+  "lang": "es-MX",
+  "id": "./",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#0b0b10",
+  "theme_color": "#0b0b10",
+  "categories": ["music", "entertainment"],
+  "icons": [
+    { "src": "img/icono-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "img/icono-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "img/icono-512-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
+    { "src": "img/icono.svg", "sizes": "any", "type": "image/svg+xml" }
+  ]
+}
