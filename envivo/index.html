@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="es-MX">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
+  <title>Coronel En Vivo</title>
+  <meta name="theme-color" content="#0b0b10" />
+  <meta name="description" content="Consola de voz en vivo: afinación, coros, vibrato, reverb y ritmos Cumbia, Banda, Norteño y Tumbado." />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" href="img/icono.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="img/icono-192.png" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <link rel="stylesheet" href="css/envivo.css" />
+</head>
+<body>
+  <!-- Candado: misma contraseña del portal (solo hash PBKDF2, nada en texto) -->
+  <div id="gate">
+    <div class="gate-card">
+      <img src="img/icono.svg" alt="" class="gate-logo" />
+      <h1>CORONEL <span>EN VIVO</span></h1>
+      <p class="muted">Acceso con la contraseña del portal</p>
+      <form id="gate-form" autocomplete="on">
+        <input id="gate-pw" type="password" autocomplete="current-password" required placeholder="Contraseña" />
+        <label class="chk"><input type="checkbox" id="gate-recordar" checked /> Recordar en este teléfono</label>
+        <button type="submit" class="btn oro">Entrar</button>
+        <p id="gate-err" class="err"></p>
+      </form>
+    </div>
+  </div>
+
+  <main id="app" hidden>
+    <header class="top">
+      <div class="marca">
+        <img src="img/icono.svg" alt="" />
+        <div><b>CORONEL</b> <span>EN VIVO</span><small>Consola de voz · ritmos · auto-mezcla</small></div>
+      </div>
+      <div class="leds">
+        <span class="led" id="led-audio">AUDIO</span>
+        <span class="led" id="led-mic">MIC</span>
+        <span class="led" id="led-midi">MK-900</span>
+        <span class="led" id="led-offline">OFFLINE</span>
+      </div>
+      <div class="lat" id="lat">Latencia: —</div>
+      <button id="btn-encender" class="btn oro grande">⏻ ENCENDER</button>
+    </header>
+
+    <section class="panel generos">
+      <h2>Género <small>(acomoda la mezcla, el tempo y los ritmos solo)</small></h2>
+      <div class="fila-gen">
+        <button class="gen" data-gen="cumbia"><i>🎺</i>Cumbia<small>100 BPM</small></button>
+        <button class="gen" data-gen="banda"><i>🥁</i>Banda<small>108 BPM</small></button>
+        <button class="gen" data-gen="norteno"><i>🪗</i>Norteño<small>118 BPM</small></button>
+        <button class="gen" data-gen="corrido_tumbado"><i>🎸</i>Tumbado<small>145 BPM 6/8</small></button>
+      </div>
+    </section>
+
+    <section class="panel transporte">
+      <div class="grupo">
+        <button id="btn-play" class="btn play">▶</button>
+        <button id="btn-stop" class="btn">■</button>
+      </div>
+      <div class="grupo secciones">
+        <button class="sec" data-sec="intro">INTRO</button>
+        <button class="sec" data-sec="A">A</button>
+        <button class="sec" data-sec="B">B</button>
+        <button class="sec" data-sec="fill">FILL</button>
+        <button class="sec" data-sec="ending">FINAL</button>
+      </div>
+      <div class="grupo">
+        <label>Tempo</label>
+        <button class="btn mini" id="bpm-menos">−</button>
+        <span class="lcd" id="bpm">100</span>
+        <button class="btn mini" id="bpm-mas">+</button>
+        <button class="btn mini" id="bpm-tap">TAP</button>
+      </div>
+      <div class="grupo">
+        <label>Tono</label>
+        <select id="tono"></select>
+        <select id="escala">
+          <option value="mayor">Mayor</option>
+          <option value="menor">Menor</option>
+          <option value="menor_armonica">Menor armónica</option>
+          <option value="pentatonica">Pentatónica</option>
+          <option value="cromatica">Cromática</option>
+        </select>
+      </div>
+      <div class="grupo">
+        <label class="tg"><input type="checkbox" id="auto-mezcla" checked /><span>AUTO-MEZCLA</span></label>
+        <label class="tg"><input type="checkbox" id="auto-fill" checked /><span>FILL c/8</span></label>
+      </div>
+      <div class="lcd compas" id="compas">— · —</div>
+    </section>
+
+    <div class="dos">
+      <section class="panel voz">
+        <h2>Voz <small>afinación · coros · efectos</small></h2>
+        <div class="afinador">
+          <div class="nota" id="af-nota">—</div>
+          <div class="aguja"><div class="escala-c"><span>-50</span><span>0</span><span>+50</span></div><div class="ind" id="af-ind"></div></div>
+          <div class="hz" id="af-hz">sin señal</div>
+          <canvas class="vu-in" id="vu-in" width="16" height="80"></canvas>
+        </div>
+        <div class="toggles">
+          <label class="tg"><input type="checkbox" id="t-afinar" checked /><span>AFINACIÓN</span></label>
+          <label class="tg"><input type="checkbox" id="t-coros" /><span>COROS</span></label>
+          <label class="tg"><input type="checkbox" id="t-coro-acorde" /><span>COROS SIGUEN ACORDE</span></label>
+          <label class="tg"><input type="checkbox" id="t-monitor" checked /><span>VOZ A LA SALIDA</span></label>
+        </div>
+        <div class="knobs" id="knobs-voz"></div>
+      </section>
+
+      <section class="panel pads">
+        <h2>Pads <small>siguen el acorde</small></h2>
+        <div class="fila-pads">
+          <button class="pad" data-pad="cuerdas">Cuerdas</button>
+          <button class="pad" data-pad="coro">Coro “Aah”</button>
+          <button class="pad" data-pad="sinte">Sinte</button>
+          <button class="pad" data-pad="organo">Órgano</button>
+          <button class="pad" data-pad="viento">Viento</button>
+          <button class="pad apagar" data-pad="">Apagar</button>
+        </div>
+        <h2>MK-900 <small>Web MIDI (cable USB-OTG)</small></h2>
+        <div class="midi">
+          <button class="btn" id="btn-midi">Conectar MIDI</button>
+          <span class="lcd" id="midi-acorde">Acorde: —</span>
+          <label>Mano izq. hasta <select id="split"></select></label>
+          <p class="muted tiny" id="midi-info">Toca acordes con la mano izquierda: el bajo, los pads y los coros los siguen.</p>
+        </div>
+      </section>
+    </div>
+
+    <section class="panel consola">
+      <h2>Consola <small>8 faders “motorizados” en pantalla · se mueven solos con la auto-mezcla</small></h2>
+      <div class="canales" id="canales"></div>
+    </section>
+
+    <section class="panel notas">
+      <details>
+        <summary>Notas honestas (léelas una vez)</summary>
+        <ul>
+          <li><b>Latencia:</b> depende del teléfono. En Android la ruta USB suele dar 20–60 ms entre mic y salida; el afinador agrega ~10 ms. Arriba ves la medida real de tu equipo. Si se siente “eco”, baja coros/reverb o usa otro teléfono más nuevo.</li>
+          <li><b>Faders del Digi 002:</b> sus motores sólo se mueven desde una PC con FireWire y software de control. Este teléfono no puede moverlos; aquí los “motores” son los faders de pantalla, que sí se regulan solos por género y sección.</li>
+          <li><b>Conexión:</b> mic → interfaz Live-Broadcast → teléfono (USB-C). Salida PHONES de la interfaz → entradas 5-6 del Digi 002 → MAIN L/R → mezcladora Mackie → bocinas. La interfaz debe trabajar como tarjeta USB (modo “USB audio” / “OTG”).</li>
+          <li><b>Afinación:</b> es un afinador automático propio (detector YIN + desplazador granular). Probado: deja la voz a ±6 cents de la nota. No es Antares Auto-Tune; con correcciones muy grandes se escucha “robot”, que en tumbado a veces se busca.</li>
+          <li><b>Instrumentos:</b> son los sonidos General MIDI FluidR3 del portal y batería sintetizada; suenan bien para ensayo y eventos chicos, no como una banda real.</li>
+          <li><b>Sin internet:</b> abre la app una vez con internet y toca “Guardar todo para usar sin internet”.</li>
+          <li><b>Retroalimentación:</b> no uses la bocina del teléfono con el mic abierto; sal siempre por la interfaz.</li>
+        </ul>
+      </details>
+      <div class="pie">
+        <button class="btn" id="btn-offline">⬇ Guardar todo para usar sin internet</button>
+        <span class="muted tiny" id="offline-estado"></span>
+        <a class="btn" href="../musica.html">← Portal · Música</a>
+      </div>
+    </section>
+  </main>
+
+  <div id="toast"></div>
+  <script src="../js/soundfont-player.min.js"></script>
+  <script src="js/voz-dsp.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
