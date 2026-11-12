@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="es-MX">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Nodo VAH 4D · Portal del Coronel</title>
+  <meta name="theme-color" content="#0b0b10" />
+  <link rel="icon" type="image/svg+xml" href="../img/favicon.svg" />
+  <link rel="stylesheet" href="css/nodo4d.css" />
+  <script type="importmap">
+  { "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.min.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/"
+  } }
+  </script>
+  <script src="data/sitio.js"></script>
+  <script src="data/presupuesto4d.js"></script>
+  <script type="module" src="js/app.js"></script>
+</head>
+<body>
+  <!-- Candado: misma contraseña del portal (solo hash PBKDF2, nada en texto) -->
+  <div id="gate">
+    <div class="gate-card">
+      <img src="../img/logo.svg" alt="" class="gate-logo" />
+      <h1>NODO VAH <span>4D</span></h1>
+      <p class="muted">Acceso con la contraseña del portal</p>
+      <form id="gate-form" autocomplete="on">
+        <input id="gate-pw" type="password" autocomplete="current-password" required placeholder="Contraseña" />
+        <label class="chk"><input type="checkbox" id="gate-recordar" checked /> Recordar en este equipo</label>
+        <button type="submit" class="btn oro">Entrar</button>
+        <p id="gate-err" class="err"></p>
+      </form>
+    </div>
+  </div>
+
+  <main id="app" hidden>
+    <header class="top">
+      <a class="marca" href="../index.html" title="Volver al Gabinete">
+        <img src="../img/logo.svg" alt="" />
+        <div><b>NODO VAH</b> <span>4D</span><small>Centro de mando de obra · Gómez Palacio, Dgo.</small></div>
+      </a>
+      <div class="leds">
+        <span class="led amb">ANTEPROYECTO CONCEPTUAL</span>
+        <span class="led" id="led-fase">FASE —</span>
+        <span class="led" id="led-mes">MES 0</span>
+      </div>
+      <nav class="nav">
+        <a class="btn mini" href="../index.html">← Gabinete</a>
+        <button class="btn mini" id="btn-salir" type="button">Salir</button>
+      </nav>
+    </header>
+
+    <section class="kpis" id="kpis"></section>
+
+    <div class="grid">
+      <section class="panel visor">
+        <div class="visor-cab">
+          <h2>Modelo 3D + tiempo <small id="sub-visor">PL-01 Conjunto · coordenadas del documento</small></h2>
+          <div class="vistas">
+            <button class="btn mini" data-vista="aerea">Aérea</button>
+            <button class="btn mini" data-vista="iso">Isométrica</button>
+            <button class="btn mini" data-vista="planta">Planta</button>
+            <button class="btn mini on" id="btn-fantasma" type="button">Fantasma</button>
+          </div>
+        </div>
+        <div class="modos" id="modos">
+          <button class="modo on" data-modo="obra">🏗️ Obra 4D</button>
+          <button class="modo" data-modo="tuberias">🧪 Tuberías</button>
+          <button class="modo" data-modo="tratadora">💧 Tratadora</button>
+          <button class="modo" data-modo="v360">🔄 360°</button>
+          <button class="modo" data-modo="ciudad">🏙️ Ciudad y drenaje</button>
+          <button class="modo" data-modo="forma">🚧 Forma de trabajo</button>
+        </div>
+        <div id="lienzo"><div id="hud"></div><div id="ficha" hidden></div><div id="etq"></div><div id="cargando">Cargando modelo…</div></div>
+        <div id="modo-panel" hidden></div>
+        <div class="linea">
+          <div class="ctrl">
+            <button class="btn oro" id="btn-play" type="button">▶</button>
+            <select id="vel" title="Velocidad"><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="2">2×</option><option value="4">4×</option></select>
+            <div class="mes-lbl"><b id="mes-txt">Mes 0</b><small id="tri-txt">Antes de iniciar</small></div>
+          </div>
+          <div class="gantt" id="gantt"></div>
+          <input type="range" id="slider" min="0" max="27" step="0.05" value="0" aria-label="Mes de obra" />
+          <div class="escala" id="escala"></div>
+          <p class="nota tiny" id="nota-crono"></p>
+        </div>
+      </section>
+
+      <aside class="lado">
+        <section class="panel">
+          <h2>Avance programado <small id="av-mes">mes 0</small></h2>
+          <div class="gauges">
+            <div class="gauge"><canvas id="g-fis" width="160" height="100"></canvas><b id="g-fis-v">0%</b><small>Físico (programa)</small></div>
+            <div class="gauge"><canvas id="g-fin" width="160" height="100"></canvas><b id="g-fin-v">$0</b><small>Financiero acumulado</small></div>
+          </div>
+          <div id="fases-av"></div>
+          <p class="nota tiny">Programa según el cronograma §11. Aún no hay reportes de avance real de obra cargados: estas curvas son el plan, no la obra ejecutada.</p>
+        </section>
+
+        <section class="panel">
+          <h2>Curva S · inversión acumulada <small>MDP sin IVA</small></h2>
+          <canvas id="curva" width="560" height="240"></canvas>
+          <p class="nota tiny" id="nota-curva"></p>
+        </section>
+      </aside>
+    </div>
+
+    <div class="grid3">
+      <section class="panel">
+        <h2>Presupuesto por partida <small>MDP sin IVA</small></h2>
+        <div id="partidas"></div>
+        <p class="ley tiny"><i class="l1"></i>Plan maestro completo <i class="l2"></i>Solo alcance del documento <i class="l3"></i>Rango del documento</p>
+      </section>
+      <section class="panel">
+        <h2>Presupuesto por fase y zona</h2>
+        <div id="porfase"></div>
+        <div id="zonas"></div>
+      </section>
+      <section class="panel">
+        <h2>Planos y documentos</h2>
+        <ul class="planos" id="planos"></ul>
+        <h2 style="margin-top:14px">Calidad de las cifras</h2>
+        <div id="calidad"></div>
+      </section>
+    </div>
+
+    <section class="panel">
+      <details>
+        <summary><h2 style="display:inline">Supuestos de diseño <small>(S-01 … S-15 — lo que NO viene en el documento)</small></h2></summary>
+        <ol class="sup" id="supuestos"></ol>
+      </details>
+    </section>
+
+    <section class="panel pil">
+      <h2>Contexto: Parque Industrial Lagunero (PIL) <small>documento histórico</small></h2>
+      <div class="pil-grid">
+        <div>
+          <h3>Lo que dice el proyecto Nodo VAH</h3>
+          <ul>
+            <li>El predio del nodo piloto está en la franja periurbana <b>colindante con el PIL</b> y los canales de riego ejidal (Especificaciones, §1).</li>
+            <li>Las <b>descargas del PIL</b> se estiman en <b>40–80 L/s</b> (1.25–2.50 Mm³/año) y requieren la Fase 1 SIBRA: trampas de grasa y separadores coalescentes para grasas e hidrocarburos (Documento Maestro, §5).</li>
+            <li>La entrada de diseño es un efluente mixto municipal e industrial SIDEAPA/PIL con DBO₅ de 450 mg/L.</li>
+            <li>Recomendación del documento: firmar convenios marco entre SIDEAPA, el PIL y la A.C. promotora (§14).</li>
+          </ul>
+        </div>
+        <div>
+          <h3>Lo que muestra el folleto histórico</h3>
+          <ul>
+            <li>Folleto promocional bilingüe de la Promotora del Parque Industrial Lagunero de Gómez Palacio, de fecha no indicada (escaneo de 22 páginas).</li>
+            <li>Giros que menciona: jugos y néctares, envases de cartón para líquidos, válvulas y tubería petrolera, incubadoras y alimentos balanceados, medicinas, cerámica, maquinaria agrícola, petroquímica y equipo de riego. Estos giros explican por qué el SIBRA necesita un pretratamiento contra grasas e hidrocarburos.</li>
+            <li>Servicios que ofrecía: electricidad, agua, combustóleo, diésel y gas natural, además de carretera, ferrocarril y el aeropuerto a 15 minutos.</li>
+            <li>El folleto no trae datos de agua residual ni de lotes que se puedan usar en el diseño.</li>
+          </ul>
+        </div>
+      </div>
+      <p class="nota tiny">Fuente histórica: <a href="https://www.torreon.gob.mx/archivo/pdf/libros/Parque%20Industrial%20Lagunero%20de%20G%C3%B3mez%20Palacio.pdf" target="_blank" rel="noopener">«Parque Industrial Lagunero de Gómez Palacio», Archivo Municipal de Torreón Eduardo Guerra · Biblioteca Digital</a>. Es un folleto de época: sus datos describen el parque como era entonces y no son cifras actuales.</p>
+    </section>
+
+    <footer class="pie tiny muted">Fuente: Documento Ejecutivo Maestro Integral (§6, §11), planos PL-01…PL-06 Rev. 0 y presupuesto del 25-oct-2026. ANTEPROYECTO CONCEPTUAL – NO VÁLIDO PARA CONSTRUCCIÓN; requiere validación y firma de perito/DRO.</footer>
+  </main>
+</body>
+</html>
