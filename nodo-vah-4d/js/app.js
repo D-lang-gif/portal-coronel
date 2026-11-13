@@ -1,6 +1,6 @@
 // Nodo VAH 4D · Portal del Coronel
 // Datos: data/sitio.js (modelo único de los planos PL-01…PL-06), data/presupuesto4d.js (agregados del presupuesto del 25-oct-2026)
-// y data/ciudad_pil.js (ciudad derivada del folleto histórico del PIL; red de drenaje referencial).
+// y data/ciudad_osm.js (ciudad real de OpenStreetMap; todas las redes de agua con trazo referencial).
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
@@ -8,7 +8,7 @@ import { W } from "./visor/util.js";
 import { crearMateriales, M } from "./visor/materiales.js";
 import { construir } from "./visor/constructores.js";
 import { crearFlujos, uTiempo } from "./visor/flujos.js";
-import { crearCiudad } from "./ciudad.js";
+import { crearCiudad, REDES } from "./ciudad.js";
 
 const $ = (s, r = document) => r.querySelector(s);
 const D = window.NODO_DATA, PR = window.NODO_PRES;
@@ -244,16 +244,18 @@ function escena() {
   });
 
   const reloj = new THREE.Clock();
-  renderer.setAnimationLoop(() => {
+  const ciclo = () => {
     const dt = Math.min(reloj.getDelta(), .1); uTiempo.value += dt; if (S.ciudad) S.ciudad.uT.value += dt;
     if (S.play) avanzar(dt);
     for (const id in fac) { const g = fac[id].userData.giro; if (g && fac[id].visible) g.rotation.y += dt * .15; }
     if (S.enfoque) { const k = 1 - Math.exp(-dt * 3.2); camera.position.lerp(S.enfoque.pos, k); controls.target.lerp(S.enfoque.tgt, Math.min(1, k * 1.3)); if (camera.position.distanceTo(S.enfoque.pos) < 1) S.enfoque = null; }
     if (S.orient) aplicarOrientacion();
+    if (S.modo === "recorrido") animTour(dt);
     if (S.pulso) { const k = .5 + .5 * Math.sin(uTiempo.value * 5); for (const m of S.pulso) m.material.emissive?.setRGB(.35 * k, .25 * k, .05 * k); }
     const dist = camera.position.distanceTo(controls.target); const nr = Math.max(.5, dist / 1500); if (Math.abs(nr - camera.near) / camera.near > .2) { camera.near = nr; camera.updateProjectionMatrix(); }
     controls.update(); renderer.render(scene, camera); etiquetas();
-  });
+  };
+  renderer.setAnimationLoop(ciclo); S.pausar = (on) => renderer.setAnimationLoop(on ? null : ciclo);
 }
 function avanzar(dt) {
   if (S.modo === "forma") { const N = S.ciudad.N; let j = S.jor + dt * .12 * S.vel; if (j >= N) { j = N; parar(); } ponerJornada(j); return; }
@@ -263,10 +265,12 @@ function parar() { S.play = false; $("#btn-play").textContent = "▶"; }
 
 async function cargarCiudad() {
   try {
-    if (!window.CIUDAD_PIL) await new Promise((ok, no) => { const s = document.createElement("script"); s.src = "data/ciudad_pil.js"; s.onload = ok; s.onerror = no; document.head.appendChild(s); });
-    const C = crearCiudad(S.scene, window.CIUDAD_PIL); S.ciudad = C;
-    for (const e of C.etiquetas) S.etiqueta(e.t, e.p, e.red ? "drenaje" : "ciudad", e.red ? "#ff8a3d" : "#4aa8ff");
-    S.etiqueta("Nodo VAH · PTAR SIBRA<br><small>posición referencial junto al PIL</small>", new THREE.Vector3(0, 60, 0), "ciudad", "#f3d27a");
+    if (!window.CIUDAD_OSM) await new Promise((ok, no) => { const s = document.createElement("script"); s.src = "data/ciudad_osm.js"; s.onload = ok; s.onerror = no; document.head.appendChild(s); });
+    const pozos = D.instalaciones.filter((f) => /^PI-803/.test(f.id)).map((f) => [f.cx - 100, 100 - f.cy]);
+    const C = crearCiudad(S.scene, window.CIUDAD_OSM, pozos); S.ciudad = C;
+    for (const e of C.etiquetas) { S.etiqueta(e.t, e.p, e.cat, e.color); S.etq[S.etq.length - 1].cerca = e.cerca; }
+    S.etiqueta("Nodo VAH · PTAR SIBRA<br><small>posición REFERENCIAL junto al PIL</small>", new THREE.Vector3(0, 60, 0), "ciudad", "#f3d27a");
+    S.capasRed = new Set(Object.keys(REDES));
     ponerMes(S.mes);
   } catch (e) { console.error("ciudad", e); }
 }
@@ -274,9 +278,12 @@ async function cargarCiudad() {
 function etiquetas() {
   const r = S.renderer.domElement.getBoundingClientRect(); const lejos = S.camera.position.distanceTo(S.controls.target) > 900;
   for (const t of S.etq) {
-    const enCiudad = S.modo === "ciudad" || S.modo === "forma";
-    const show = t.modo === "sitio" ? (!enCiudad && S.modo !== "tratadora" && !lejos) : t.modo === "ciudad" ? (enCiudad || lejos) : t.modo === "drenaje" ? S.modo === "ciudad" : t.modo === "etapa" ? S.modo === "tratadora" : false;
-    if (!show) { t.e.style.display = "none"; continue; }
+    const enCiudad = S.modo === "ciudad" || S.modo === "forma" || S.modo === "recorrido";
+    const red = S.modo === "ciudad" || S.modo === "recorrido";
+    const capa = t.modo === "colonia" ? "sanitario" : t.modo;
+    const show = t.modo === "sitio" ? (!enCiudad && S.modo !== "tratadora" && !lejos) : t.modo === "ciudad" ? (enCiudad || lejos) : t.modo === "nodo" ? red
+      : REDES[capa] ? red && S.capasRed?.has(capa) && (S.modo !== "recorrido" || S.tourCapa === capa) : t.modo === "etapa" ? S.modo === "tratadora" : t.modo === "tour" ? S.modo === "recorrido" : false;
+    if (!show || (t.cerca && S.camera.position.distanceTo(S.controls.target) > 2200)) { t.e.style.display = "none"; continue; }
     const v = t.p.clone().project(S.camera); const vis = v.z < 1 && Math.abs(v.x) < 1.05 && Math.abs(v.y) < 1.05;
     t.e.style.display = vis ? "" : "none"; if (vis) { t.e.style.left = (v.x * .5 + .5) * r.width + "px"; t.e.style.top = (-v.y * .5 + .5) * r.height + "px"; }
   }
@@ -287,7 +294,7 @@ function vista(n, inst) {
   const pos = new THREE.Vector3(...P[0]), tgt = new THREE.Vector3(...P[1]);
   if (inst) { S.camera.position.copy(pos); S.controls.target.copy(tgt); } else S.enfoque = { pos, tgt };
 }
-document.querySelectorAll("[data-vista]").forEach((b) => b.addEventListener("click", () => { if (S) { if (S.modo === "ciudad" || S.modo === "forma") modo("obra"); vista(b.dataset.vista); } }));
+document.querySelectorAll("[data-vista]").forEach((b) => b.addEventListener("click", () => { if (S) { if (["ciudad", "forma", "recorrido"].includes(S.modo)) modo("obra"); vista(b.dataset.vista); } }));
 $("#btn-fantasma").addEventListener("click", (e) => { if (!S) return; S.fantasma = !S.fantasma; e.currentTarget.classList.toggle("on", S.fantasma); ponerMes(S.mes); });
 
 function ponerMes(m, desdePlay) {
@@ -302,7 +309,7 @@ function ponerMes(m, desdePlay) {
   $("#led-mes").textContent = m > 24 ? "MES 24+" : "MES " + Math.floor(m);
   tablero(m);
   if (!S) return;
-  const forzar = ["tuberias", "tratadora", "ciudad"].includes(S.modo) ? 24 : null;
+  const forzar = ["tuberias", "tratadora", "ciudad", "recorrido"].includes(S.modo) ? 24 : null;
   const mm = forzar ?? m;
   let nObra = 0, nList = 0, nInst = 0;
   for (const it of S.items) {
@@ -315,9 +322,10 @@ function ponerMes(m, desdePlay) {
   const enc = S.modo === "tuberias" ? null : S.modo === "tratadora" ? ["agua_residual", "agua_proceso", "agua_tratada"] : mm >= 18 ? Object.keys(S.flujos) : [];
   for (const k in S.flujos) S.flujos[k].grupo.visible = enc ? enc.includes(k) : (S.capasOn?.has(k) ?? true);
   const enProc = S.items.filter((it) => it.tipo === "inst" && mm > it.ini && mm < it.fin).map((it) => it.f.id);
-  const tit = { obra: "OBRA 4D · NODO VAH", tuberias: "TUBERÍAS DEL NODO (proyecto completo)", tratadora: "MODO TRATADORA · SIBRA", v360: "VISTA 360°", ciudad: "CIUDAD Y DRENAJE · REFERENCIAL" }[S.modo];
+  const tit = { obra: "OBRA 4D · NODO VAH", tuberias: "TUBERÍAS DEL NODO (proyecto completo)", tratadora: "MODO TRATADORA · SIBRA", v360: "VISTA 360°", ciudad: "CIUDAD Y REDES DE AGUA" }[S.modo];
+  if (S.modo === "recorrido") return;
   $("#hud").innerHTML = S.modo === "ciudad"
-    ? `<b>${tit}</b><br>Mapa base: folleto histórico del PIL (pág. 13).<br><span class="ob">Colectores, subcolectores y descargas: esquema referencial.</span><br>El Plan de Drenaje está pendiente de cargar.`
+    ? `<b>${tit}</b><br><span class="ok">Ciudad, Río Nazas, canales y PIL: OpenStreetMap (real).</span><br><span class="ob">Trazo de las 6 redes y posición del Nodo: referencial.</span><br>El Plan Integral de Drenaje está pendiente de cargar.`
     : `<b>${tit}</b> · ${forzar ? "mes 24 (todo construido)" : m > 24 ? "mes 24+" : "mes " + m.toFixed(1)}<br>
     <span class="ok">■ Terminadas: ${nList}/${nInst}</span> · <span class="ob">■ En obra: ${nObra}</span><br>
     ${enProc.length && !forzar ? "Trabajando: " + enProc.slice(0, 4).join(", ") + (enProc.length > 4 ? "…" : "") : mm >= 18 && !forzar ? "Redes en prueba (Fase 3)" : ""}`;
@@ -329,7 +337,7 @@ function ponerJornada(j) {
   $("#tri-txt").textContent = `Tramo T-${String(r.i + 1).padStart(2, "0")} · ${Math.round(r.t.len)} m · ${r.paso}`;
   $("#led-fase").textContent = "DRENAJE"; $("#led-mes").textContent = "JORNADA " + (Math.floor(j) + 1);
   ambiente(r.noche);
-  if (S.tramoCam !== r.i) { S.tramoCam = r.i; const c = new THREE.Vector3(r.t.c[0], 0, r.t.c[1]); S.enfoque = { tgt: c, pos: c.clone().add(new THREE.Vector3(-75 * r.t.dir[1] + 20, 70, 75 * r.t.dir[0] + 20)) }; }
+  if (S.tramoCam !== r.i) { S.tramoCam = r.i; const c = new THREE.Vector3(r.t.c[0], 0, r.t.c[1]); S.enfoque = { tgt: c, pos: c.clone().add(new THREE.Vector3(-120 * r.t.dir[1] + 45, 120, 120 * r.t.dir[0] + 45)) }; }
   const hechos = r.i + (r.f >= 1 ? 1 : 0);
   $("#hud").innerHTML = `<b>FORMA DE TRABAJO · TRAMOS CORTOS</b><br>Colector C-1 (ruta referencial) · ${hechos}/${N} tramos cerrados<br>
     <span class="${r.t.tipo === "colonia" ? "ok" : "ob"}">${r.t.nota}</span><br>Paso actual: <b>${r.paso}</b>${r.noche ? "<br>🌙 Turno nocturno · torres de iluminación" : ""}`;
@@ -427,23 +435,89 @@ function panelTuberias() {
 }
 function panelCiudad() {
   const p = $("#modo-panel"); p.hidden = false; const C = S.ciudad;
-  p.innerHTML = `<h2>Ciudad y drenaje <small>mapa base del folleto histórico del PIL · red referencial</small></h2>
+  p.innerHTML = `<h2>Ciudad y redes de agua <small>OpenStreetMap real · redes con trazo referencial</small></h2>
+   <div class="capas leyenda">${Object.entries(REDES).map(([k, r]) => `<label style="--c:${r.c}" title="${r.d}"><input type="checkbox" data-red="${k}" ${S.capasRed.has(k) ? "checked" : ""}><i></i><b>${r.n}</b><small>${r.d}</small></label>`).join("")}</div>
    <div class="capas"><label><input type="checkbox" id="chk-xray" ${S.xray ? "checked" : ""}> 🩻 Rayos X (suelo transparente)</label>
-   ${C ? Object.keys(C.capas).map((k) => `<label style="--c:${{ colectores: "#ff8a3d", subcolectores: "#f3d27a", descargas: "#2fd3e6", pozos: "#9aa3ab" }[k]}"><input type="checkbox" data-red="${k}" ${C.capas[k].visible ? "checked" : ""}><i></i>${{ colectores: "Colectores (3)", subcolectores: "Subcolectores", descargas: "Descargas domiciliarias", pozos: "Pozos de visita c/100 m" }[k]}</label>`).join("") : ""}</div>
-   <p class="nota tiny">Las <b>manzanas</b> salen del mapa de la página 13 del folleto «Parque Industrial Lagunero de Gómez Palacio» (Archivo Municipal de Torreón): son los huecos entre las calles dibujadas y sus alturas son ilustrativas. El mapa es de época y no trae escala; aquí se <b>supone</b> que la lámina mide 14 km de ancho. Los <b>colectores, subcolectores, descargas y pozos son un esquema referencial</b>, con diámetros exagerados para que se lean. No son la red real: el Plan Integral de Drenaje está pendiente de cargar. La posición del Nodo VAH junto al PIL también es referencial.</p>`;
-  $("#chk-xray").addEventListener("change", (e) => { S.xray = e.target.checked; C?.xray(S.xray); });
-  p.querySelectorAll("[data-red]").forEach((c) => c.addEventListener("change", () => (C.capas[c.dataset.red].visible = c.checked)));
+   <label><input type="checkbox" id="chk-folleto" ${C.folleto.visible ? "checked" : ""}> 🗺️ Folleto histórico del PIL (pág. 13)</label>
+   <button class="btn mini oro" id="btn-tour">🌊 Recorrido del agua</button></div>
+   <div class="real-ref"><div><span class="tag doc">REAL · OSM</span> Calles, edificios mapeados, Río Nazas, canales (Sacramento, Tlahualilo), drenes y arroyos, vía férrea, aeropuertos, área industrial del PIL, tanques elevados, obras hidráulicas, bombeo y la PTAR existente de OSM.</div>
+   <div><span class="tag sup">REFERENCIAL</span> Posición del Nodo VAH junto al PIL; trazo y diámetros de las seis redes (van por calles reales); descarga al Nazas; toma al canal; colectores pluviales; ubicación de colonias (aprox.). Manzanas = huecos entre calles OSM con alturas ilustrativas.</div></div>
+   <p class="nota tiny">Datos © colaboradores de OpenStreetMap (licencia ODbL), extracto Geofabrik México del 12-nov-2026. El PIL no tiene nombre en OSM; se identificó por sus calles (Guanaceví, Topia, Canelas, Tamazula, Piedras Negras, CP 35078). Las coordenadas UTM de la memoria (E 654 200–654 400, N 2 854 600–2 854 800) caen unos 26 km al norte de Gómez Palacio, así que no se usaron para ubicar el Nodo. El folleto es un mapa de época sin escala; su ajuste sobre OSM es aproximado (error de 1–2 km). Ningún documento menciona una descarga al Río Nazas: se dibuja como opción referencial que tendría que cumplir la NOM-001-SEMARNAT-2021.</p>`;
+  $("#chk-xray").addEventListener("change", (e) => { S.xray = e.target.checked; C.xray(S.xray); });
+  $("#chk-folleto").addEventListener("change", (e) => { C.cargarFolleto(); C.folleto.visible = e.target.checked; });
+  $("#btn-tour").addEventListener("click", () => modo("recorrido"));
+  p.querySelectorAll("[data-red]").forEach((c) => c.addEventListener("change", () => { c.checked ? S.capasRed.add(c.dataset.red) : S.capasRed.delete(c.dataset.red); C.capa(c.dataset.red, c.checked); }));
+}
+/* ───────── Recorrido del agua ───────── */
+function pasosTour() {
+  const C = S.ciudad, r = C.rutas, P = C.prof, A = C.ACU; const v3 = (pts, y) => pts.map(([x, z]) => new THREE.Vector3(x, y, z));
+  const caja = (ids) => { const b = new THREE.Box3(); ids.forEach((id) => S.fac[id] && b.expandByObject(S.fac[id])); return b.getCenter(new THREE.Vector3()).setY(3); };
+  const ent = C.emisor[C.emisor.length - 1];
+  const sibra = [new THREE.Vector3(ent[0], 2, ent[1]), ...ETAPAS.slice(0, 7).map((e) => caja(e.ids)), caja(["ER-801"])];
+  const [px, pz] = C.pozosI[0] || [92, -20];
+  return [
+    { t: "Fuente: pozo / obra hidráulica", k: "potable", tag: "REAL + REF", pts: [new THREE.Vector3(r.pozo[0], A, r.pozo[1]), new THREE.Vector3(r.pozo[0], 0, r.pozo[1])],
+      txt: "El punto es una obra hidráulica de OpenStreetMap (real). Que sea la fuente del agua que llega al PIL es referencial. El acuífero de la Comarca está sobreexplotado y tiene arsénico y fluoruros (Documento Maestro §2)." },
+    { t: "Conducción al tanque elevado", k: "potable", tag: "REF", pts: v3(r.conduccion, P.potable), txt: "Línea de conducción con trazo referencial sobre calles reales, hasta un tanque elevado que sí está en OSM." },
+    { t: "Red de distribución hacia el PIL", k: "potable", tag: "REF", pts: v3(r.distribucion, P.potable), txt: "Red de distribución referencial que reparte el agua potable a las naves del Parque Industrial Lagunero." },
+    { t: "Uso en la industria del PIL", k: "industrial", tag: "DOC", pts: [new THREE.Vector3(r.industria[0], 0, r.industria[1]), new THREE.Vector3(r.industria[0], 25, r.industria[1]), new THREE.Vector3(r.industria[0], P.industrial, r.industria[1])],
+      txt: "El agua se usa en los procesos del PIL. El Documento Maestro estima descargas del parque de 40–80 L/s (1.25–2.50 Mm³/año), que necesitan la fase 1 de SIBRA (grasas e hidrocarburos)." },
+    { t: "Descarga industrial → colector → Nodo", k: "industrial", tag: "REF", pts: v3(r.descarga, P.industrial),
+      txt: "Las descargas de las naves van por un colector industrial (trazo referencial) al Nodo. Ahí también llega el emisor municipal con los colectores C-1…C-5. El Plan Integral de Drenaje está pendiente de cargar." },
+    { t: "Entrada de agua cruda y cárcamo TK-101", k: "sanitario", tag: "DOC + SUP", pts: [sibra[0], sibra[1]],
+      txt: "El agua cruda entra por el norte del predio (punto de entrega supuesto S-10) al cárcamo TK-101: 52.5 m³, 2 bombas trituradoras de 15 HP, caudal de diseño 22.5 L/s (19–29). El Nodo piloto trata una parte de las descargas del PIL." },
+    { t: "Tratamiento SIBRA en el Nodo", k: "tratada", tag: "DOC", pts: sibra.slice(1),
+      txt: "Pretratamiento → RAFA anaerobio → lodos activados → clarificación (supuesto S-05) → biofiltros y humedal → filtración y UV sin cloro. El documento plantea cumplir NOM-001-SEMARNAT-2021 y NOM-002-SEMARNAT-1996." },
+    { t: "Reúso industrial (agua morada)", k: "tratada", tag: "REF", pts: v3(r.reuso, P.tratada), txt: "Agua tratada de regreso a las naves del PIL. Es una propuesta con trazo referencial: el documento habla de reúso productivo y de riego." },
+    { t: "Riego ejidal por el canal", k: "tratada", tag: "OSM + REF", pts: v3(r.riego, P.tratada), txt: "El documento dice que el predio colinda con canales de riego ejidal (bombeo EB-802, supuesto S-07). El Canal de Sacramento es real (OSM); la conexión es referencial." },
+    { t: "Río Nazas", k: "tratada", tag: "REF", pts: v3(r.nazas, P.tratada), txt: "Los documentos no mencionan el Nazas. El cauce es real (OSM) y la descarga es solo una opción referencial: tendría que cumplir la NOM-001-SEMARNAT-2021 y tener permiso de CONAGUA." },
+    { t: "Recarga al acuífero", k: "recarga", tag: "DOC + SUP", pts: [new THREE.Vector3(px, 0, pz), new THREE.Vector3(px, A, pz)],
+      txt: "4 pozos de infiltración inducida (documento); su ubicación es el supuesto S-14 y requiere estudio geohidrológico y permiso de CONAGUA. Reúso y recarga del piloto: 0.60–0.90 Mm³/año, con menos extracción de pozos profundos (Documento Maestro)." },
+  ];
+}
+function panelTour() {
+  const p = $("#modo-panel"); p.hidden = false; S.tour = pasosTour();
+  p.innerHTML = `<h2>Recorrido del agua <small>del pozo a la industria, al Nodo y de vuelta: reúso, riego, Nazas y acuífero</small></h2>
+   <div class="etapas">${S.tour.map((e, i) => `<button class="etapa" data-i="${i}" style="--c:${REDES[e.k].c}"><b>${i + 1}. ${e.t}</b> <span class="tag ${/REF|SUP/.test(e.tag) ? "sup" : "doc"}">${e.tag}</span></button>`).join("")}</div>
+   <div class="det" id="det-tour"></div>
+   <p class="nota tiny"><button class="btn mini oro" id="btn-tour-play">▶ Reproducir</button> <button class="btn mini" id="btn-ciudad">⟵ Volver a Ciudad y redes</button> La gota recorre cada tramo; el color es el de la red.</p>`;
+  p.querySelectorAll(".etapa").forEach((b) => b.addEventListener("click", () => { tourAuto(false); pasoTour(+b.dataset.i); }));
+  $("#btn-tour-play").addEventListener("click", () => tourAuto(!S.tourAuto));
+  $("#btn-ciudad").addEventListener("click", () => modo("ciudad"));
+  if (!S.gota) { S.gota = new THREE.Mesh(new THREE.SphereGeometry(1, 20, 14), new THREE.MeshBasicMaterial({ color: 0xffffff, depthTest: false, transparent: true })); S.gota.renderOrder = 20;
+    S.halo = new THREE.Mesh(new THREE.SphereGeometry(1.8, 20, 14), new THREE.MeshBasicMaterial({ color: 0xffffff, depthTest: false, transparent: true, opacity: .3 })); S.halo.renderOrder = 19; S.gota.add(S.halo); S.scene.add(S.gota); }
+  S.gota.visible = true; pasoTour(0); tourAuto(true);
+}
+function tourAuto(on) { S.tourAuto = on; const b = $("#btn-tour-play"); if (b) b.textContent = on ? "❚❚ Pausa" : "▶ Reproducir"; }
+function pasoTour(i) {
+  const e = S.tour[i]; S.tourI = i; S.tourT = 0; S.tourCapa = e.k;
+  document.querySelectorAll("#modo-panel .etapa").forEach((b) => b.classList.toggle("on", +b.dataset.i === i));
+  $("#det-tour").innerHTML = `<b style="color:${REDES[e.k].c}">${i + 1}. ${e.t}</b> — ${e.txt}`;
+  for (const k of Object.keys(REDES)) S.ciudad.capa(k, k === e.k || (k === "sanitario" && e.k === "industrial"));
+  S.ciudad.resaltar(e.k);
+  const c = new THREE.Color(REDES[e.k].c); S.gota.material.color.copy(c); S.halo.material.color.copy(c);
+  const curva = new THREE.CurvePath(); for (let j = 0; j < e.pts.length - 1; j++) if (e.pts[j].distanceToSquared(e.pts[j + 1]) > .01) curva.add(new THREE.LineCurve3(e.pts[j], e.pts[j + 1]));
+  S.tourCurva = curva; S.tourL = curva.getLength();
+  const b = new THREE.Box3().setFromPoints(e.pts); const ctr = b.getCenter(new THREE.Vector3()); const r = Math.max(110, b.getSize(new THREE.Vector3()).length() * .8);
+  S.gota.scale.setScalar(Math.max(2.5, r / 45));
+  S.enfoque = { tgt: ctr.clone().setY(Math.max(ctr.y, -5)), pos: ctr.clone().add(new THREE.Vector3(-.45 * r, .85 * r, .75 * r)).setY(Math.max(60, .85 * r)) };
+  $("#hud").innerHTML = `<b>RECORRIDO DEL AGUA · ${i + 1}/${S.tour.length}</b><br><span style="color:${REDES[e.k].c}">■</span> ${e.t}<br><span class="${/REF|SUP/.test(e.tag) ? "ob" : "ok"}">${e.tag}</span>`;
+}
+function animTour(dt) {
+  if (!S.tourCurva || !S.tourL) return; S.tourT += dt;
+  const u = Math.min(1, S.tourT / 5); S.gota.position.copy(S.tourCurva.getPointAt(ease(u)));
+  if (S.tourAuto && S.tourT > 6.5) pasoTour((S.tourI + 1) % S.tour.length);
 }
 function panelForma() {
   const p = $("#modo-panel"); p.hidden = false; const C = S.ciudad;
-  p.innerHTML = `<h2>Forma de trabajo · tramos cortos <small>metodología del Plan de Drenaje (§6 del índice que envió Raúl)</small></h2>
+  p.innerHTML = `<h2>Forma de trabajo · tramos cortos <small>metodología del Plan de Drenaje (§6 de su índice)</small></h2>
    <div class="etapas">
      <div class="etapa" style="--c:#3fd46b"><b>Colonias</b><small>Tramos de 100–200 m: se abre, se instala y se tapa el mismo día. Así no quedan zanjas abiertas de noche.</small></div>
      <div class="etapa" style="--c:#4aa8ff"><b>Avenidas</b><small>Trabajo nocturno con torres de iluminación, para no cerrar la vialidad de día.</small></div>
      <div class="etapa" style="--c:#ffb547"><b>Cruces críticos</b><small>Sin zanja: fosas de entrada y salida y perforación horizontal bajo vías, bulevares o canales.</small></div>
    </div>
    <div class="tramos" id="lista-tramos">${C.tramos.map((t) => `<div data-t="${t.i}">T-${String(t.i + 1).padStart(2, "0")} · ${Math.round(t.len)} m · ${t.tipo === "avenida" ? "🌙 avenida, nocturno" : t.tipo === "sinzanja" ? "⛏️ sin zanja" : "colonia"}</div>`).join("")}</div>
-   <p class="nota tiny">Animación <b>referencial</b>. La ruta del colector C-1, la ubicación de la avenida y de los cruces y los 150 m por tramo ilustran el método; no son la ingeniería del Plan de Drenaje, que aún no se ha cargado. Pon ▶ para ver avanzar las jornadas.</p>`;
+   <p class="nota tiny">Animación <b>referencial</b> del método. El colector C-1 va por calles reales de OpenStreetMap, del Nodo hacia el Centro. Los tramos nocturnos caen donde OSM marca vialidad primaria, y los tramos sin zanja donde la ruta cruza la vía férrea, un canal o una vía rápida de OSM. La ruta y los 150 m por tramo no son la ingeniería del Plan de Drenaje, que aún no se ha cargado. Pon ▶ para ver avanzar las jornadas.</p>`;
 }
 function panel360() {
   const p = $("#modo-panel"); p.hidden = false;
@@ -471,23 +545,27 @@ function aplicarOrientacion() {
 }
 function modo(n) {
   if (!S) return;
-  if ((n === "ciudad" || n === "forma") && !S.ciudad) { $("#hud").innerHTML = "<b>Cargando la ciudad…</b>"; setTimeout(() => modo(n), 600); return; }
+  if ((n === "ciudad" || n === "forma" || n === "recorrido") && !S.ciudad) { $("#hud").innerHTML = "<b>Cargando la ciudad…</b>"; setTimeout(() => modo(n), 600); return; }
   const prev = S.modo; S.modo = n; parar();
   document.querySelectorAll(".modo").forEach((b) => b.classList.toggle("on", b.dataset.modo === n));
   clearInterval(S.recorrido); S.controls.autoRotate = false; if (S.orient) { S.orient = null; window.removeEventListener("deviceorientation", S.onOri); }
   atenuar(false); pulsar([]);
   $("#modo-panel").hidden = true; $("#ficha").hidden = true;
-  if (S.ciudad) { S.ciudad.enForma(n === "forma"); S.xray ??= true; if (n === "forma") S.ciudad.xray(false, .5); else S.ciudad.xray(n === "ciudad" ? S.xray : false); }
+  if (S.ciudad) { S.ciudad.enForma(n === "forma"); S.xray ??= true; if (n === "forma") S.ciudad.xray(false, .5); else S.ciudad.xray(n === "ciudad" ? S.xray : n === "recorrido");
+    if (n !== "recorrido") { for (const k of Object.keys(REDES)) S.ciudad.capa(k, S.capasRed.has(k)); S.ciudad.resaltar(null); } }
+  if (S.ciudad && n === "forma") for (const k of Object.keys(REDES)) S.ciudad.capa(k, false);
+  if (S.gota) S.gota.visible = n === "recorrido"; S.tourCurva = null; S.tourCapa = null;
   ambiente(false); S.tramoCam = -1;
-  S.scene.fog.near = n === "ciudad" ? 4000 : 900; S.scene.fog.far = n === "ciudad" ? 16000 : 9000;
+  const lejosM = n === "ciudad" || n === "recorrido"; S.scene.fog.near = lejosM ? 9000 : 900; S.scene.fog.far = lejosM ? 30000 : 9000;
   if (n === "tuberias") { panelTuberias(); atenuar(true, []); S.enfoque = { pos: new THREE.Vector3(-60, 150, 140), tgt: new THREE.Vector3(-20, 0, -10) }; }
   if (n === "tratadora") { panelTratadora(); S.enfoque = { pos: new THREE.Vector3(-150, 95, 40), tgt: new THREE.Vector3(-30, 0, -15) }; atenuar(true, ETAPAS.flatMap((e) => e.ids)); }
   if (n === "v360") { panel360(); S.controls.autoRotate = true; S.controls.autoRotateSpeed = 1.2; S.enfoque = { pos: new THREE.Vector3(-420, 260, 420), tgt: new THREE.Vector3(0, 0, 0) }; }
-  if (n === "ciudad") { panelCiudad(); S.enfoque = { pos: new THREE.Vector3(-100, 1700, 1100), tgt: new THREE.Vector3(-900, 0, -700) }; }
+  if (n === "ciudad") { panelCiudad(); S.enfoque = { pos: new THREE.Vector3(-400, 3300, 4700), tgt: new THREE.Vector3(-2200, 0, 1300) }; }
+  if (n === "recorrido") panelTour();
   if (n === "forma") { panelForma(); ganttForma(true); ponerJornada(S.jor || 0); }
   if (prev === "forma" && n !== "forma") ganttForma(false);
   if (n === "obra" && prev !== "obra") vista("aerea");
-  $("#sub-visor").textContent = { obra: "PL-01 Conjunto · cronograma §11", tuberias: "Redes PL-03 / PL-04 · trazo referencial", tratadora: "Tren SIBRA · PL-03 + memoria MT-NVAH-01", v360: "Órbita panorámica", ciudad: "Folleto PIL pág. 13 · red referencial", forma: "Tramos cortos · colector C-1 referencial" }[n];
+  $("#sub-visor").textContent = { obra: "PL-01 Conjunto · cronograma §11", tuberias: "Redes PL-03 / PL-04 · trazo referencial", tratadora: "Tren SIBRA · PL-03 + memoria MT-NVAH-01", v360: "Órbita panorámica", ciudad: "OpenStreetMap (real) · redes referenciales", forma: "Tramos cortos · C-1 sobre calles OSM", recorrido: "Pozo → industria → Nodo → reúso / riego / Nazas / acuífero" }[n];
   notaCrono();
   if (n !== "forma") ponerMes(S.mes);
 }
