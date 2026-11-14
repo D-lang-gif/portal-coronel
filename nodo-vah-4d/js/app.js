@@ -274,16 +274,19 @@ async function cargarCiudad() {
     S.etiqueta("Nodo VAH · PTAR SIBRA<br><small>posición REFERENCIAL junto al PIL</small>", new THREE.Vector3(0, 60, 0), "ciudad", "#f3d27a");
     S.capasRed = new Set(Object.keys(REDES));
     try { // capas nuevas 2026 (si fallan, el visor anterior sigue igual)
-      S.c2 = crearCapas2(S.scene, C, window.CIUDAD_OSM); S.capas2 ||= new Set();
+      S.c2 = crearCapas2(S.scene, C, window.CIUDAD_OSM); S.capas2 ||= new Set(["gob"]);
       for (const e of S.c2.etiquetas) { S.etiqueta(e.t, e.p, e.cat, e.color); const t = S.etq[S.etq.length - 1]; t.cerca = e.cerca; t.src = e; }
+      for (const [n, x, z, r] of (window.CALLES_OSM || [])) { S.etiqueta(n, new THREE.Vector3(x, 20, z), "calles", "#aeb7bf"); const t = S.etq[S.etq.length - 1]; t.rango = r; t.e.classList.add("e-calle", "r" + r); }
+      S.relK ??= 2; S.calles ??= true;
       aplicarCapas2();
     } catch (e) { console.error("capas2", e); }
     ponerMes(S.mes);
   } catch (e) { console.error("ciudad", e); }
 }
 
+const LOD_CALLES = [0, 6500, 3800, 2400, 1400];
 function etiquetas() {
-  const r = S.renderer.domElement.getBoundingClientRect(); const lejos = S.camera.position.distanceTo(S.controls.target) > 900;
+  const r = S.renderer.domElement.getBoundingClientRect(); const dc = S.camera.position.distanceTo(S.controls.target); const lejos = dc > 900; const tg = S.controls.target; const vistas = [];
   for (const t of S.etq) {
     const enCiudad = S.modo === "ciudad" || S.modo === "forma" || S.modo === "recorrido";
     const red = S.modo === "ciudad" || S.modo === "recorrido";
@@ -291,10 +294,13 @@ function etiquetas() {
     const show = t.modo === "sitio" ? (!enCiudad && S.modo !== "tratadora" && !lejos) : t.modo === "ciudad" ? (enCiudad || lejos) : t.modo === "nodo" ? red
       : C2CAT.includes(t.modo) ? red && S.capas2?.has(t.modo) : t.modo === "sim" ? red && S.simOn && !t.src?.oculta
       : t.modo === "obra" ? red && S.obraVis && S.capas2?.has("zanja")
+      : t.modo === "calles" ? red && S.calles && dc < LOD_CALLES[t.rango] && Math.hypot(t.p.x - tg.x, t.p.z - tg.z) < Math.max(900, dc * 1.1)
       : REDES[capa] ? red && S.capasRed?.has(capa) && (S.modo !== "recorrido" || S.tourCapa === capa) : t.modo === "etapa" ? S.modo === "tratadora" : t.modo === "tour" ? S.modo === "recorrido" : false;
     if (!show || (t.cerca && S.camera.position.distanceTo(S.controls.target) > 2200)) { t.e.style.display = "none"; continue; }
     const v = t.p.clone().project(S.camera); const vis = v.z < 1 && Math.abs(v.x) < 1.05 && Math.abs(v.y) < 1.05;
-    t.e.style.display = vis ? "" : "none"; if (vis) { t.e.style.left = (v.x * .5 + .5) * r.width + "px"; t.e.style.top = (-v.y * .5 + .5) * r.height + "px"; }
+    let ok = vis; const sx = (v.x * .5 + .5) * r.width, sy = (-v.y * .5 + .5) * r.height;
+    if (ok && t.modo === "calles") { if (vistas.some(([a, b]) => Math.abs(a - sx) < 130 && Math.abs(b - sy) < 22)) ok = false; else vistas.push([sx, sy]); }
+    t.e.style.display = ok ? "" : "none"; if (ok) { t.e.style.left = sx + "px"; t.e.style.top = sy + "px"; }
   }
 }
 
@@ -454,6 +460,9 @@ function panelCiudad() {
    ${S.c2 ? `<div class="c2-bloque"><h3>Capas nuevas · Propuesta Integral 2026 <span class="tag sup">REFERENCIAL</span></h3>
    <div class="capas">${C2CAT.map((k) => `<label class="c2-${k}"><input type="checkbox" data-c2="${k}" ${S.capas2.has(k) ? "checked" : ""}> ${C2NOM[k]}</label>`).join("")}
    <button class="btn mini ${S.simOn ? "on" : ""}" id="btn-sim">${S.simOn ? "■ Detener simulación" : "▶ Simulación demostrativa de alerta"}</button></div>
+   <div class="capas c2-mapa">⛰️ Relieve real (DEM): ${[[0, "apagado"], [1, "×1"], [2, "×2"], [4, "×4"]].map(([k, n]) => `<button class="btn mini ${(S.relK ?? 2) === k ? "on" : ""}" data-rel="${k}">${n}</button>`).join("")}
+   <label><input type="checkbox" id="chk-calles" ${S.calles !== false ? "checked" : ""}> 🏷️ Nombres de calles (OSM)</label></div>
+   <div class="c2-ley diam"><span style="--c:#f3d27a"><i></i>Emisor Central 72″</span><span style="--c:#2fd3e6"><i></i>San Ignacio 42″</span><span style="--c:#c58bff"><i></i>Rehabilitación 60″</span><span style="--c:#c58bff"><i></i>Agua tratada: 16″ ≈ 100 L/s (referencia: línea existente Lerdo–Jabonoso)</span></div>
    <div class="c2-ley">${Object.values(TEC).map((t) => `<span style="--c:${t.c}" title="${t.d}"><i></i>${t.n}</span>`).join("")}</div>
    <p class="nota tiny">Posiciones de equipos, zonas y conexiones: <b>referenciales</b>, no son levantamiento oficial. Precios de equipos: <b>por cotizar</b>. Las zonas industriales se muestran como beneficiarias y posibles aliadas, nunca como señaladas. Más detalle abajo, en «Propuesta integral 2026».</p></div>` : ""}
    <p class="nota tiny">Datos © colaboradores de OpenStreetMap (licencia ODbL), extracto Geofabrik México del 12-nov-2026. El PIL no tiene nombre en OSM; se identificó por sus calles (Guanaceví, Topia, Canelas, Tamazula, Piedras Negras, CP 35078). Las coordenadas UTM de la memoria (E 654 200–654 400, N 2 854 600–2 854 800) caen unos 26 km al norte de Gómez Palacio, así que no se usaron para ubicar el Nodo. El folleto es un mapa de época sin escala; su ajuste sobre OSM es aproximado (error de 1–2 km). Ningún documento menciona una descarga al Río Nazas: se dibuja como opción referencial que tendría que cumplir la NOM-001-SEMARNAT-2021.</p>`;
@@ -462,6 +471,8 @@ function panelCiudad() {
   $("#btn-tour").addEventListener("click", () => modo("recorrido"));
   p.querySelectorAll("[data-c2]").forEach((c) => c.addEventListener("change", () => { c.checked ? S.capas2.add(c.dataset.c2) : S.capas2.delete(c.dataset.c2); if (!S.capas2.has("tec") && S.simOn) pararSim(); aplicarCapas2(); }));
   $("#btn-sim")?.addEventListener("click", () => (S.simOn ? pararSim() : iniciarSim()));
+  p.querySelectorAll("[data-rel]").forEach((b) => b.addEventListener("click", () => { S.relK = +b.dataset.rel; aplicarCapas2(); p.querySelectorAll("[data-rel]").forEach((x) => x.classList.toggle("on", x === b)); }));
+  $("#chk-calles")?.addEventListener("change", (e) => { S.calles = e.target.checked; });
   p.querySelectorAll("[data-red]").forEach((c) => c.addEventListener("change", () => { c.checked ? S.capasRed.add(c.dataset.red) : S.capasRed.delete(c.dataset.red); C.capa(c.dataset.red, c.checked); }));
 }
 /* ───────── Recorrido del agua ───────── */
@@ -588,13 +599,14 @@ function modo(n) {
 }
 document.querySelectorAll(".modo").forEach((b) => b.addEventListener("click", () => modo(b.dataset.modo)));
 /* ───────── Capas nuevas · Propuesta Integral 2026 ───────── */
-const C2CAT = ["tec", "aliados", "colectivo", "zanja", "lluvias"];
-const C2NOM = { tec: "📡 Tecnología de la red", aliados: "🤝 Aliados que ganan", colectivo: "🔗 De lo aislado a lo colectivo", zanja: "🚧 Hacerlo de una vez (zanja abierta)", lluvias: "🌧️ Lluvias y campo" };
+const C2CAT = ["gob", "tec", "aliados", "colectivo", "zanja", "lluvias", "agua"];
+const C2NOM = { gob: "🟢 Obras de gobierno en marcha y plantas", tec: "📡 Tecnología de la red", aliados: "🤝 Aliados que ganan", colectivo: "🔗 De lo aislado a lo colectivo", zanja: "🚧 Hacerlo de una vez (zanja abierta)", lluvias: "🌧️ Lluvias y campo", agua: "💧 Agua tratada y áreas verdes" };
 function aplicarCapas2() {
   if (!S?.c2) return; const en = S.modo === "ciudad" || S.modo === "recorrido";
   for (const k of C2CAT) S.c2[k].visible = en && S.capas2.has(k);
   S.c2.sim.visible = en && !!S.simOn;
   if (S.c2.obra) S.c2.obra.visible = en && !!S.obraVis && S.capas2.has("zanja");
+  if (S.c2.relieve) { const k = en ? (S.relK ?? 2) : 0; if (S.c2._relK !== k) { S.c2.relieve.escala(k); S.c2._relK = k; } }
 }
 /* Simulación de obra por tramo (propuesta / estimado): 1.6 s por tramo en pantalla */
 function iniciarObra() {
@@ -637,7 +649,7 @@ function verEnMapa(k) {
   if (!S) return; if (!S.c2) { $("#hud").innerHTML = "<b>Cargando la ciudad…</b>"; setTimeout(() => verEnMapa(k), 700); return; }
   if (k !== "zanja" && S.obraOn) pararObra(false);
   S.capas2.add(k); if (S.modo !== "ciudad") modo("ciudad"); else { aplicarCapas2(); panelCiudad(); }
-  const f = S.c2.foco; const P = k === "aliados" ? [-1300, 900] : k === "colectivo" ? [-600, 400] : k === "zanja" ? f.zanja : k === "lluvias" ? f.lluvias : null;
+  const f = S.c2.foco; const P = k === "aliados" ? [-1300, 900] : k === "colectivo" ? [-600, 400] : k === "zanja" ? f.zanja : k === "lluvias" ? f.lluvias : k === "agua" ? f.agua : null;
   const k2 = k === "zanja" ? .6 : k === "lluvias" ? .9 : 1;
   if (P) S.enfoque = { tgt: new THREE.Vector3(P[0], 0, P[1]), pos: new THREE.Vector3(P[0] - 1600 * k2, 3300 * k2, P[1] + 3900 * k2) };
   document.querySelector(".visor").scrollIntoView({ behavior: "smooth", block: "start" });
@@ -681,6 +693,8 @@ function elegirTramo(i) { salvaTramo(i);
 }
 sellos(); pestanas(); tramos100();
 $("#btn-obra")?.addEventListener("click", () => (S?.obraOn ? pararObra(false) : iniciarObra()));
+$("#btn-fase")?.addEventListener("click", () => { if (!S?.c2?.obraEstado) return; if (!S.obraVis) { iniciarObra(); } pararObra(false);
+  const u = S.obraU || 0, i = Math.floor(u), f = u - i; const B = [.3, .55, .65, .85, 1]; const b = B.find((x) => x > f + 1e-4) ?? 1; ponerObra(Math.min(48.999, i + (b >= 1 ? 1 : b) + .001)); });
 $("#obra-rango")?.addEventListener("input", (e) => { if (!S?.c2?.obraEstado) return; if (!S.obraVis) { iniciarObra(); pararObra(false); } S.obraOn = false; botonesObra(); ponerObra(+e.target.value); });
 window.NodoVAH4D = { ponerMes, ponerJornada, modo, vista, verEnMapa, iniciarSim, pararSim, elegirTramo, iniciarObra, pararObra, ponerObra, get S() { return S; } };
 candado();

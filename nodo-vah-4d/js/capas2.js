@@ -7,6 +7,8 @@
 import * as THREE from "three";
 import { dec, enLinea } from "./ciudad.js";
 import { crearLluvias } from "./lluvias.js";
+import { crearAguaTratada } from "./aguatratada.js";
+import { crearRelieve } from "./relieve.js";
 
 export const TEC = {
   reja: { n: "Reja de cribado automática", c: "#f2c230", d: "Entrada de cada nodo y cárcamo: saca basura y sólidos" },
@@ -116,11 +118,11 @@ export function crearCapas2(scene, Cd, osm) {
   ET("📡 Monitoreo compartido<br><small>datos de calidad al tablero común</small>", new THREE.Vector3((SCADA[0] + PIL[0]) / 2, 470, (SCADA[1] + PIL[1]) / 2), "colectivo", "#2fd3e6");
   ET("🏦 Fondo de saneamiento<br><small>propuesta por verificar con Cabildo</small>", new THREE.Vector3(NODO[0] + 700, 200, NODO[1] - 700), "colectivo", "#f3d27a");
 
-  // Aliado potencial: CFE (agua tratada para enfriamiento). Ubicación REFERENCIAL: inicio del trazo de la zanja (col. Miguel de la Madrid)
-  { const c5p = (colect.find((c) => c.id === "C-5") || colect[0]).pts[0]; const x = c5p[0] - 420, z = c5p[1] - 380; const gC = new THREE.Group(); gC.position.set(x, 0, z);
+  // Aliado potencial: CFE (agua tratada para enfriamiento). Centrales según OpenStreetMap
+  for (const [n, x, z] of (window.AGUA_TRATADA?.cfe || [])) { const gC = new THREE.Group(); gC.position.set(x, 0, z);
     pon(gC, new THREE.Mesh(new THREE.CylinderGeometry(30, 46, 120, 20), new THREE.MeshStandardMaterial({ color: 0xffe14a, emissive: 0x554800 })), 0, 60);
     pon(gC, new THREE.Mesh(new THREE.CylinderGeometry(14, 14, 190, 10), new THREE.MeshStandardMaterial({ color: 0xbfc6cc, emissive: 0x222222 })), 70, 95); gC.scale.setScalar(1.6); aliados.add(gC);
-    ET("⚡ Aliado potencial: CFE (agua tratada)<br><small>La Laguna II (col. Miguel de la Madrid) y CC Jabonoso · ubicación referencial</small>", new THREE.Vector3(x, 330, z), "aliados", "#ffe14a"); }
+    ET(`⚡ Aliado potencial: CFE (agua tratada)<br><small>${n} (OSM)${/Laguna II/.test(n) ? " · zona de la col. Miguel de la Madrid" : " · junto al bulevar Jabonoso"}</small>`, new THREE.Vector3(x, 330, z), "aliados", "#ffe14a"); }
 
   /* ───── Hacerlo de una vez (zanja abierta del Emisor Central / colector San Ignacio) ─────
      Trazo REFERENCIAL: colector C-5 (Miguel de la Madrid) + emisor del visor. No es el proyecto ejecutivo de CAED/SIDEAPA. */
@@ -167,6 +169,8 @@ export function crearCapas2(scene, Cd, osm) {
       const m = new THREE.Mesh(new THREE.BoxGeometry(6, 26, 96), new THREE.MeshBasicMaterial({ color: COLT[t[1]] || 0xffffff }));
       m.position.set(p[0], 13, p[1]); m.rotation.y = Math.atan2(-dir[1], dir[0]); zanja.add(m); }
     tramoSel = new THREE.Group(); zanja.add(tramoSel);
+    for (const [d, a, b] of [["72", 0, 2400], ["42", 2350, 3250], ["60", 3250, TOT]]) { const m = enLinea(zt, (dT(a) + dT(b)) / 2).p;
+      ET(`⌀ ${d}″ · ${d === "72" ? "Emisor Central (PRFV)" : d === "42" ? "Colector San Ignacio" : "Rehabilitación San Ignacio"}<br><small>1.ª etapa · CompraNet Durango</small>`, new THREE.Vector3(m[0], 95, m[1]), "zanja", d === "72" ? "#f3d27a" : d === "42" ? "#2fd3e6" : "#c58bff"); }
   }
   function verTramo(i) {
     if (!tramoSel) return null; tramoSel.clear(); const t = T100[i]; if (!t) return null;
@@ -258,5 +262,26 @@ export function crearCapas2(scene, Cd, osm) {
   function tick(dt, tt) { const k = .35 + .3 * Math.sin(tt * 3); for (const h of halos) h.material.opacity = k; for (const f of [fPIL, fHER, fALI]) f.userData.top.rotation.y += dt; }
   let LL = null; try { LL = crearLluvias(raiz, Cd, osm, uT); etiquetas.push(...LL.etiquetas); } catch (e) { console.error("lluvias", e); }
   const lluvias = LL ? LL.g : new THREE.Group();
-  return { raiz, tec, aliados, colectivo, zanja, sim, lluvias, tickLluvias: (dt) => LL?.tick(dt), verTramo, T100, obra, obraEstado, iniciarObra, pararObra, FASES, etiquetas, paso, iniciarSim, pararSim, tick, foco: { lluvias: LL ? LL.foco : [0, 0], zanja: enLinea(zt, LZ * .5).p, sim: pS, pil: PIL, herrera: HERRERA, scada: SCADA } };
+  /* ───── Obras de gobierno en marcha (VERDE) y plantas: lo que ya existe o ya se construye; lo nuestro va en otros colores ───── */
+  const gob = new THREE.Group(); gob.visible = false; raiz.add(gob);
+  const mG = new THREE.MeshBasicMaterial({ color: 0x22c55e, transparent: true, opacity: .8, depthWrite: false });
+  const tuboG = (pts, y, r, mat) => { const c = new THREE.CurvePath(); for (let k = 0; k < pts.length - 1; k++) { const a = new THREE.Vector3(pts[k][0], y, pts[k][1]), b = new THREE.Vector3(pts[k + 1][0], y, pts[k + 1][1]); if (a.distanceToSquared(b) > .01) c.add(new THREE.LineCurve3(a, b)); } if (!c.curves.length) return null; const m = new THREE.Mesh(new THREE.TubeGeometry(c, Math.min(800, pts.length * 4 + 16), r, 8, false), mat); m.renderOrder = 8; return m; };
+  { const m = tuboG(zt, 18, 20, mG); m && gob.add(m); const q = enLinea(zt, LZ * .3).p;
+    ET("🟢 Obra de gobierno en marcha · CAED-IPE-082-26<br><small>Emisor Central y colector San Ignacio, 1.ª etapa · trazo referencial</small>", new THREE.Vector3(q[0], 140, q[1]), "gob", "#22c55e"); }
+  const ASL = [[-9700, 7700], [-4170, 6960], [-5454, 5205], [-5553, 4164], [-5654, 3780]];
+  { const m = tuboG(ASL, 14, 16, mG); m && gob.add(m);
+    ET("🟢 Agua Saludable para La Laguna · línea a Gómez Palacio<br><small>baja del cerro El Huarache por el bulevar Villa de las Flores (El Siglo, 2024) · trazo referencial</small>", new THREE.Vector3(-4900, 140, 6100), "gob", "#22c55e");
+    const fl = new THREE.Mesh(new THREE.ConeGeometry(70, 180, 16), mG); fl.rotation.z = Math.PI / 2; fl.rotation.y = Math.atan2(-(7700 - 6960), -9700 + 4170) + Math.PI; fl.position.set(-9500, 60, 7680); gob.add(fl);
+    ET("⬅ Potabilizadora Agua Saludable · fuera del mapa<br><small>ejido San Jacinto, Lerdo (~32 km) · capacidad 7,200 L/s, opera a ~30 % (Milenio) · ubicación referencial</small>", new THREE.Vector3(-9300, 200, 7500), "gob", "#22c55e"); }
+  // plantas de tratamiento: coordenadas oficiales del Decreto 422 (Congreso de Durango)
+  const mPT = new THREE.MeshStandardMaterial({ color: 0x8fd3ff, emissive: 0x0b3350 });
+  for (const [x, z, t] of [[-2648, -6235, "PTAR Norte · lagunas · 500 L/s de diseño<br><small>ejido J. Guadalupe Rodríguez · coordenadas del Decreto 422 (Congreso de Durango) · no cumple NOM-001-SEMARNAT-2021 (Plan Fluye)</small>"], [832, -3260, "PTAR Oriente · lodos activados · ≈120 L/s<br><small>ejido Las Huertas · coordenadas del Decreto 422 · no cumple NOM-001-SEMARNAT-2021 (Plan Fluye)</small>"]]) {
+    const c = new THREE.Mesh(new THREE.CylinderGeometry(130, 130, 14, 32), mPT); c.position.set(x, 7, z); gob.add(c); ET("🏭 " + t, new THREE.Vector3(x, 120, z), "gob", "#8fd3ff"); }
+  // tanques de agua potable de OSM: nunca para agua tratada ni pluvial
+  for (const i of (osm.infra || []).filter((i) => /tanque/.test(i.t)).slice(0, 12)) ET("🛢️ Tanque de agua potable (OSM)<br><small>solo para agua potable · uno dado de baja por SIDEAPA podría guardar agua tratada: por confirmar</small>", new THREE.Vector3(i.x, 90, i.z), "gob", "#7dd3fc", true);
+
+  let AT = null; try { AT = crearAguaTratada(raiz, uT, LL?.morada); etiquetas.push(...AT.etiquetas); } catch (e) { console.error("agua", e); }
+  const agua = AT ? AT.g : new THREE.Group();
+  let REL = null; try { REL = crearRelieve(raiz); } catch (e) { console.error("relieve", e); }
+  return { raiz, tec, aliados, colectivo, zanja, sim, lluvias, agua, gob, relieve: REL, pasosAereos: AT?.pasos || 0, tickLluvias: (dt) => LL?.tick(dt), verTramo, T100, obra, obraEstado, iniciarObra, pararObra, FASES, etiquetas, paso, iniciarSim, pararSim, tick, foco: { agua: AT ? AT.foco : [0, 0], lluvias: LL ? LL.foco : [0, 0], zanja: enLinea(zt, LZ * .5).p, sim: pS, pil: PIL, herrera: HERRERA, scada: SCADA } };
 }

@@ -18,6 +18,9 @@
   <script src="data/presupuesto4d.js"></script>
   <script src="data/tramos_100m.js"></script>
   <script src="data/salvaguarda_tramos.js"></script>
+  <script src="data/relieve.js"></script>
+  <script src="data/calles.js"></script>
+  <script src="data/agua_tratada.js"></script>
   <script type="module" src="js/app.js"></script>
 </head>
 <body>
@@ -134,6 +137,7 @@
         <button class="pest" data-pest="colectivo" role="tab">🔗 De lo aislado a lo colectivo</button>
         <button class="pest" data-pest="zanja" role="tab">🚧 Hacerlo de una vez</button>
         <button class="pest" data-pest="lluvias" role="tab">🌧️ Lluvias y campo</button>
+        <button class="pest" data-pest="agua" role="tab">💧 Agua tratada</button>
         <button class="pest" data-pest="creditos" role="tab">🎖️ Créditos</button>
       </div>
       <p class="aviso-ref">⚠️ Las rutas de la red, los colectores y la posición de cada equipo en el mapa son <b>referenciales</b>; no son un levantamiento oficial. Los precios de los equipos están <b>por cotizar</b>.</p>
@@ -236,7 +240,7 @@
         </div>
         <div class="obra-sim" id="obra-sim">
           <h3>Simulación de obra por tramo <small class="muted">propuesta / estimado</small></h3>
-          <div class="obra-ctl"><button class="btn mini" id="btn-obra">▶ Simular obra por tramos</button><input type="range" id="obra-rango" min="0" max="48.999" step="0.01" value="0" aria-label="Avance de la obra por tramos" /><span id="obra-txt">T-01 · Excavar</span></div>
+          <div class="obra-ctl"><button class="btn mini" id="btn-obra">▶ Simular obra por tramos</button><button class="btn mini" id="btn-fase" title="Avanza una fase: excavar → ademe y bombeo de desvío → tubo → ductos → relleno → repavimentar">⏭ Siguiente fase</button><input type="range" id="obra-rango" min="0" max="48.999" step="0.01" value="0" aria-label="Avance de la obra por tramos" /><span id="obra-txt">T-01 · Excavar</span></div>
           <div class="obra-fases"><span style="--c:#8a5a2b">1 · Excavar</span><span style="--c:#e8e2cf">2 · Instalar tubo PRFV</span><span style="--c:#2fd3e6">3 · Meter ductos de una vez</span><span style="--c:#c9a36a">4 · Relleno y compactación</span><span style="--c:#6c7380">5 · Repavimentar</span></div>
           <div class="obra-ley"><span style="--c:#3fd46b">Tramo terminado</span><span style="--c:#ff3b30">Tramo cerrado</span><span style="--c:#ff9f1c">Desvío vial sugerido</span><span style="--c:#ff4fd8">Bombeo de desvío provisional</span></div>
           <p class="nota tiny"><b>Orden aguas abajo → aguas arriba:</b> se empieza junto a la Planta Norte y se avanza hacia las colonias, para que cada tramo nuevo tenga a dónde descargar. CAED informó que la obra arranca aguas abajo, donde se interconectan el colector San Ignacio y el emisor rumbo a la Planta Norte (<a href="https://www.noticierosgrem.com.mx/en-noviembre-arrancaran-obras-del-emisor-central-y-colector-san-ignacio-de-gomez-palacio/" target="_blank" rel="noopener">Noticieros GREM, 21 oct 2026</a>). En el visor, T-01 se coloca en el extremo aguas abajo del trazo referencial; el sentido exacto del cadenamiento está por confirmar con CAED.<br>
@@ -296,6 +300,15 @@
           <li>Vasos de retención y captación en la orilla de la ciudad, cerca de los ejidos, con rejas a la entrada para detener basura.</li>
           <li>Infiltrar al acuífero solo después de un estudio: el agua subterránea de La Laguna tiene problemas de arsénico.</li>
         </ul>
+        <p>Los vasos pueden diseñarse como <b>parques inundables</b>: en secas son canchas y áreas verdes; en lluvias guardan agua. Arbolado con especies nativas (mezquite, huizache, palo verde). Propuesta.</p>
+        <h3>Diámetro estimado de colectores pluviales <small class="muted">estimado, por validar con SIDEAPA y CAED</small></h3>
+        <div class="tabla-wrap"><table class="tz2"><thead><tr><th>Subcuenca (área)</th><th>Caudal Q = C·i·A/360</th><th>Diámetro a tubo lleno (Manning)</th></tr></thead><tbody>
+          <tr><td>10 ha</td><td>≈0.89 m³/s</td><td><b>≈36″</b></td></tr>
+          <tr><td>20 ha</td><td>≈1.78 m³/s</td><td><b>≈48″</b></td></tr>
+          <tr><td>50 ha</td><td>≈4.44 m³/s</td><td><b>≈66″</b></td></tr>
+          <tr><td>100 ha</td><td>≈8.89 m³/s</td><td><b>≈87″</b></td></tr>
+        </tbody></table></div>
+        <p class="nota tiny"><b>Supuestos:</b> lluvia de diseño de 40 mm/h (supuesto; la lluvia de diseño oficial la da Conagua), coeficiente de escurrimiento C = 0.8 (zona urbana), pendiente S = 0.2 %, rugosidad n = 0.013 (concreto); con PRFV (n ≈ 0.010) salen unas 3–8″ menos. Se elige el diámetro comercial hacia arriba. El pluvial va <b>enterrado y por gravedad</b>; solo el agua ya bombeada desde un vaso podría cruzar por un puente. Cálculo de la tabla compartida del documento (Pulso), revisado.</p>
         <h3>Agua tratada del Nodo para las parcelas <small class="muted">propuesta</small></h3>
         <p>Una <b>línea morada</b> llevaría el agua tratada del Nodo por el <b>bordo o derecho de vía</b> del Canal de Sacramento, <b>no dentro del canal</b>, hasta las parcelas. En el mapa, el canal es el trazo de OpenStreetMap; la línea morada, las parcelas y los vasos son <b>trazo referencial</b>.</p>
         <div class="cards hechos">
@@ -320,6 +333,41 @@
           <tr><td><b>Municipio</b></td><td>Menos atención de emergencias por lluvias.</td><td>Ingreso por venta de agua tratada, como ya permiten los decretos 470 y 471. Costos de obra: estimado / por cotizar.</td></tr>
         </tbody></table></div>
         <div class="hecho transp"><b>🔎 Transparencia</b><span>Un tablero público en tiempo real con el avance de la obra, el gasto y lo que miden los sensores (nivel, caudal, calidad del agua). Una herramienta que el Municipio puede tener como propia, para informar a vecinos, Cabildo y aportantes con los mismos datos. Propuesta; costo por cotizar.</span></div>
+      </div>
+
+      <div class="pp" data-pp="agua" hidden>
+        <div class="pp-cab"><p class="lema">Agua tratada que cumple la norma: apta para riego e industria, no para beber.</p>
+          <div class="pp-btns"><button class="btn mini oro" data-mapa="agua">🗺️ Ver en el mapa 3D</button></div></div>
+        <p>Propuesta para platicarla con SIDEAPA, SAPAL, CFE y Conagua. Orden de reúso: <b>primero parques, camellones y árboles</b> (NOM-003-SEMARNAT-1997, reúso con contacto público), <b>después ejidos</b> (NOM-001-SEMARNAT-2021). En el mapa, las derivaciones y los pasos aéreos son <b>propuesta</b> con trazo referencial; los parques y puentes son de OpenStreetMap.</p>
+        <div class="gao" style="border-left-color:#22c55e"><b style="color:#22c55e">🟢 Obras de gobierno en marcha</b> En el mapa, en verde: el contrato de la CAED para el Emisor Central y el colector San Ignacio (CAED-IPE-082-26), la línea de Agua Saludable para La Laguna hacia Gómez Palacio y las plantas de tratamiento Norte y Oriente (coordenadas del Decreto 422 del Congreso de Durango). Las obras del Plan Agua Fluye en colonias se listan en el Plan Fluye. Trazos referenciales salvo las coordenadas de las plantas. Lo nuestro va en otros colores: es lo que <b>sumamos</b>.</div>
+        <h3>Agua potable: Agua Saludable para La Laguna</h3>
+        <div class="cards hechos">
+          <div class="hecho"><b>Potabilizadora a ~30 %</b><span>Ejido San Jacinto, Lerdo, junto al cerro San Jacinto (~32 km de la cabecera; fuera del mapa). Capacidad de 7,200 L/s; trabaja a ~30 % de su capacidad (<a href="https://www.milenio.com/estados/agua-saludable-laguna-opera-30-ciento" target="_blank" rel="noopener">Milenio</a>).</span></div>
+          <div class="hecho"><b>Menos de la mitad de lo asignado</b><span>Gómez Palacio recibe menos de la mitad de lo asignado (según notas de Milenio y El Siglo, 2024–2026).</span></div>
+          <div class="hecho"><b>Megatanques: capacidad sin aprovechar</b><span>El Consuelo (cerro, col. Campestre), Cerro de la Cruz y Fidel Velázquez / Chapala son tanques de <b>agua potable</b>: nunca para agua tratada ni pluvial. Propuesta: aprovechar la zanja abierta del drenaje para tender las líneas internas que faltan, para que se llenen y lleguen a más colonias (hacerlo de una vez).</span></div>
+        </div>
+        <p class="nota tiny">Solo un tanque que SIDEAPA haya dado de baja podría guardar agua tratada: por confirmar con SIDEAPA.</p>
+        <h3>Línea existente Lerdo → CFE Jabonoso</h3>
+        <div class="cards hechos">
+          <div class="hecho"><b>16″ · 11.2 km · hasta 100 L/s</b><span>Construida por SAPAL (Lerdo) para el ciclo combinado de CFE en el ejido Jabonoso; concluida en agosto de 2013 (<a href="https://www.elsiglodetorreon.com.mx/noticia/2013/finalizan-obras-de-la-tratadora-de-cfe.html" target="_blank" rel="noopener">El Siglo de Torreón, 31 ago 2013</a>). En el mapa: trazo esquemático.</span></div>
+          <div class="hecho"><b>Infraestructura existente, por inspeccionar</b><span>De SAPAL, comprometida por convenio con CFE. Derivaciones: por convenir con SAPAL y CFE tras inspección (cámara y prueba de presión). Capacidad disponible por confirmar. Alternativa: una línea morada nueva, paralela, en el mismo derecho de vía.</span></div>
+          <div class="hecho"><b>Referencia de diámetro</b><span>16″ para unos 100 L/s, como esa línea. Emisor Central 72″, San Ignacio 42″ y rehabilitación 60″ (1.ª etapa, CompraNet Durango).</span></div>
+        </div>
+        <h3>Cruces <small class="muted">propuesta</small></h3>
+        <p>El agua tratada va <b>a presión</b>, así que puede cruzar canales, el Río Nazas o el libramiento <b>por un puente</b> (paso aéreo), con permiso del dueño del puente: Estado, SCT o Conagua. El drenaje sanitario y el pluvial van <b>por gravedad y enterrados</b>; no cruzan por puentes. En el mapa se marcan como «paso aéreo propuesto» los puentes de OpenStreetMap que quedan junto a las líneas propuestas.</p>
+        <h3>Calidad del agua <small class="muted">propuesta</small></h3>
+        <div class="cards hechos">
+          <div class="hecho"><b>📶 En línea, a la salida del Nodo</b><span>Turbidez, cloro residual, pH y oxígeno disuelto, al tablero público.</span></div>
+          <div class="hecho"><b>🧪 Laboratorio acreditado, cada mes</b><span>Coliformes fecales, huevos de helminto y metales.</span></div>
+          <div class="hecho"><b>🔁 Válvula de desvío automática</b><span>Si el agua sale fuera de norma, regresa sola a tratamiento y no llega a parques ni parcelas.</span></div>
+        </div>
+        <div class="tabla-wrap"><table class="tz2 benef-t"><thead><tr><th>Parámetro</th><th>NOM-003 (contacto público)</th><th>Hoy · PTAR Lerdo</th><th>Hoy · Gómez Palacio</th><th>Nodo</th></tr></thead><tbody>
+          <tr><td>DBO</td><td>≤ 20 mg/L</td><td>5 mg/L (publicado por el operador)</td><td rowspan="3">Las plantas Norte y Oriente no cumplen la NOM-001-SEMARNAT-2021 (Plan Fluye). Arreglo aprobado: ≈500 MDP (nueva línea de 250 L/s en la Norte y nueva Oriente de 250 L/s).</td><td rowspan="3">% de remoción: por definir con el diseño del proceso. Meta: cumplir la NOM-003.</td></tr>
+          <tr><td>Sólidos suspendidos</td><td>—</td><td>10 mg/L (publicado por el operador)</td></tr>
+          <tr><td>Coliformes fecales / helmintos</td><td>≤ 240 NMP/100 mL · ≤ 1 huevo/L</td><td>Un estudio independiente del INIFAP (muestreos 2014–2015) encontró excedencias en bacterias y sales.</td></tr>
+        </tbody></table></div>
+        <p class="nota tiny">PTAR Lerdo: TICSA, lodos activados, hasta 400 L/s; efluente publicado por el operador (<a href="https://www.ticsa.com.mx/logros/clientes" target="_blank" rel="noopener">TICSA</a>). <b>Valores de referencia, no garantizados hasta elegir tecnología:</b> una planta secundaria bien operada, con filtración y desinfección, suele remover 90–95 % de DBO y SST y más de 99.9 % de bacterias.</p>
+        <p class="nota">🌳 Arbolado con especies nativas (mezquite, huizache, palo verde), que piden poca agua. Escuelas y camellones por identificar con el Municipio.</p>
       </div>
 
       <div class="pp" data-pp="creditos" hidden>
