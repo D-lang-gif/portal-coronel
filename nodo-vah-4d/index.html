@@ -16,6 +16,8 @@
   <script src="js/config.js"></script>
   <script src="data/sitio.js"></script>
   <script src="data/presupuesto4d.js"></script>
+  <script src="data/tramos_100m.js"></script>
+  <script src="data/salvaguarda_tramos.js"></script>
   <script type="module" src="js/app.js"></script>
 </head>
 <body>
@@ -131,6 +133,7 @@
         <button class="pest" data-pest="aliados" role="tab">🤝 Aliados que ganan</button>
         <button class="pest" data-pest="colectivo" role="tab">🔗 De lo aislado a lo colectivo</button>
         <button class="pest" data-pest="zanja" role="tab">🚧 Hacerlo de una vez</button>
+        <button class="pest" data-pest="lluvias" role="tab">🌧️ Lluvias y campo</button>
         <button class="pest" data-pest="creditos" role="tab">🎖️ Créditos</button>
       </div>
       <p class="aviso-ref">⚠️ Las rutas de la red, los colectores y la posición de cada equipo en el mapa son <b>referenciales</b>; no son un levantamiento oficial. Los precios de los equipos están <b>por cotizar</b>.</p>
@@ -223,7 +226,100 @@
             <tr><td><i class="sw" style="--c:#4aa8ff"></i>Medidores de caudal a la entrada y a la salida del tramo</td><td>Comparar lo que entra con lo que sale: la diferencia señala fuga u obstrucción</td><td><span class="tag sup">POR COTIZAR</span></td></tr>
             <tr><td><i class="sw" style="--c:#ff8a3d"></i>Puntos de control de grasas y sólidos aguas arriba</td><td>Trampas de grasa (NOM-002) y cribado en origen: el tubo nuevo no se corroe, pero sí se puede tapar con grasa y basura</td><td><span class="tag sup">POR COTIZAR</span><br><small class="muted">Referencia del expediente del Nodo: separador coalescente de 20–75 L/s, $46,530 sin IVA (catálogo, línea P-005). No es precio para este tramo.</small></td></tr>
           </tbody></table></div>
+        <div class="gao"><b>¿Por qué ahora?</b> Referencia EE. UU. (<a href="https://www.gao.gov/assets/gao-12-687r.pdf" target="_blank" rel="noopener">GAO-12-687R, 2012</a>): ahorro de <b>25 % a 33 %</b> en obras adicionales instaladas en la misma zanja (ductos y fibra), frente a hacerlas después como proyecto aparte; mayor en zonas urbanas densas. Es un ahorro en esas obras adicionales, <b>no sobre todo el colector</b>.</div>
+        <div class="t100" id="t100">
+          <h3>Tramos de 100 m de la 1.ª etapa <small class="muted">toque un tramo para verlo en el mapa</small></h3>
+          <div class="t100-ley"><span style="--c:#f3d27a"><i></i>Emisor Central 72″</span><span style="--c:#2fd3e6"><i></i>Colector San Ignacio 42″</span><span style="--c:#c58bff"><i></i>Rehabilitación 60″</span></div>
+          <div class="t100-barra" id="t100-barra"></div>
+          <div class="tabla-wrap t100-tabla"><table class="tz2"><thead><tr><th>Tramo</th><th>Sección</th><th>Metros</th><th>Inicio estimado</th><th>Fin estimado</th><th>Costo estimado a ritmo parejo (MDP con IVA)</th></tr></thead><tbody id="t100-filas"></tbody></table></div>
+          <p class="nota tiny"><b>Estimación, no calendario oficial:</b> 49 tramos con un calendario uniforme de un solo frente, de unos 3.7 días por tramo, y ~3.9 MDP con IVA (~3.3 MDP sin IVA) por tramo, estimado a ritmo parejo (188.3 MDP con IVA y 162.3 MDP sin IVA ÷ 49). El calendario y el orden reales los define la CAED con la contratista. Tabla compartida con el documento (Crownteer). En el mapa los tramos se reparten en proporción sobre el trazo referencial de la zanja, empezando por el extremo aguas abajo.</p>
+        </div>
+        <div class="obra-sim" id="obra-sim">
+          <h3>Simulación de obra por tramo <small class="muted">propuesta / estimado</small></h3>
+          <div class="obra-ctl"><button class="btn mini" id="btn-obra">▶ Simular obra por tramos</button><input type="range" id="obra-rango" min="0" max="48.999" step="0.01" value="0" aria-label="Avance de la obra por tramos" /><span id="obra-txt">T-01 · Excavar</span></div>
+          <div class="obra-fases"><span style="--c:#8a5a2b">1 · Excavar</span><span style="--c:#e8e2cf">2 · Instalar tubo PRFV</span><span style="--c:#2fd3e6">3 · Meter ductos de una vez</span><span style="--c:#c9a36a">4 · Relleno y compactación</span><span style="--c:#6c7380">5 · Repavimentar</span></div>
+          <div class="obra-ley"><span style="--c:#3fd46b">Tramo terminado</span><span style="--c:#ff3b30">Tramo cerrado</span><span style="--c:#ff9f1c">Desvío vial sugerido</span><span style="--c:#ff4fd8">Bombeo de desvío provisional</span></div>
+          <p class="nota tiny"><b>Orden aguas abajo → aguas arriba:</b> se empieza junto a la Planta Norte y se avanza hacia las colonias, para que cada tramo nuevo tenga a dónde descargar. CAED informó que la obra arranca aguas abajo, donde se interconectan el colector San Ignacio y el emisor rumbo a la Planta Norte (<a href="https://www.noticierosgrem.com.mx/en-noviembre-arrancaran-obras-del-emisor-central-y-colector-san-ignacio-de-gomez-palacio/" target="_blank" rel="noopener">Noticieros GREM, 21 oct 2026</a>). En el visor, T-01 se coloca en el extremo aguas abajo del trazo referencial; el sentido exacto del cadenamiento está por confirmar con CAED.<br>
+          <b>Bombeo de desvío provisional:</b> mientras un tramo está abierto, el agua residual se bombea por fuera de la zanja para que ninguna casa se quede sin descarga. El Plan Fluye pide una «planeación por etapas con operación paralela del sistema existente» (<a href="https://www.gomezpalacio.gob.mx/wp-content/uploads/2026/04/plan-fluye.pdf" target="_blank" rel="noopener">Plan Fluye</a>). Capacidad y equipo: por confirmar con CAED.<br>
+          <b>Desvíos viales:</b> propuesta referencial, sujeta a Tránsito y Vialidad; no son las rutas oficiales. El reparto de las cinco fases dentro de cada tramo es un estimado para la animación, no el programa de la contratista.</p>
+        </div>
+
+        <div class="benef" id="benef">
+          <h3>Beneficios por colonia</h3>
+          <div class="cards">
+            <div class="hecho"><b>≈262 mil habitantes</b><span>reciben drenaje del Emisor Central y el colector San Ignacio completos (13.27 km), que llevan ≈80 % del agua residual de la ciudad a la Planta Norte (SIDEAPA, en <a href="https://www.milenio.com/estados/presentan-avances-plan-fluye-gomez-palacio" target="_blank" rel="noopener">Milenio, 26 oct 2026</a>). La población servida <b>solo</b> por esta primera etapa no está publicada: por confirmar con CAED.</span></div>
+            <div class="hecho"><b>Emisor Central 72″ · T-01 a T-24</b><span>Entre la colonia <b>Miguel de la Madrid</b> y el segundo Libramiento Periférico / Libramiento Norte de La Laguna (<a href="https://www.elsiglodetorreon.com.mx/noticia/2026/anuncian-empresa-que-iniciara-obra-de-emisor-sanitario-en-gomez-palacio-van-mas-de-188mdp.html" target="_blank" rel="noopener">El Siglo, 2 nov 2026</a>). Arranca en la interconexión San Ignacio–emisor rumbo a la Planta Norte (CAED). Gana: menos riesgo de colapso en la columna del sistema.</span></div>
+            <div class="hecho"><b>Colector San Ignacio 42″ y 60″ · T-25 a T-49</b><span>Sector referencial. SIDEAPA reportó caídos del colector San Ignacio en Las Luisas, Leticia Herrera y Centenario (<a href="https://www.elsiglodetorreon.com.mx/noticia/2026/asegura-betzabe-que-no-metera-parches-a-sistema-de-drenaje-de-y-va-por-solucion-integral.html" target="_blank" rel="noopener">El Siglo, 17 mar 2026</a>); si caen en estos kilómetros: por confirmar con los planos de la licitación.</span></div>
+          </div>
+          <h4>Prioridad sugerida de atención por colonia</h4>
+          <ol class="prio">
+            <li><b>Con fallas documentadas del colector San Ignacio:</b> Las Luisas, Leticia Herrera y Centenario (caídos, SIDEAPA).</li>
+            <li><b>Con brotes o más reportes de drenaje:</b> Rinconadas Hamburgo (brotes en av. Arboledas y Tulipanes y en el bulevar Francisco Villa, <a href="https://www.elsiglodetorreon.com.mx/noticia/2026/me-voy-a-tener-que-meter-a-la-pinche-agua-y-la-hediondez-en-el-carro-dicen-vecinos-de-hamburgo-tras-brote-d.html" target="_blank" rel="noopener">El Siglo, 10 sep 2026</a>); Nuevo Álamos y Filadelfia (entre las más afectadas según SIDEAPA, <a href="https://www.milenio.com/estados/colapso-drenaje-gomez-palacio-suma-miles-reportes" target="_blank" rel="noopener">Milenio, 28 abr 2026</a>). Si descargan a estos 4.8 km: por confirmar con CAED y SIDEAPA.</li>
+            <li><b>Con obra pluvial en el Plan Fluye (zonas que se inundan):</b> Fracc. Morelos I, Urbivillas y colonia Hamburgo (bombeo pluvial).</li>
+            <li><b>Junto a la obra activa:</b> Miguel de la Madrid y su entorno.</li>
+            <li><b>Otros puntos de inundación recurrente:</b> por confirmar con SIDEAPA y Protección Civil.</li>
+          </ol>
+          <p class="nota tiny">El orden de la obra no cambia con esta lista: por técnica va aguas abajo → aguas arriba. La prioridad sirve para avisos, atención a vecinos y obras complementarias. Esta primera etapa sustituye o rehabilita el tubo tronco; no es, por sí sola, drenaje domiciliario nuevo. INEGI no publica población por colonia: por confirmar con CAED. Fuente de la tabla: anexo «Colonias y beneficios de la primera etapa» del documento.</p>
+        </div>
+
+        <div class="salva" id="salva">
+          <h3>Plan de salvaguarda <small class="muted">propuesta / estimado</small></h3>
+          <p class="nota">Propuesta para complementar el trabajo de CAED y SIDEAPA. No sustituye el programa de obra ni el plan de tránsito oficial; cada medida queda por validar con CAED, SIDEAPA, Tránsito y Vialidad y Protección Civil.</p>
+          <div class="cards">
+            <div class="hecho"><b>🌙 Trabajo nocturno en cruces con mucho tráfico</b><span>Propuesta: horario general de día; de noche solo en cruces de vialidad primaria, como el libramiento del emisor de 72″, cerrando un carril y no toda la vía. Ruido de noche (22:00 a 6:00): <b>50 dB(A) en zona residencial</b>; 65 dB(A) solo en zona industrial o comercial (NOM-081-SEMARNAT-1994). El horario lo fija el Municipio en la autorización de obra en vía pública (Reglamento de Construcciones, norma 95-1). Límite aplicable a cada tramo: por confirmar con CAED.</span></div>
+            <div class="hecho"><b>👷 Cuadrillas por frente</b><span>Estimado: 2 a 3 frentes (o 2 de día y 1 de noche) para cumplir los 180 días, con rendimientos de referencia de EE. UU. (<a href="https://mdotwiki.state.mi.us/images_construction/a/a4/MDOT_Production_Rates.pdf" target="_blank" rel="noopener">MDOT, 2018</a>), no datos locales. Cuadrillas y costos reales: por confirmar con CAED.</span></div>
+            <div class="hecho"><b>🚧 Señalización</b><span>Señalamiento de zona de obra según la NOM-086-SCT2-2015, con señales luminosas de noche y banderero; plano de desvíos diurno y nocturno como lo pide el Reglamento de Construcciones; rutas alternas publicadas en un mapa (esta capa del visor). Zanja con ademe según la NOM-031-STPS-2011. Un solo tramo abierto por frente.</span></div>
+            <div class="hecho"><b>🚑 Acceso a vecinos y emergencias</b><span>Paso peatonal y vehicular a viviendas, negocios y escuelas; carril libre para ambulancias, bomberos y patrullas. Zanja cubierta o cerrada al final de cada jornada cerca de casas y escuelas.</span></div>
+            <div class="hecho"><b>🌧️ Lluvia o falla</b><span>Bombeo de desvío con equipo de respaldo, zanja protegida si se pronostica lluvia y aviso inmediato a SIDEAPA si falla el bombeo. Capacidades: por confirmar con CAED.</span></div>
+            <div class="hecho"><b>📣 Comunicación con vecinos</b><span>Propuesta (no hay plazo legal fijo): aviso con al menos una semana de anticipación por tramo (volante, lona en sitio y redes del Ayuntamiento), un teléfono o QR de quejas, un enlace vecinal por colonia y acta fotográfica de las casas cercanas antes y después de la obra.</span></div>
+          </div>
+          <div class="salva-tramo" id="salva-tramo"><b>Medidas para el tramo seleccionado</b><span class="muted">Toque un tramo en la tabla o use la simulación de obra.</span></div>
+          <p class="nota tiny">Medidas por tramo: tabla compartida del documento (parte 12, Nova), todas como propuesta. Programa de obra, plan de tránsito, calles exactas y jurisdicción de cada vía: por confirmar con CAED.
+        </div>
         <p class="nota tiny">Fuentes: <a href="https://www.milenio.com/estados/presentan-avances-plan-fluye-gomez-palacio" target="_blank" rel="noopener">Milenio, 26 oct 2026</a> (13.27 km en total, ≈80 % del agua residual, material PRFV; la corrosión por suelo y gases dañó los tubos actuales), <a href="https://comprasestatal.durango.gob.mx/consulta/ProcedimientosDeContratacion/10416" target="_blank" rel="noopener">CompraNet Durango, licitación LP/E/CAED/008/2026</a> (tramos y diámetros de la 1.ª etapa) y <a href="https://www.elsiglodetorreon.com.mx/noticia/2026/anuncian-empresa-que-iniciara-obra-de-emisor-sanitario-en-gomez-palacio-van-mas-de-188mdp.html" target="_blank" rel="noopener">El Siglo de Torreón, 2 nov 2026</a> (contrato de la 1.ª etapa, empresa, inicio el 9 de noviembre y 180 días naturales). La fecha de término es un cálculo propio a partir de esos 180 días. En el mapa, la zanja va sobre un <b>trazo referencial</b> del visor, no sobre el proyecto ejecutivo de CAED y SIDEAPA.</p>
+      </div>
+
+      <div class="pp" data-pp="lluvias" hidden>
+        <div class="pp-cab"><p class="lema">La lluvia que hoy inunda y el agua tratada que hoy se pierde pueden servirle al campo de Gómez Palacio.</p>
+          <div class="pp-btns"><button class="btn mini oro" data-mapa="lluvias">🗺️ Ver en el mapa 3D</button></div></div>
+        <p>Propuesta para platicarla con SIDEAPA, Conagua, el Distrito de Riego 017 y los ejidos. Complementa la rehabilitación del Canal de Sacramento y el Plan Fluye; no los sustituye. Lo que no tiene fuente está marcado como <b>propuesta</b>; los costos, <b>estimado / por cotizar</b>.</p>
+        <h3>Cuánto llueve</h3>
+        <div class="cards hechos">
+          <div class="hecho"><b>194 mm al año</b><span>Normales climatológicas 1951–2010 (SMN), estación C.B.T.A. 101 Gómez Palacio.</span></div>
+          <div class="hecho"><b>≈70 % de junio a septiembre</b><span>136.6 mm de los 194 mm caen en esos cuatro meses (misma estación).</span></div>
+          <div class="hecho"><b>85 mm en un solo día</b><span>Máxima diaria registrada (septiembre), misma estación. Fuente: <a href="http://rmgir.proyectomesoamerica.org/PDFMunicipales/10007_Gomez_Palacio.pdf" target="_blank" rel="noopener">Atlas de Riesgos de Gómez Palacio, tabla 3.8</a>.</span></div>
+        </div>
+        <div class="gao"><b>Cuánta agua se podría captar (cálculo propio)</b> 1 mm de lluvia sobre 1 ha son 10 m³. <b>Supuesto:</b> escurre el 80 % en superficie urbana. Temporada de junio a septiembre: 136.6 mm × 10 × 0.8 ≈ <b>1,100 m³ por ha</b>. Una tormenta fuerte de 85 mm: 85 × 10 × 0.8 ≈ <b>680 m³ por ha</b>. El coeficiente real depende de cada cuenca: por estudio.</div>
+        <h3>La lluvia, fuera del drenaje sanitario <small class="muted">propuesta</small></h3>
+        <ul class="lista">
+          <li>Colectores pluviales separados, para que el agua de lluvia no sature el emisor ni el colector San Ignacio.</li>
+          <li>Vasos de retención y captación en la orilla de la ciudad, cerca de los ejidos, con rejas a la entrada para detener basura.</li>
+          <li>Infiltrar al acuífero solo después de un estudio: el agua subterránea de La Laguna tiene problemas de arsénico.</li>
+        </ul>
+        <h3>Agua tratada del Nodo para las parcelas <small class="muted">propuesta</small></h3>
+        <p>Una <b>línea morada</b> llevaría el agua tratada del Nodo por el <b>bordo o derecho de vía</b> del Canal de Sacramento, <b>no dentro del canal</b>, hasta las parcelas. En el mapa, el canal es el trazo de OpenStreetMap; la línea morada, las parcelas y los vasos son <b>trazo referencial</b>.</p>
+        <div class="cards hechos">
+          <div class="hecho"><b>Canal de Sacramento: 270 MDP</b><span>Rehabilitación de Conagua del km 0+000 al 13+440 en Lerdo y Gómez Palacio; conclusión estimada en 2029 (<a href="https://www.milenio.com/estados/presidenta-claudia-sheinbaum-supervisa-obra-canal-sacramento" target="_blank" rel="noopener">Milenio, 22 feb 2026</a>).</span></div>
+          <div class="hecho"><b>15 de más de 50 km · 24,883 usuarios</b><span>Avance de la rehabilitación y usuarios beneficiados (<a href="https://www.elsiglodetorreon.com.mx/noticia/2026/avanza-rehabilitacion-del-canal-sacramento.html" target="_blank" rel="noopener">El Siglo, 25 feb 2026</a>).</span></div>
+          <div class="hecho"><b>Ya hay venta de agua tratada</b><span>Decretos 470 y 471 del Congreso de Durango (2018): 100 L/s de la PTAR Oriente y 100 L/s de la PTAR Norte para uso agrícola. Vigencia y volumen libre: por verificar con SIDEAPA. Calidad: NOM-001-SEMARNAT-2021.</span></div>
+        </div>
+        <p class="nota"><b>Permisos por gestionar:</b> CNA-01-006 (concesión para ocupar terrenos federales a cargo de Conagua), CNA-02-002, autorización ambiental de SEMARNAT y convenio con el Distrito de Riego 017.</p>
+        <h3>El campo de Gómez Palacio</h3>
+        <div class="cards hechos">
+          <div class="hecho"><b>37,260 → 29,306 ha</b><span>Superficie sembrada en el municipio, 2024 → 2025: −21 % (SIAP, cierre agrícola definitivo).</span></div>
+          <div class="hecho"><b>2,419 → 1,681 MDP</b><span>Valor de la producción, 2024 → 2025: −30 %, unos 738 MDP menos en un año (SIAP).</span></div>
+          <div class="hecho"><b>70 a 80 % sin sembrar</b><span>De 120 comunidades rurales del municipio, en el miniciclo 2024-2025 (CNC municipal, vía <a href="https://www.milenio.com/estados/cnc-gomez-palacio-urge-apoyo-federal-campo-lagunero" target="_blank" rel="noopener">Milenio</a>).</span></div>
+          <div class="hecho"><b>942 ha de nogal</b><span>Sembradas en 2025 (SIAP). Más de 200 productores de nuez del municipio levantaron cerca del 20 % de la cosecha esperada en 2025 (CNC municipal, vía <a href="https://reportelaguna.com/por-sequia-productores-de-nuez-de-gomez-palacio-registran-perdidas-de-un-80-por-ciento/" target="_blank" rel="noopener">Reporte Laguna</a>).</span></div>
+        </div>
+        <div class="gao"><b>Lluvias de octubre de 2026</b> En comunidades rurales de Gómez Palacio, unas 30 viviendas quedaron inhabitables, sobre todo en Poanas, Santa Cruz, Numancia, La Jarita, Manila y Estación Noé. Conagua informó que estudia estructuras de captación para no tener que romper los canales cada vez que llueve fuerte, algo que, dijo, ocurre cada tres o cuatro años (<a href="https://www.meganoticias.mx/laguna/noticia/prepara-obras-hidráulicas-para-evitar-daños-en-canales-por-lluvias-extraordinarias/776903" target="_blank" rel="noopener">Meganoticias, 7 oct 2026</a>). Los vasos de retención propuestos pueden sumarse a ese estudio.</div>
+        <h3>Beneficios <small class="muted">cualitativos, salvo donde hay fuente</small></h3>
+        <div class="tabla-wrap"><table class="tz2 benef-t"><thead><tr><th></th><th>Corto plazo</th><th>Largo plazo</th></tr></thead><tbody>
+          <tr><td><b>Colonias</b></td><td>Menos encharcamientos y menos brotes cuando llueve, porque la lluvia deja de entrar al drenaje sanitario.</td><td>Un emisor que dura más, con menos carga en temporada de lluvias.</td></tr>
+          <tr><td><b>Ejidatarios</b></td><td>Agua tratada para forrajes en años de poca dotación, con NOM-001 y permiso.</td><td>Una fuente estable que no le quita agua potable a la ciudad; menos daños por lluvias extraordinarias.</td></tr>
+          <tr><td><b>Empresarios</b></td><td>Menos paros por inundación y vialidades cerradas.</td><td>Agua tratada para procesos y enfriamiento, con contrato.</td></tr>
+          <tr><td><b>Municipio</b></td><td>Menos atención de emergencias por lluvias.</td><td>Ingreso por venta de agua tratada, como ya permiten los decretos 470 y 471. Costos de obra: estimado / por cotizar.</td></tr>
+        </tbody></table></div>
+        <div class="hecho transp"><b>🔎 Transparencia</b><span>Un tablero público en tiempo real con el avance de la obra, el gasto y lo que miden los sensores (nivel, caudal, calidad del agua). Una herramienta que el Municipio puede tener como propia, para informar a vecinos, Cabildo y aportantes con los mismos datos. Propuesta; costo por cotizar.</span></div>
       </div>
 
       <div class="pp" data-pp="creditos" hidden>

@@ -252,7 +252,7 @@ function escena() {
     if (S.enfoque) { const k = 1 - Math.exp(-dt * 3.2); camera.position.lerp(S.enfoque.pos, k); controls.target.lerp(S.enfoque.tgt, Math.min(1, k * 1.3)); if (camera.position.distanceTo(S.enfoque.pos) < 1) S.enfoque = null; }
     if (S.orient) aplicarOrientacion();
     if (S.modo === "recorrido") animTour(dt);
-    if (S.c2) { S.c2.tick(dt, uTiempo.value); if (S.simOn) animSim(dt); }
+    if (S.c2) { S.c2.tick(dt, uTiempo.value); if (S.simOn) animSim(dt); if (S.obraOn) animObra(dt); S.c2.tickLluvias?.(dt); }
     if (S.pulso) { const k = .5 + .5 * Math.sin(uTiempo.value * 5); for (const m of S.pulso) m.material.emissive?.setRGB(.35 * k, .25 * k, .05 * k); }
     const dist = camera.position.distanceTo(controls.target); const nr = Math.max(.5, dist / 1500); if (Math.abs(nr - camera.near) / camera.near > .2) { camera.near = nr; camera.updateProjectionMatrix(); }
     controls.update(); renderer.render(scene, camera); etiquetas();
@@ -290,6 +290,7 @@ function etiquetas() {
     const capa = t.modo === "colonia" ? "sanitario" : t.modo;
     const show = t.modo === "sitio" ? (!enCiudad && S.modo !== "tratadora" && !lejos) : t.modo === "ciudad" ? (enCiudad || lejos) : t.modo === "nodo" ? red
       : C2CAT.includes(t.modo) ? red && S.capas2?.has(t.modo) : t.modo === "sim" ? red && S.simOn && !t.src?.oculta
+      : t.modo === "obra" ? red && S.obraVis && S.capas2?.has("zanja")
       : REDES[capa] ? red && S.capasRed?.has(capa) && (S.modo !== "recorrido" || S.tourCapa === capa) : t.modo === "etapa" ? S.modo === "tratadora" : t.modo === "tour" ? S.modo === "recorrido" : false;
     if (!show || (t.cerca && S.camera.position.distanceTo(S.controls.target) > 2200)) { t.e.style.display = "none"; continue; }
     const v = t.p.clone().project(S.camera); const vis = v.z < 1 && Math.abs(v.x) < 1.05 && Math.abs(v.y) < 1.05;
@@ -570,7 +571,7 @@ function modo(n) {
     if (n !== "recorrido") { for (const k of Object.keys(REDES)) S.ciudad.capa(k, S.capasRed.has(k)); S.ciudad.resaltar(null); } }
   if (S.ciudad && n === "forma") for (const k of Object.keys(REDES)) S.ciudad.capa(k, false);
   if (S.gota) S.gota.visible = n === "recorrido"; S.tourCurva = null; S.tourCapa = null;
-  if (S.simOn && n !== "ciudad") pararSim(); aplicarCapas2();
+  if (S.simOn && n !== "ciudad") pararSim(); if (S.obraVis && n !== "ciudad") pararObra(); aplicarCapas2();
   ambiente(false); S.tramoCam = -1;
   const lejosM = n === "ciudad" || n === "recorrido"; S.scene.fog.near = lejosM ? 9000 : 900; S.scene.fog.far = lejosM ? 30000 : 9000;
   if (n === "tuberias") { panelTuberias(); atenuar(true, []); S.enfoque = { pos: new THREE.Vector3(-60, 150, 140), tgt: new THREE.Vector3(-20, 0, -10) }; }
@@ -587,12 +588,33 @@ function modo(n) {
 }
 document.querySelectorAll(".modo").forEach((b) => b.addEventListener("click", () => modo(b.dataset.modo)));
 /* ───────── Capas nuevas · Propuesta Integral 2026 ───────── */
-const C2CAT = ["tec", "aliados", "colectivo", "zanja"];
-const C2NOM = { tec: "📡 Tecnología de la red", aliados: "🤝 Aliados que ganan", colectivo: "🔗 De lo aislado a lo colectivo", zanja: "🚧 Hacerlo de una vez (zanja abierta)" };
+const C2CAT = ["tec", "aliados", "colectivo", "zanja", "lluvias"];
+const C2NOM = { tec: "📡 Tecnología de la red", aliados: "🤝 Aliados que ganan", colectivo: "🔗 De lo aislado a lo colectivo", zanja: "🚧 Hacerlo de una vez (zanja abierta)", lluvias: "🌧️ Lluvias y campo" };
 function aplicarCapas2() {
   if (!S?.c2) return; const en = S.modo === "ciudad" || S.modo === "recorrido";
   for (const k of C2CAT) S.c2[k].visible = en && S.capas2.has(k);
   S.c2.sim.visible = en && !!S.simOn;
+  if (S.c2.obra) S.c2.obra.visible = en && !!S.obraVis && S.capas2.has("zanja");
+}
+/* Simulación de obra por tramo (propuesta / estimado): 1.6 s por tramo en pantalla */
+function iniciarObra() {
+  if (!S?.c2?.obraEstado || !window.TRAMOS_100M) return; if (S.simOn) pararSim();
+  if (!S.capas2.has("zanja") || S.modo !== "ciudad") verEnMapa("zanja");
+  if ((S.obraU ?? 0) >= 48.99) S.obraU = 0; S.obraVis = true; S.obraOn = true; S.obraI = -1; S.c2.iniciarObra(); aplicarCapas2(); ponerObra(S.obraU || 0); botonesObra();
+  document.querySelector(".visor").scrollIntoView({ behavior: "smooth", block: "start" });
+}
+function pararObra(ocultar = true) { S.obraOn = false; if (ocultar) { S.obraVis = false; S.c2?.pararObra(); } aplicarCapas2(); botonesObra(); }
+function botonesObra() { const b = $("#btn-obra"); if (b) { b.textContent = S.obraOn ? "■ Pausar" : "▶ Simular obra por tramos"; b.classList.toggle("on", !!S.obraOn); } }
+function animObra(dt) { S.obraU = Math.min(48.999, (S.obraU || 0) + dt / 1.6); ponerObra(S.obraU); if (S.obraU >= 48.999) pararObra(false); }
+function ponerObra(u) {
+  S.obraU = u; const i = Math.floor(u); const r = S.c2.obraEstado(i, u - i); if (!r) return; const t = r.t;
+  const rg = $("#obra-rango"); if (rg && document.activeElement !== rg) rg.value = u;
+  const id = `T-${String(t[0]).padStart(2, "0")}`; $("#obra-txt") && ($("#obra-txt").textContent = `${id} · ${t[1]}″ · ${r.nombre}`);
+  document.querySelectorAll(".obra-fases span").forEach((e, k) => e.classList.toggle("on", k === r.fase));
+  for (const x of S.etq) if (x.src && x.src.cat === "obra") { if (x.e.innerHTML !== x.src.t) x.e.innerHTML = x.src.t; x.e.style.setProperty("--c", x.src.color); }
+  if (S.obraI !== i) { S.obraI = i; salvaTramo(i); const p = r.foco; S.enfoque = { tgt: new THREE.Vector3(p[0], 0, p[1]), pos: new THREE.Vector3(p[0] - 750, 1350, p[1] + 1500) }; }
+  const sec = t[1] === "72" ? "Emisor Central 72″ · junto a la obra: col. Miguel de la Madrid" : t[1] === "42" ? "Colector San Ignacio 42″ · sector referencial" : "Rehabilitación 60″ · sector referencial";
+  if (S.modo === "ciudad") $("#hud").innerHTML = `<b>SIMULACIÓN DE OBRA · ${id} de 49</b><br>${sec}<br>${t[4]} → ${t[5]} (estimado) · ~${t[6].toFixed(2)} MDP con IVA (~${(t[6] / 1.16).toFixed(2)} sin IVA), estimado a ritmo parejo<br>Fase: <b>${r.nombre}</b><br><span class="ob">Propuesta / estimado · orden aguas abajo → aguas arriba · desvíos sujetos a Tránsito y Vialidad · bombeo de desvío provisional</span>`;
 }
 function iniciarSim() {
   if (!S?.c2) return; if (S.modo !== "ciudad") modo("ciudad");
@@ -613,9 +635,10 @@ function animSim(dt) {
 }
 function verEnMapa(k) {
   if (!S) return; if (!S.c2) { $("#hud").innerHTML = "<b>Cargando la ciudad…</b>"; setTimeout(() => verEnMapa(k), 700); return; }
+  if (k !== "zanja" && S.obraOn) pararObra(false);
   S.capas2.add(k); if (S.modo !== "ciudad") modo("ciudad"); else { aplicarCapas2(); panelCiudad(); }
-  const f = S.c2.foco; const P = k === "aliados" ? [-1300, 900] : k === "colectivo" ? [-600, 400] : k === "zanja" ? f.zanja : null;
-  const k2 = k === "zanja" ? .6 : 1;
+  const f = S.c2.foco; const P = k === "aliados" ? [-1300, 900] : k === "colectivo" ? [-600, 400] : k === "zanja" ? f.zanja : k === "lluvias" ? f.lluvias : null;
+  const k2 = k === "zanja" ? .6 : k === "lluvias" ? .9 : 1;
   if (P) S.enfoque = { tgt: new THREE.Vector3(P[0], 0, P[1]), pos: new THREE.Vector3(P[0] - 1600 * k2, 3300 * k2, P[1] + 3900 * k2) };
   document.querySelector(".visor").scrollIntoView({ behavior: "smooth", block: "start" });
 }
@@ -635,6 +658,29 @@ function pestanas() {
   document.querySelectorAll("[data-mapa]").forEach((b) => b.addEventListener("click", () => verEnMapa(b.dataset.mapa)));
   document.querySelectorAll("[data-sim]").forEach((b) => b.addEventListener("click", () => { if (!S?.c2) return verEnMapa("tec"); S.simOn ? pararSim() : (iniciarSim(), document.querySelector(".visor").scrollIntoView({ behavior: "smooth", block: "start" })); }));
 }
-sellos(); pestanas();
-window.NodoVAH4D = { ponerMes, ponerJornada, modo, vista, verEnMapa, iniciarSim, pararSim, get S() { return S; } };
+function tramos100() {
+  const T = window.TRAMOS_100M; const fil = $("#t100-filas"), bar = $("#t100-barra"); if (!fil) return;
+  if (!T || !T.length) { $("#t100").hidden = true; return; }
+  const C = { "72": "#f3d27a", "42": "#2fd3e6", "60": "#c58bff" }; const tot = T[T.length - 1][3];
+  const f = (d) => { const [y, m, dd] = d.split("-"); return `${+dd} ${["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"][m - 1]} ${y}`; };
+  fil.innerHTML = T.map((t, i) => `<tr data-t100="${i}"><td>T-${String(t[0]).padStart(2, "0")}</td><td><i class="sw" style="--c:${C[t[1]]}"></i>${t[1]}″</td><td>${t[2].toLocaleString("es-MX")}–${t[3].toLocaleString("es-MX")}</td><td>${f(t[4])}</td><td>${f(t[5])}</td><td>${t[6].toFixed(2)}</td></tr>`).join("");
+  bar.innerHTML = T.map((t, i) => `<button data-t100="${i}" title="T-${t[0]} · ${t[1]}″ · ${f(t[4])} → ${f(t[5])}" style="--c:${C[t[1]]};flex:${t[3] - t[2]}"></button>`).join("");
+  document.querySelectorAll("[data-t100]").forEach((el) => el.addEventListener("click", () => elegirTramo(+el.dataset.t100)));
+}
+function salvaTramo(i) {
+  const W = window.SALVA_TRAMOS, T = window.TRAMOS_100M, el = $("#salva-tramo"); if (!el || !W || !T?.[i]) return; const r = W.t.find((x) => x[0] === T[i][0]); if (!r) return;
+  el.innerHTML = `<b>Medidas para T-${String(T[i][0]).padStart(2, "0")} · ${T[i][1]}″ <small class="muted">propuesta</small></b><span><b>Horario:</b> ${W.ventana[r[1]]}</span><span><b>Vialidad:</b> ${W.vial[r[2]]}</span><span><b>Seguridad:</b> ${W.seguridad[r[3]]}</span>`;
+}
+function elegirTramo(i) { salvaTramo(i);
+  document.querySelectorAll("[data-t100]").forEach((el) => el.classList.toggle("on", +el.dataset.t100 === i));
+  if (!S?.c2) return; if (!S.capas2.has("zanja") || S.modo !== "ciudad") verEnMapa("zanja");
+  const p = S.c2.verTramo(i); if (!p) return; const T = window.TRAMOS_100M[i];
+  S.enfoque = { tgt: new THREE.Vector3(p[0], 0, p[1]), pos: new THREE.Vector3(p[0] - 750, 1350, p[1] + 1500) };
+  setTimeout(() => { if (S.modo === "ciudad") $("#hud").innerHTML = `<b>TRAMO T-${String(T[0]).padStart(2, "0")} · ${T[1]}″</b><br>${T[2]}–${T[3]} m · ${T[4]} → ${T[5]}<br>~${T[6].toFixed(2)} MDP con IVA (~${(T[6] / 1.16).toFixed(2)} sin IVA), estimado a ritmo parejo<br><span class="ob">Estimación uniforme, no calendario oficial de la CAED · posición proporcional sobre trazo referencial</span>`; }, 900);
+  document.querySelector(".visor").scrollIntoView({ behavior: "smooth", block: "start" });
+}
+sellos(); pestanas(); tramos100();
+$("#btn-obra")?.addEventListener("click", () => (S?.obraOn ? pararObra(false) : iniciarObra()));
+$("#obra-rango")?.addEventListener("input", (e) => { if (!S?.c2?.obraEstado) return; if (!S.obraVis) { iniciarObra(); pararObra(false); } S.obraOn = false; botonesObra(); ponerObra(+e.target.value); });
+window.NodoVAH4D = { ponerMes, ponerJornada, modo, vista, verEnMapa, iniciarSim, pararSim, elegirTramo, iniciarObra, pararObra, ponerObra, get S() { return S; } };
 candado();

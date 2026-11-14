@@ -6,6 +6,7 @@
 // TODAS las posiciones son REFERENCIALES (no son levantamiento oficial). Equipos: precio «por cotizar».
 import * as THREE from "three";
 import { dec, enLinea } from "./ciudad.js";
+import { crearLluvias } from "./lluvias.js";
 
 export const TEC = {
   reja: { n: "Reja de cribado automática", c: "#f2c230", d: "Entrada de cada nodo y cárcamo: saca basura y sólidos" },
@@ -115,6 +116,12 @@ export function crearCapas2(scene, Cd, osm) {
   ET("📡 Monitoreo compartido<br><small>datos de calidad al tablero común</small>", new THREE.Vector3((SCADA[0] + PIL[0]) / 2, 470, (SCADA[1] + PIL[1]) / 2), "colectivo", "#2fd3e6");
   ET("🏦 Fondo de saneamiento<br><small>propuesta por verificar con Cabildo</small>", new THREE.Vector3(NODO[0] + 700, 200, NODO[1] - 700), "colectivo", "#f3d27a");
 
+  // Aliado potencial: CFE (agua tratada para enfriamiento). Ubicación REFERENCIAL: inicio del trazo de la zanja (col. Miguel de la Madrid)
+  { const c5p = (colect.find((c) => c.id === "C-5") || colect[0]).pts[0]; const x = c5p[0] - 420, z = c5p[1] - 380; const gC = new THREE.Group(); gC.position.set(x, 0, z);
+    pon(gC, new THREE.Mesh(new THREE.CylinderGeometry(30, 46, 120, 20), new THREE.MeshStandardMaterial({ color: 0xffe14a, emissive: 0x554800 })), 0, 60);
+    pon(gC, new THREE.Mesh(new THREE.CylinderGeometry(14, 14, 190, 10), new THREE.MeshStandardMaterial({ color: 0xbfc6cc, emissive: 0x222222 })), 70, 95); gC.scale.setScalar(1.6); aliados.add(gC);
+    ET("⚡ Aliado potencial: CFE (agua tratada)<br><small>La Laguna II (col. Miguel de la Madrid) y CC Jabonoso · ubicación referencial</small>", new THREE.Vector3(x, 330, z), "aliados", "#ffe14a"); }
+
   /* ───── Hacerlo de una vez (zanja abierta del Emisor Central / colector San Ignacio) ─────
      Trazo REFERENCIAL: colector C-5 (Miguel de la Madrid) + emisor del visor. No es el proyecto ejecutivo de CAED/SIDEAPA. */
   const c5 = colect.find((c) => c.id === "C-5") || colect[0];
@@ -149,6 +156,69 @@ export function crearCapas2(scene, Cd, osm) {
   zEt("🕳️ Pozos de visita amplios para robot CCTV<br><small>con sensores de H₂S y de nivel · por cotizar</small>", .72, 190, "#d9dde0");
   zEt("🌀 Medidor de caudal<br><small>entrada y salida del tramo · por cotizar</small>", .97, 170, TEC.caudal.c);
   if (grasas.length) ET("🧴 Control de grasas y sólidos aguas arriba<br><small>trampas y cribado en origen · por cotizar</small>", new THREE.Vector3(grasas[0][0], 120, grasas[0][1]), "zanja", "#ff8a3d");
+
+  // Tramos de 100 m (tabla compartida): divisiones PROPORCIONALES sobre el trazo referencial de la zanja
+  const T100 = window.TRAMOS_100M || null; const COLT = { "72": 0xf3d27a, "42": 0x2fd3e6, "60": 0xc58bff };
+  let tramoSel = null, tramoFoco = null;
+  // Orden de obra aguas abajo → aguas arriba: T-01 en el extremo del trazo que llega a la Planta Norte (fin de zt)
+  const TOT = T100 && T100.length ? T100[T100.length - 1][3] : 1; const dT = (m) => LZ * (1 - m / TOT);
+  if (T100 && T100.length) {
+    for (const t of T100) { const d = dT(t[2]); const { p, dir } = enLinea(zt, d);
+      const m = new THREE.Mesh(new THREE.BoxGeometry(6, 26, 96), new THREE.MeshBasicMaterial({ color: COLT[t[1]] || 0xffffff }));
+      m.position.set(p[0], 13, p[1]); m.rotation.y = Math.atan2(-dir[1], dir[0]); zanja.add(m); }
+    tramoSel = new THREE.Group(); zanja.add(tramoSel);
+  }
+  function verTramo(i) {
+    if (!tramoSel) return null; tramoSel.clear(); const t = T100[i]; if (!t) return null;
+    const d0 = dT(t[3]), d1 = dT(t[2]); const pts = [enLinea(zt, d0).p];
+    for (let d = d0 + 10; d < d1; d += 10) pts.push(enLinea(zt, d).p); pts.push(enLinea(zt, d1).p);
+    const path = new THREE.CurvePath(); for (let k = 0; k < pts.length - 1; k++) { const a = new THREE.Vector3(pts[k][0], 40, pts[k][1]), b = new THREE.Vector3(pts[k + 1][0], 40, pts[k + 1][1]); if (a.distanceToSquared(b) > .01) path.add(new THREE.LineCurve3(a, b)); }
+    if (path.curves.length) { const m = new THREE.Mesh(new THREE.TubeGeometry(path, 40, 46, 10, false), new THREE.MeshBasicMaterial({ color: COLT[t[1]] || 0xffffff, transparent: true, opacity: .9, depthWrite: false })); m.renderOrder = 10; tramoSel.add(m); }
+    tramoFoco = enLinea(zt, (d0 + d1) / 2).p;
+    const bm = new THREE.MeshBasicMaterial({ color: COLT[t[1]] || 0xffffff, transparent: true, opacity: .75, depthWrite: false });
+    const be = new THREE.Mesh(new THREE.CylinderGeometry(9, 9, 420, 12), bm); be.position.set(tramoFoco[0], 210, tramoFoco[1]); be.renderOrder = 11; tramoSel.add(be);
+    const an = new THREE.Mesh(new THREE.TorusGeometry(70, 9, 8, 32), bm); an.rotation.x = Math.PI / 2; an.position.set(tramoFoco[0], 430, tramoFoco[1]); tramoSel.add(an);
+    return tramoFoco;
+  }
+
+  /* ───── Simulación de obra por tramo (propuesta / estimado) ─────
+     Fases y su reparto dentro de cada tramo de ~3.7 días: estimado propio para la animación, no programa de la contratista. */
+  const FASES = [["Excavar", .30, 0x8a5a2b], ["Instalar tubo PRFV", .25, 0xe8e2cf], ["Meter ductos de una vez (fibra y sensores)", .10, 0x2fd3e6], ["Relleno y compactación", .20, 0xc9a36a], ["Repavimentar", .15, 0x6c7380]];
+  const obra = new THREE.Group(); obra.visible = false; raiz.add(obra); const oFija = new THREE.Group(), oVar = new THREE.Group(); obra.add(oFija, oVar);
+  const pOff = (d, off) => { const { p, dir } = enLinea(zt, Math.max(0, Math.min(LZ, d))); return [p[0] - dir[1] * off, p[1] + dir[0] * off]; };
+  const tubo = (pts, y, r, mat) => { const c = new THREE.CurvePath(); for (let k = 0; k < pts.length - 1; k++) { const a = new THREE.Vector3(pts[k][0], y, pts[k][1]), b = new THREE.Vector3(pts[k + 1][0], y, pts[k + 1][1]); if (a.distanceToSquared(b) > .01) c.add(new THREE.LineCurve3(a, b)); }
+    if (!c.curves.length) return null; const m = new THREE.Mesh(new THREE.TubeGeometry(c, Math.max(8, pts.length * 2), r, 8, false), mat); if (mat.uniforms) mat.uniforms.uLen.value = c.getLength(); m.renderOrder = 10; return m; };
+  const seg = (a, b, off = 0) => { const pts = []; const st = Math.sign(b - a) * 10 || 10; for (let d = a; (st > 0 ? d < b : d > b); d += st) pts.push(pOff(d, off)); pts.push(pOff(b, off)); return pts; };
+  const curva = (a, b, off, n = 24) => { const A = pOff(a, 0), B = pOff(b, 0), M = pOff((a + b) / 2, off); const q = new THREE.QuadraticBezierCurve(new THREE.Vector2(...A), new THREE.Vector2(M[0] * 2 - (A[0] + B[0]) / 2, M[1] * 2 - (A[1] + B[1]) / 2), new THREE.Vector2(...B)); return q.getPoints(n).map((v) => [v.x, v.y]); };
+  const mHecho = new THREE.MeshBasicMaterial({ color: 0x3fd46b, transparent: true, opacity: .85, depthWrite: false });
+  const mCierre = new THREE.MeshBasicMaterial({ color: 0xff3b30, transparent: true, opacity: .35, depthWrite: false });
+  const mFase = FASES.map((f) => new THREE.MeshBasicMaterial({ color: f[2] }));
+  const maq = new THREE.Group(); pon(maq, new THREE.Mesh(new THREE.BoxGeometry(40, 22, 26), new THREE.MeshStandardMaterial({ color: 0xffc21a, emissive: 0x553f00 })), 0, 16);
+  pon(maq, new THREE.Mesh(new THREE.BoxGeometry(46, 6, 6), new THREE.MeshStandardMaterial({ color: 0xffc21a, emissive: 0x553f00 })), 30, 34); obra.add(maq);
+  const bomba = new THREE.Mesh(new THREE.BoxGeometry(34, 26, 34), new THREE.MeshStandardMaterial({ color: 0xff4fd8, emissive: 0x551040 })); obra.add(bomba);
+  const etO = { t: "", p: new THREE.Vector3(), cat: "obra", color: "#ff3b30" }, etD = { t: "↪ Desvío vial sugerido<br><small>propuesta referencial, sujeta a Tránsito y Vialidad</small>", p: new THREE.Vector3(), cat: "obra", color: "#ff9f1c" },
+    etB = { t: "⛽ Bombeo de desvío provisional<br><small>operación paralela del sistema existente</small>", p: new THREE.Vector3(), cat: "obra", color: "#ff4fd8" };
+  etiquetas.push(etO, etD, etB);
+  let oI = -1, oQ = -1;
+  function obraEstado(i, u) {
+    if (!T100) return null; i = Math.max(0, Math.min(T100.length - 1, i)); const t = T100[i]; const d0 = dT(t[3]), d1 = dT(t[2]); // d1 = lado aguas abajo del tramo
+    if (i !== oI) { oI = i; oQ = -1; oFija.clear();
+      if (d1 < LZ - 1) { const m = tubo(seg(d1, LZ), 8, 26, mHecho); m && oFija.add(m); }
+      const c = tubo(seg(d0, d1), 22, 62, mCierre); c && oFija.add(c);
+      const det = tubo(curva(d0 - 260, d1 + 260, 360), 10, 13, matFlujo(uT, "#ff9f1c", 1, 160)); det && oFija.add(det);
+      const det2 = tubo(curva(d0 - 260, d1 + 260, -360), 10, 13, matFlujo(uT, "#ff9f1c", .8, 160)); det2 && oFija.add(det2);
+      const by = tubo([pOff(d0 - 40, 0), ...seg(d0 - 30, d1 + 30, 90), pOff(d1 + 40, 0)], 30, 9, matFlujo(uT, "#ff4fd8", 1, 220)); by && oFija.add(by); // de aguas arriba hacia aguas abajo
+      const pb = pOff(d0 - 30, 90); bomba.position.set(pb[0], 14, pb[1]);
+      const pd = pOff((d0 + d1) / 2, 380); etD.p.set(pd[0], 60, pd[1]);
+      etB.p.set(pb[0], 110, pb[1]); }
+    let acc = 0, k = 0; for (; k < FASES.length - 1 && u > acc + FASES[k][1]; k++) acc += FASES[k][1];
+    const f = Math.min(1, (u - acc) / FASES[k][1]); const q = k * 20 + Math.floor(f * 20);
+    if (q !== oQ) { oQ = q; oVar.clear(); for (let j = 0; j <= k; j++) { const e = j < k ? d0 : d1 - (d1 - d0) * f; const m = tubo(seg(d1, Math.min(d1 - 2, e)), 14 + j * 3, 30 - j * 2, mFase[j]); m && oVar.add(m); } }
+    const pm = pOff(d1 - (d1 - d0) * f, -48); maq.position.set(pm[0], 0, pm[1]);
+    const pc = pOff((d0 + d1) / 2, 0); etO.p.set(pc[0], 150, pc[1]); etO.t = `🚧 T-${String(t[0]).padStart(2, "0")} cerrado · ${t[1]}″<br><small>${FASES[k][0]} (estimado)</small>`;
+    return { i, t, fase: k, nombre: FASES[k][0], f, foco: pc };
+  }
+  const iniciarObra = () => { obra.visible = true; oI = -1; }, pararObra = () => { obra.visible = false; };
 
   /* ───── Simulación demostrativa de alerta (colector C-2) ───── */
   const c2 = colect.find((c) => c.id === "C-2") || colect[0]; const L2 = largo(c2.pts);
@@ -186,5 +256,7 @@ export function crearCapas2(scene, Cd, osm) {
   function iniciarSim() { t = 0; sim.visible = true; }
   function pararSim() { sim.visible = false; }
   function tick(dt, tt) { const k = .35 + .3 * Math.sin(tt * 3); for (const h of halos) h.material.opacity = k; for (const f of [fPIL, fHER, fALI]) f.userData.top.rotation.y += dt; }
-  return { raiz, tec, aliados, colectivo, zanja, sim, etiquetas, paso, iniciarSim, pararSim, tick, foco: { zanja: enLinea(zt, LZ * .5).p, sim: pS, pil: PIL, herrera: HERRERA, scada: SCADA } };
+  let LL = null; try { LL = crearLluvias(raiz, Cd, osm, uT); etiquetas.push(...LL.etiquetas); } catch (e) { console.error("lluvias", e); }
+  const lluvias = LL ? LL.g : new THREE.Group();
+  return { raiz, tec, aliados, colectivo, zanja, sim, lluvias, tickLluvias: (dt) => LL?.tick(dt), verTramo, T100, obra, obraEstado, iniciarObra, pararObra, FASES, etiquetas, paso, iniciarSim, pararSim, tick, foco: { lluvias: LL ? LL.foco : [0, 0], zanja: enLinea(zt, LZ * .5).p, sim: pS, pil: PIL, herrera: HERRERA, scada: SCADA } };
 }
