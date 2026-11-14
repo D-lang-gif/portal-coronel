@@ -38,8 +38,8 @@ function arco(uT, a, b, alto, r, color) {
 export function crearCapas2(scene, Cd, osm) {
   const R = osm.redes; const uT = Cd.uT;
   const raiz = new THREE.Group(); raiz.name = "capas2"; scene.add(raiz);
-  const tec = new THREE.Group(), aliados = new THREE.Group(), colectivo = new THREE.Group(), sim = new THREE.Group();
-  [tec, aliados, colectivo, sim].forEach((g) => { g.visible = false; raiz.add(g); });
+  const tec = new THREE.Group(), aliados = new THREE.Group(), colectivo = new THREE.Group(), sim = new THREE.Group(), zanja = new THREE.Group();
+  [tec, aliados, colectivo, sim, zanja].forEach((g) => { g.visible = false; raiz.add(g); });
   const etiquetas = []; const ET = (t, p, cat, color, cerca) => etiquetas.push({ t, p, cat, color, cerca });
   const halos = []; // anillos que laten
   const mats = {}; const mat = (k) => (mats[k] ||= new THREE.MeshStandardMaterial({ color: TEC[k].c, emissive: TEC[k].c, emissiveIntensity: .7, roughness: .35, metalness: .2 }));
@@ -115,6 +115,41 @@ export function crearCapas2(scene, Cd, osm) {
   ET("📡 Monitoreo compartido<br><small>datos de calidad al tablero común</small>", new THREE.Vector3((SCADA[0] + PIL[0]) / 2, 470, (SCADA[1] + PIL[1]) / 2), "colectivo", "#2fd3e6");
   ET("🏦 Fondo de saneamiento<br><small>propuesta por verificar con Cabildo</small>", new THREE.Vector3(NODO[0] + 700, 200, NODO[1] - 700), "colectivo", "#f3d27a");
 
+  /* ───── Hacerlo de una vez (zanja abierta del Emisor Central / colector San Ignacio) ─────
+     Trazo REFERENCIAL: colector C-5 (Miguel de la Madrid) + emisor del visor. No es el proyecto ejecutivo de CAED/SIDEAPA. */
+  const c5 = colect.find((c) => c.id === "C-5") || colect[0];
+  const zt = [...c5.pts, ...emisor.slice(1)]; const LZ = largo(zt);
+  { const pos = [], idx = []; let n = 0; const A = 70;
+    for (let i = 0; i < zt.length - 1; i++) { const [x0, z0] = zt[i], [x1, z1] = zt[i + 1]; const l = Math.hypot(x1 - x0, z1 - z0); if (l < .1) continue;
+      const nx = -(z1 - z0) / l * A / 2, nz = (x1 - x0) / l * A / 2; pos.push(x0 + nx, 1.2, z0 + nz, x0 - nx, 1.2, z0 - nz, x1 + nx, 1.2, z1 + nz, x1 - nx, 1.2, z1 - nz); idx.push(n, n + 2, n + 1, n + 1, n + 2, n + 3); n += 4; }
+    const g = new THREE.BufferGeometry(); g.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3)); g.setIndex(idx);
+    const m = new THREE.Mesh(g, new THREE.MeshBasicMaterial({ color: 0xffb547, transparent: true, opacity: .85, depthWrite: false, side: THREE.DoubleSide })); m.renderOrder = 6; zanja.add(m); }
+  // ducto para fibra y cables de sensores (paralelo a la zanja)
+  { const off = zt.map((p, i) => { const q = zt[Math.min(i + 1, zt.length - 1)], r0 = zt[Math.max(i - 1, 0)]; const dx = q[0] - r0[0], dz = q[1] - r0[1], l = Math.hypot(dx, dz) || 1; return [p[0] - dz / l * 24, p[1] + dx / l * 24]; });
+    const path = new THREE.CurvePath(); let L = 0; for (let i = 0; i < off.length - 1; i++) { const a = new THREE.Vector3(off[i][0], 8, off[i][1]), b = new THREE.Vector3(off[i + 1][0], 8, off[i + 1][1]); if (a.distanceToSquared(b) < .01) continue; path.add(new THREE.LineCurve3(a, b)); L += a.distanceTo(b); }
+    const m = new THREE.Mesh(new THREE.TubeGeometry(path, 300, 5, 6, false), matFlujo(uT, "#2fd3e6", 1, 260)); m.material.uniforms.uLen.value = L; m.renderOrder = 9; zanja.add(m); }
+  const ZC = { pozo: "#d9dde0", h2s: TEC.h2s.c, nivel: TEC.nivel.c, caudal: TEC.caudal.c, grasa: "#ff8a3d" };
+  const zm = (k) => new THREE.MeshStandardMaterial({ color: ZC[k], emissive: ZC[k], emissiveIntensity: .55, roughness: .4 });
+  const zMat = Object.fromEntries(Object.keys(ZC).map((k) => [k, zm(k)]));
+  let kz = 0;
+  for (let d = 150; d < LZ - 100; d += 420, kz++) { const [x, z] = enLinea(zt, d).p; const g = new THREE.Group(); g.position.set(x, 0, z);
+    pon(g, new THREE.Mesh(new THREE.CylinderGeometry(26, 26, 18, 20), zMat.pozo), 0, 9); // pozo de visita amplio (CCTV robot)
+    if (kz % 2 === 0) { pon(g, new THREE.Mesh(new THREE.TetrahedronGeometry(16), zMat.h2s), 0, 52); pon(g, new THREE.Mesh(new THREE.CylinderGeometry(2.5, 2.5, 40, 6), zMat.h2s), 0, 30); }
+    else { pon(g, new THREE.Mesh(new THREE.CylinderGeometry(15, 9, 10, 16), zMat.nivel), 0, 52); pon(g, new THREE.Mesh(new THREE.CylinderGeometry(2.5, 2.5, 40, 6), zMat.nivel), 0, 30); }
+    g.scale.setScalar(1.8); zanja.add(g); }
+  for (const f of [.03, .97]) { const [x, z] = enLinea(zt, LZ * f).p; const g = new THREE.Group(); g.position.set(x, 0, z);
+    pon(g, new THREE.Mesh(new THREE.TorusGeometry(20, 6, 10, 28), zMat.caudal), 0, 60); pon(g, new THREE.Mesh(new THREE.CylinderGeometry(2.5, 2.5, 60, 6), zMat.caudal), 0, 30); g.scale.setScalar(1.8); zanja.add(g); }
+  // puntos de control de grasas y sólidos aguas arriba (inicio de subcolectores que llegan a la zona)
+  const grasas = []; for (const s0 of osm.redes.subs.map(dec)) { const p0 = s0[0]; const dmin = Math.min(...zt.map((q) => Math.hypot(q[0] - p0[0], q[1] - p0[1])));
+    if (dmin > 250 && dmin < 1400 && grasas.every((q) => Math.hypot(q[0] - p0[0], q[1] - p0[1]) > 600)) grasas.push(p0); if (grasas.length >= 6) break; }
+  for (const [x, z] of grasas) { const g = new THREE.Group(); g.position.set(x, 0, z); pon(g, new THREE.Mesh(new THREE.BoxGeometry(30, 22, 30), zMat.grasa), 0, 11); pon(g, new THREE.Mesh(new THREE.ConeGeometry(12, 20, 4), zMat.grasa), 0, 34); g.scale.setScalar(1.8); zanja.add(g); }
+  const zEt = (t, f, y, c) => { const [x, z] = enLinea(zt, LZ * f).p; ET(t, new THREE.Vector3(x, y, z), "zanja", c); };
+  zEt("🚧 Zanja abierta · Emisor Central y colector San Ignacio<br><small>trazo REFERENCIAL del visor, no es el proyecto de CAED/SIDEAPA</small>", .5, 230, "#ffb547");
+  zEt("🔌 Ducto para fibra óptica y cables de sensores<br><small>por cotizar</small>", .3, 150, "#2fd3e6");
+  zEt("🕳️ Pozos de visita amplios para robot CCTV<br><small>con sensores de H₂S y de nivel · por cotizar</small>", .72, 190, "#d9dde0");
+  zEt("🌀 Medidor de caudal<br><small>entrada y salida del tramo · por cotizar</small>", .97, 170, TEC.caudal.c);
+  if (grasas.length) ET("🧴 Control de grasas y sólidos aguas arriba<br><small>trampas y cribado en origen · por cotizar</small>", new THREE.Vector3(grasas[0][0], 120, grasas[0][1]), "zanja", "#ff8a3d");
+
   /* ───── Simulación demostrativa de alerta (colector C-2) ───── */
   const c2 = colect.find((c) => c.id === "C-2") || colect[0]; const L2 = largo(c2.pts);
   const pS = enLinea(c2.pts, L2 * .55).p, pT = enLinea(c2.pts, L2 * .62).p, pQ = enLinea(c2.pts, L2 * .75).p;
@@ -151,5 +186,5 @@ export function crearCapas2(scene, Cd, osm) {
   function iniciarSim() { t = 0; sim.visible = true; }
   function pararSim() { sim.visible = false; }
   function tick(dt, tt) { const k = .35 + .3 * Math.sin(tt * 3); for (const h of halos) h.material.opacity = k; for (const f of [fPIL, fHER, fALI]) f.userData.top.rotation.y += dt; }
-  return { raiz, tec, aliados, colectivo, sim, etiquetas, paso, iniciarSim, pararSim, tick, foco: { sim: pS, pil: PIL, herrera: HERRERA, scada: SCADA } };
+  return { raiz, tec, aliados, colectivo, zanja, sim, etiquetas, paso, iniciarSim, pararSim, tick, foco: { zanja: enLinea(zt, LZ * .5).p, sim: pS, pil: PIL, herrera: HERRERA, scada: SCADA } };
 }

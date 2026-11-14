@@ -587,8 +587,8 @@ function modo(n) {
 }
 document.querySelectorAll(".modo").forEach((b) => b.addEventListener("click", () => modo(b.dataset.modo)));
 /* ───────── Capas nuevas · Propuesta Integral 2026 ───────── */
-const C2CAT = ["tec", "aliados", "colectivo"];
-const C2NOM = { tec: "📡 Tecnología de la red", aliados: "🤝 Aliados que ganan", colectivo: "🔗 De lo aislado a lo colectivo" };
+const C2CAT = ["tec", "aliados", "colectivo", "zanja"];
+const C2NOM = { tec: "📡 Tecnología de la red", aliados: "🤝 Aliados que ganan", colectivo: "🔗 De lo aislado a lo colectivo", zanja: "🚧 Hacerlo de una vez (zanja abierta)" };
 function aplicarCapas2() {
   if (!S?.c2) return; const en = S.modo === "ciudad" || S.modo === "recorrido";
   for (const k of C2CAT) S.c2[k].visible = en && S.capas2.has(k);
@@ -614,8 +614,9 @@ function animSim(dt) {
 function verEnMapa(k) {
   if (!S) return; if (!S.c2) { $("#hud").innerHTML = "<b>Cargando la ciudad…</b>"; setTimeout(() => verEnMapa(k), 700); return; }
   S.capas2.add(k); if (S.modo !== "ciudad") modo("ciudad"); else { aplicarCapas2(); panelCiudad(); }
-  const f = S.c2.foco; const P = k === "aliados" ? [-1300, 900] : k === "colectivo" ? [-600, 400] : null;
-  if (P) S.enfoque = { tgt: new THREE.Vector3(P[0], 0, P[1]), pos: new THREE.Vector3(P[0] - 1600, 3300, P[1] + 3900) };
+  const f = S.c2.foco; const P = k === "aliados" ? [-1300, 900] : k === "colectivo" ? [-600, 400] : k === "zanja" ? f.zanja : null;
+  const k2 = k === "zanja" ? .6 : 1;
+  if (P) S.enfoque = { tgt: new THREE.Vector3(P[0], 0, P[1]), pos: new THREE.Vector3(P[0] - 1600 * k2, 3300 * k2, P[1] + 3900 * k2) };
   document.querySelector(".visor").scrollIntoView({ behavior: "smooth", block: "start" });
 }
 function sellos() {

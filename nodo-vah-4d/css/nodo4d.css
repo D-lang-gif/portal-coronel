@@ -182,3 +182,7 @@ table.tz2 td{border-top:1px solid var(--borde);padding:6px 8px;vertical-align:to
 .c2-tec{border-left:3px solid #4aa8ff!important}.c2-aliados{border-left:3px solid var(--verde)!important}.c2-colectivo{border-left:3px solid #a35bff!important}
 @media (max-width:900px){.portada{grid-template-columns:1fr}.cards{grid-template-columns:1fr}.dos{grid-template-columns:1fr}}
 @media (max-width:700px){.portada{padding:14px}.portada-tit{font-size:20px}.gp-fila{grid-template-columns:1fr;gap:3px}.pest{flex-basis:46%}}
+.c2-zanja{border-left:3px solid #ffb547!important}
+.hechos{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:8px;margin-bottom:10px}
+.hecho{background:#101117;border:1px solid var(--borde);border-left:4px solid #ffb547;border-radius:9px;padding:8px 10px}
+.hecho small{display:block;color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.04em}.hecho b{display:block;font:800 15px/1.3 ui-monospace,Menlo,monospace;color:var(--oro2)}.hecho span{display:block;margin-top:2px}
