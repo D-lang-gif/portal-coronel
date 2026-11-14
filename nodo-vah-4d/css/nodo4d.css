@@ -128,3 +128,57 @@ div.etapa{cursor:default}
 .real-ref{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0;font-size:12px}
 .real-ref>div{background:#15161d;border:1px solid var(--borde);border-radius:8px;padding:7px 9px}
 @media (max-width:700px){.real-ref{grid-template-columns:1fr}.capas.leyenda label{flex-basis:100%}}
+
+/* ───── Propuesta Integral 2026: portada, sellos y capas nuevas ───── */
+.portada{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:18px;align-items:center;padding:18px 20px;background:radial-gradient(900px 300px at 85% 0,rgba(212,166,58,.10),transparent 60%),linear-gradient(180deg,var(--panel2),var(--panel))}
+.portada .pre{margin:0 0 4px;font:700 11px/1.2 ui-monospace,Menlo,monospace;letter-spacing:.14em;text-transform:uppercase;color:var(--oro)}
+.portada-tit{font-size:24px;line-height:1.15;letter-spacing:.02em;color:var(--txt)}
+.portada-sub{margin:6px 0 12px;color:#cfc8b6;font-size:13.5px;max-width:62ch}
+.destinatario{border-left:3px solid var(--oro);background:rgba(8,9,13,.45);border-radius:0 10px 10px 0;padding:9px 12px;font-size:13px}
+.destinatario p{margin:2px 0}.destinatario b{color:var(--oro2);letter-spacing:.04em}
+.destinatario .atn{margin-top:6px;color:#cfc8b6;font-size:12.5px}.destinatario .atn span{color:var(--oro);font-weight:700}
+.portada-firma{margin:10px 0 0;font-size:13px;color:var(--muted)}.portada-firma b{color:var(--oro2);letter-spacing:.03em}
+.sellos{display:flex;justify-content:center}
+.sellos img{display:block;width:100%;max-width:640px;height:auto;border-radius:10px;border:1px solid #8a6a1e;box-shadow:0 10px 30px rgba(0,0,0,.45),0 0 0 1px rgba(243,210,122,.12) inset}
+.capas2 .pestanas{display:flex;gap:6px;flex-wrap:wrap}
+.pest{flex:1 1 150px;background:#101117;border:1px solid var(--borde);color:var(--txt);border-radius:9px;padding:8px 8px;font-weight:800;font-size:12.5px;cursor:pointer}
+.pest.on{border-color:var(--oro);background:linear-gradient(#2b2516,#17140c);color:var(--oro2);box-shadow:0 0 12px rgba(212,166,58,.3)}
+.aviso-ref{margin:10px 0;padding:7px 10px;border:1px dashed #8a6a1e;border-radius:8px;background:rgba(71,49,12,.25);font-size:12.5px;color:#e9d9b0}
+.pp{margin-top:6px}
+.pp-cab{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px}.pp-cab p{margin:0;max-width:80ch}
+.pp-btns{display:flex;gap:6px;flex-wrap:wrap}
+.lema{font:italic 700 16px/1.35 Georgia,"Times New Roman",serif;color:var(--oro2)}
+.tabla-wrap{overflow-x:auto;border:1px solid var(--borde);border-radius:10px}
+table.tz2{width:100%;border-collapse:collapse;font-size:12.5px;min-width:620px}
+table.tz2 th{background:#101117;color:var(--oro);text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.05em;padding:7px 8px}
+table.tz2 td{border-top:1px solid var(--borde);padding:6px 8px;vertical-align:top}table.tz2 td:first-child{font-weight:700;min-width:180px}
+.sw{display:inline-block;width:10px;height:10px;border-radius:3px;background:var(--c);margin-right:6px;box-shadow:0 0 6px var(--c)}
+.dos{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:12px}.dos p{font-size:13px;margin:6px 0}
+.pasos{margin:0;padding-left:20px;font-size:13px}.pasos li{margin:4px 0}
+.dato{background:#101117;border:1px solid var(--borde);border-radius:8px;padding:8px 10px}
+.asl-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:8px}
+.asl{background:#101117;border:1px solid var(--borde);border-left:4px solid var(--azul);border-radius:9px;padding:9px 10px;display:flex;flex-direction:column;gap:5px;font-size:12.5px}
+.asl small{color:var(--oro);font:700 11px ui-monospace,monospace;letter-spacing:.04em}.asl b{font-size:13px}.asl a{font-size:11.5px;margin-top:auto}
+.barra{position:relative;height:16px;background:#0a0b10;border:1px solid var(--borde);border-radius:8px;overflow:hidden}
+.barra i{display:block;height:100%;background:linear-gradient(90deg,#2f8dff,var(--cian))}
+.barra span{position:absolute;inset:0 6px;font:700 10.5px/15px ui-monospace,monospace;color:#fff;text-shadow:0 1px 2px #000}
+.barra.meta i{background:repeating-linear-gradient(45deg,rgba(63,212,107,.55) 0 6px,rgba(63,212,107,.25) 6px 12px)}
+.barra.rojo i{background:linear-gradient(90deg,#b8322a,var(--rojo))}
+.gp{margin-top:12px;background:#0e0f14;border:1px solid var(--borde);border-radius:10px;padding:10px}
+.gp-fila{display:grid;grid-template-columns:170px 1fr;gap:8px;align-items:center;margin:6px 0;font-size:12.5px}
+.cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.card{background:#101117;border:1px solid var(--borde);border-top:3px solid var(--verde);border-radius:10px;padding:10px}.card.cian{border-top-color:#7fe0c8}
+.card h3{color:var(--verde)}.card.cian h3{color:#7fe0c8}.card ul{margin:0;padding-left:18px;font-size:12.5px}.card li{margin:3px 0}
+.creditos{display:grid;gap:10px}
+.cred-titular{text-align:center;padding:14px;border:1px solid #8a6a1e;border-radius:12px;background:radial-gradient(500px 120px at 50% 0,rgba(212,166,58,.16),transparent),#101117}
+.cred-titular small{display:block;color:var(--oro);font:700 11px ui-monospace,monospace;letter-spacing:.14em;text-transform:uppercase}
+.cred-titular b{display:block;font-size:22px;letter-spacing:.05em;color:var(--oro2);margin:4px 0}.cred-titular span{color:var(--muted);font-size:12px}
+.cred-lista{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:6px}
+.cred-lista li{background:#101117;border:1px solid var(--borde);border-radius:8px;padding:7px 10px;display:flex;flex-direction:column}
+.cred-lista b{font-size:13px}.cred-lista span{color:var(--muted);font-size:12px}
+.c2-bloque{margin-top:8px;padding-top:8px;border-top:1px dashed var(--borde)}
+.c2-ley{display:flex;flex-wrap:wrap;gap:4px 12px;margin-top:6px;font-size:11.5px;color:#cfc8b6}
+.c2-ley i{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--c);margin-right:5px;box-shadow:0 0 6px var(--c)}
+.c2-tec{border-left:3px solid #4aa8ff!important}.c2-aliados{border-left:3px solid var(--verde)!important}.c2-colectivo{border-left:3px solid #a35bff!important}
+@media (max-width:900px){.portada{grid-template-columns:1fr}.cards{grid-template-columns:1fr}.dos{grid-template-columns:1fr}}
+@media (max-width:700px){.portada{padding:14px}.portada-tit{font-size:20px}.gp-fila{grid-template-columns:1fr;gap:3px}.pest{flex-basis:46%}}
