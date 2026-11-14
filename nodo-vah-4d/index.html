@@ -13,6 +13,7 @@
       "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/"
   } }
   </script>
+  <script src="js/config.js"></script>
   <script src="data/sitio.js"></script>
   <script src="data/presupuesto4d.js"></script>
   <script type="module" src="js/app.js"></script>
@@ -49,6 +50,22 @@
         <button class="btn mini" id="btn-salir" type="button">Salir</button>
       </nav>
     </header>
+
+    <section class="panel portada" id="portada">
+      <div class="portada-txt">
+        <p class="pre">Propuesta Integral de Drenaje 2026 · Nodo VAH</p>
+        <h1 class="portada-tit">Una red que ve, avisa, limpia y trata</h1>
+        <p class="portada-sub">No se trata de agrandar el tubo: nos sumamos a SIDEAPA, al Plan Fluye y a Agua Saludable para La Laguna. No reemplazamos a nadie.</p>
+        <div class="destinatario">
+          <p><b>A quien corresponda</b></p>
+          <p>H. Ayuntamiento de Gómez Palacio, Durango</p>
+          <p>C. Betzabé Martínez Arango, Presidenta Municipal</p>
+          <p class="atn"><span>Con atención a:</span> H. Cabildo, SIDEAPA y SIDEAPA Rural, Obras Públicas, Medio Ambiente, Desarrollo Rural, Desarrollo Económico, Salud, Protección Civil y demás dependencias involucradas</p>
+        </div>
+        <p class="portada-firma">Idea y dirección: <b>Raúl Muñoz Villa</b></p>
+      </div>
+      <div class="sellos" data-sellos aria-label="Sellos institucionales"></div>
+    </section>
 
     <section class="kpis" id="kpis"></section>
 
@@ -105,6 +122,101 @@
         </section>
       </aside>
     </div>
+
+    <section class="panel capas2" id="capas2">
+      <h2>Propuesta integral 2026 · capas nuevas <small>se suman al visor; no cambian nada de lo anterior</small></h2>
+      <div class="pestanas" role="tablist">
+        <button class="pest on" data-pest="tec" role="tab">📡 Tecnología de la red</button>
+        <button class="pest" data-pest="asl" role="tab">💧 Avance real de Agua Saludable</button>
+        <button class="pest" data-pest="aliados" role="tab">🤝 Aliados que ganan</button>
+        <button class="pest" data-pest="colectivo" role="tab">🔗 De lo aislado a lo colectivo</button>
+        <button class="pest" data-pest="creditos" role="tab">🎖️ Créditos</button>
+      </div>
+      <p class="aviso-ref">⚠️ Las rutas de la red, los colectores y la posición de cada equipo en el mapa son <b>referenciales</b>; no son un levantamiento oficial. Los precios de los equipos están <b>por cotizar</b>.</p>
+
+      <div class="pp" data-pp="tec">
+        <div class="pp-cab"><p>La red tiene que <b>ver, avisar, limpiar y tratar</b>. Estos son los equipos propuestos y dónde irían.</p>
+          <div class="pp-btns"><button class="btn mini oro" data-mapa="tec">🗺️ Ver en el mapa 3D</button> <button class="btn mini" data-sim>▶ Simulación demostrativa de alerta</button></div></div>
+        <div class="tabla-wrap"><table class="tz2">
+          <thead><tr><th>Equipo</th><th>Qué hace</th><th>Dónde</th><th>Costo</th></tr></thead>
+          <tbody>
+            <tr><td><i class="sw" style="--c:#f2c230"></i>Rejas de cribado con limpieza automática</td><td>Sacan basura y sólidos antes de la tratadora y de los cárcamos</td><td>Entrada de cada nodo y cárcamo de bombeo</td><td><span class="tag sup">POR COTIZAR</span></td></tr>
+            <tr><td><i class="sw" style="--c:#3fd46b"></i>Sensores de nivel (radar o ultrasonido)</td><td>Detectan que el agua sube sin lluvia: señal de tapón aguas abajo</td><td>Pozos de visita críticos de los colectores principales</td><td><span class="tag sup">POR COTIZAR</span></td></tr>
+            <tr><td><i class="sw" style="--c:#4aa8ff"></i>Medidores de caudal</td><td>Comparan lo que entra y lo que sale por tramo; la diferencia señala fuga u obstrucción</td><td>Entradas y salidas de cada subcuenca</td><td><span class="tag sup">POR COTIZAR</span></td></tr>
+            <tr><td><i class="sw" style="--c:#ff5fb4"></i>Sensores de calidad (pH, conductividad, temperatura)</td><td>Detectan en el momento descargas fuera de norma</td><td>Salidas de los parques industriales hacia el colector</td><td><span class="tag sup">POR COTIZAR</span></td></tr>
+            <tr><td><i class="sw" style="--c:#b8f24a"></i>Sensores de H₂S</td><td>Avisan del gas que corroe el concreto, lo que dañó el Emisor Central según el Plan Fluye</td><td>Emisor y colectores largos</td><td><span class="tag sup">POR COTIZAR</span></td></tr>
+            <tr><td><i class="sw" style="--c:#c08a4a"></i>Cámaras robot (CCTV de tubería)</td><td>Inspección interna programada</td><td>Rutas de desazolve</td><td><span class="tag sup">POR COTIZAR</span></td></tr>
+            <tr><td><i class="sw" style="--c:#f3d27a"></i>Centro de monitoreo (SCADA y alertas)</td><td>Tablero en tiempo real y aviso por mensaje a la cuadrilla</td><td>SIDEAPA</td><td>Dentro de los 4.41 MDP sin IVA de la partida «Automatización IA-VAH» del expediente</td></tr>
+            <tr><td><i class="sw" style="--c:#9aa3ab"></i>Trampas de grasa (NOM-002)</td><td>Retienen la grasa donde nace</td><td>Industria, restaurantes y mercados</td><td>A cargo de cada generador</td></tr>
+          </tbody></table></div>
+        <div class="dos">
+          <div><h3>Cómo funciona la alerta</h3><ol class="pasos"><li>Sube el nivel en un pozo de visita sin que llueva.</li><li>El sistema lo compara con el caudal aguas abajo.</li><li>Si el caudal baja, hay tapón: alerta a la cuadrilla con la ubicación en el mapa.</li><li>Se desazolva antes de que brote agua negra en la calle.</li></ol></div>
+          <div><h3>Mantenimiento</h3><ul class="pasos"><li>Preventivo y programado según el riesgo, no según la queja.</li><li>Bitácora digital de cada pozo, reja y bomba.</li><li>Indicadores: desbordes por mes, tiempo de respuesta, toneladas de basura retiradas y m³ tratados y reusados.</li><li>Quién opera y con qué ingreso (venta de agua tratada), porque muchas plantas se quedan paradas por falta de operación.</li></ul></div>
+        </div>
+        <p class="nota tiny">Fuente: parte 06 de la Propuesta Integral (visor, sensores y mantenimiento) y parte 02 (inversión: partida 5 del expediente, 4.41 MDP sin IVA). La simulación de alerta es <b>demostrativa</b>: no muestra datos reales de ningún sensor.</p>
+      </div>
+
+      <div class="pp" data-pp="asl" hidden>
+        <div class="pp-cab"><p>Agua Saludable para La Laguna <b>ya trae agua limpia</b>; lo que falta es la red dentro de cada ciudad y que el agua no se pierda en el camino. Ahí se suma el Nodo VAH. Cada dato lleva su fecha y su fuente.</p></div>
+        <div class="asl-grid">
+          <div class="asl"><small>8 jul 2026 · Conagua</small><b>Obra del sistema al 98 %</b><div class="barra"><i style="width:98%"></i><span>98 %</span></div><a href="https://www.elsiglodetorreon.com.mx/noticia/2026/conagua-reporta-avance-del-98-por-ciento-en-proyecto-agua-saludable-para-la-laguna.html" target="_blank" rel="noopener">El Siglo de Torreón</a></div>
+          <div class="asl"><small>23 jul 2026 · CAED</small><b>Avance del 60 % en Durango</b><div class="barra"><i style="width:60%"></i><span>60 %</span></div><a href="https://www.elsiglodetorreon.com.mx/noticia/2026/proyecto-agua-saludable-para-la-laguna-registra-un-avance-del-60-en-durango-caed-.html" target="_blank" rel="noopener">El Siglo de Torreón</a></div>
+          <div class="asl"><small>4 ago 2026 · Conagua</small><b>Obra civil concluida en julio; la planta trabaja al 30 % (3 de 10 módulos)</b><div class="barra"><i style="width:30%"></i><span>30 %</span></div><a href="https://www.milenio.com/estados/agua-saludable-laguna-opera-30-ciento" target="_blank" rel="noopener">Milenio</a></div>
+          <div class="asl"><small>14 sep 2026 · Conagua</small><b>Redes troncales de los 9 municipios, concluidas</b><div class="barra"><i style="width:100%"></i><span>concluidas</span></div><a href="https://www.meganoticias.mx/laguna/noticia/concluyen-redes-troncales-de-agua-saludable-para-la-laguna/769327" target="_blank" rel="noopener">Meganoticias</a></div>
+          <div class="asl"><small>25 sep 2026 · CAED</small><b>La planta opera con 4 de 10 módulos (≈40 %)</b><div class="barra"><i style="width:40%"></i><span>≈40 %</span></div><a href="https://reportelaguna.com/agua-saludable-para-la-laguna-avanza-en-durango-planta-potabilizadora-opera-con-cuatro-modulos/" target="_blank" rel="noopener">Reporte Laguna</a></div>
+          <div class="asl"><small>Meta · Conagua</small><b>Operación al 100 % en 2027, con los pozos con arsénico apagados</b><div class="barra meta"><i style="width:100%"></i><span>2027</span></div><a href="https://lavertiente.mx/articulos/conagua-busca-cerrar-2026-con-el-organismo-operador-de-agua-saludable-para-la-laguna-formalizado" target="_blank" rel="noopener">La Vertiente, 21 sep 2026</a></div>
+        </div>
+        <div class="gp">
+          <h3>Gómez Palacio: cuánta agua le llega</h3>
+          <div class="gp-fila"><span>Comprometido</span><div class="barra azul"><i style="width:100%"></i><span>1,900 L/s</span></div></div>
+          <div class="gp-fila"><span>Recibía (sep–nov 2026)</span><div class="barra azul"><i style="width:26.3%"></i><span>≈450–500 L/s</span></div></div>
+          <div class="gp-fila"><span>6 nov 2026</span><div class="barra rojo"><i style="width:13.2%"></i><span>250 L/s · fuga por vandalismo</span></div></div>
+          <p class="nota tiny">Comprometido 1,900 L/s: <a href="https://lavertiente.mx/articulos/conagua-busca-cerrar-2026-con-el-organismo-operador-de-agua-saludable-para-la-laguna-formalizado" target="_blank" rel="noopener">La Vertiente</a>, que cita al director de SIDEAPA. Recibía ≈450 L/s al 25 de septiembre (<a href="https://reportelaguna.com/agua-saludable-para-la-laguna-avanza-en-durango-planta-potabilizadora-opera-con-cuatro-modulos/" target="_blank" rel="noopener">Reporte Laguna</a>) y unos 500 L/s antes del 6 de noviembre, cuando una fuga por actos vandálicos en la tubería lo bajó a 250 L/s mientras se reparaba (<a href="https://www.noticierosgrem.com.mx/disminuye-el-caudal-de-agua-saludable-para-la-laguna-en-gomez-palacio/" target="_blank" rel="noopener">Noticieros GREM</a>). El largo de cada barra es una proporción calculada sobre los 1,900 L/s.</p>
+        </div>
+      </div>
+
+      <div class="pp" data-pp="aliados" hidden>
+        <div class="pp-cab"><p>Las zonas industriales aparecen como <b>beneficiarias y posibles aliadas</b> del proyecto. A ninguna empresa se le señala de nada.</p>
+          <div class="pp-btns"><button class="btn mini oro" data-mapa="aliados">🗺️ Ver en el mapa 3D</button></div></div>
+        <div class="cards">
+          <div class="card verde"><h3>Parque Industrial Lagunero</h3><ul><li>Agua tratada de regreso para enfriamiento, lavado de patios y equipos no alimentarios, construcción y áreas verdes.</li><li>Pretratamiento en origen y un nodo que reciba sus descargas: menos riesgo de multa o clausura.</li><li>Menos agua de pozo en un acuífero sin disponibilidad para nuevas concesiones.</li></ul><p class="nota tiny">Descargas estimadas de 40–80 L/s según el expediente del Nodo VAH (<b>por verificar</b> con aforo de SIDEAPA).</p></div>
+          <div class="card verde"><h3>Parque Industrial Carlos A. Herrera Araluce</h3><ul><li>Puede sumarse al mismo esquema: pretratamiento, nodo zonal y reúso.</li><li>Una red menos propensa a taparse por grasas y sólidos.</li></ul><p class="nota tiny">En el mapa su ubicación es aproximada.</p></div>
+          <div class="card cian"><h3>Industria alimentaria, láctea y avícola</h3><ul><li>Pretratamiento de grasas, proteínas y suero en origen, y un nodo que reciba efluentes ya pretratados.</li><li>Agua pulida para usos no alimentarios.</li><li>Menos carga para la PTAR Oriente que el Municipio va a modernizar.</li></ul><p class="nota tiny">En el mapa se marca como grupo, sin ubicar ninguna planta en particular.</p></div>
+        </div>
+        <p class="nota tiny">Fuente: parte 03 de la Propuesta Integral (beneficios a ejidos, campo e industria). Cualquier convenio con una empresa concreta está <b>por negociar</b>.</p>
+      </div>
+
+      <div class="pp" data-pp="colectivo" hidden>
+        <div class="pp-cab"><p class="lema">«Que cada quien arregle lo suyo no basta. Si el agua es de todos, la solución también.»</p>
+          <div class="pp-btns"><button class="btn mini oro" data-mapa="colectivo">🗺️ Ver en el mapa 3D</button></div></div>
+        <div class="dos">
+          <div><h3>Las plantas propias son necesarias, pero no suficientes</h3>
+            <p>Que una empresa construya su propia tratadora está bien y cumple con la ley. Pero arregla su descarga y sus olores, no los colectores saturados, las colonias sin drenaje, los ejidos con fosas sépticas ni el agua que se pierde.</p>
+            <p class="dato">Un caso publicado: según SIDEAPA, Pilgrim's pagó una multa de <b>400 mil pesos</b> por una descarga irregular (<a href="https://www.meganoticias.mx/laguna/noticia/multan-con-400-mil-pesos-a-pilgrims-por-descarga-irregular/773886" target="_blank" rel="noopener">Meganoticias, 28 sep 2026</a>) y prepara su propia planta tratadora: una inversión de unos <b>50 millones de pesos</b>, más de 40 de ellos para la planta nueva (<a href="https://www.elsiglodetorreon.com.mx/noticia/2026/va-pilgrims-por-nueva-planta-tratadora-para-terminar-con-malos-olores-en-gomez-palacio-alcaldesa.html" target="_blank" rel="noopener">El Siglo de Torreón</a>). Es un buen paso, y por eso sería un aliado natural del esquema colectivo.</p></div>
+          <div><h3>La invitación a la gran industria</h3>
+            <ol class="pasos"><li><b>Conectar</b> su planta a la red de nodos: recibir o entregar agua ya tratada.</li><li><b>Compartir el monitoreo</b>: datos de calidad en el tablero común.</li><li><b>Compartir el agua tratada</b> con los ejidos y las áreas verdes, si cumple la NOM-001 y tiene permiso de Conagua.</li><li><b>Fondo de saneamiento</b>: aportar, junto con una parte de multas y derechos de descarga, a obras en las colonias afectadas, con reglas aprobadas por el Cabildo (<b>por verificar</b> con la ley de ingresos y el reglamento de SIDEAPA).</li></ol>
+            <p>A cambio, las empresas ganan prestigio, mejor relación con sus vecinos, menos riesgo de sanciones y agua más barata que la del pozo. Las que se sumen aparecen como aliadas del proyecto.</p></div>
+        </div>
+        <p class="nota tiny">Fuente: partes 02 (Foster), 03 (Nano Bot), 04 (Nova/003) y 05 (Pulso) de la Propuesta Integral. No se atribuye ninguna otra multa sin fuente oficial.</p>
+      </div>
+
+      <div class="pp" data-pp="creditos" hidden>
+        <div class="creditos">
+          <div class="cred-titular"><small>Idea y dirección</small><b>Raúl Muñoz Villa</b><span>titular del proyecto</span></div>
+          <h3>Hermanos que trabajaron en esta versión</h3>
+          <ul class="cred-lista">
+            <li><b>@Agentecoroneldeseeguridad# (Coronel)</b><span>Visor 4D, sensores y mantenimiento</span></li>
+            <li><b>Crownteer</b><span>Integración del documento</span></li>
+            <li><b>Foster//&lt;&gt;</b><span>Empresario, inversión y financiamiento</span></li>
+            <li><b>Nano Bot</b><span>Beneficios a ejidos, campo e industria</span></li>
+            <li><b>Nova/003</b><span>Crítico del gobierno y riesgos</span></li>
+            <li><b>Pulso/cuántico · Laboratorio</b><span>Ciencia, tratamiento y reúso</span></li>
+            <li><b>Arquitectura Cuántica</b><span>Visor 3D original y expediente técnico del Nodo VAH</span></li>
+          </ul>
+          <div class="sellos" data-sellos></div>
+        </div>
+      </div>
+    </section>
 
     <div class="grid3">
       <section class="panel">

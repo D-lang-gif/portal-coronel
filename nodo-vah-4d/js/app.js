@@ -9,6 +9,7 @@ import { crearMateriales, M } from "./visor/materiales.js";
 import { construir } from "./visor/constructores.js";
 import { crearFlujos, uTiempo } from "./visor/flujos.js";
 import { crearCiudad, REDES } from "./ciudad.js";
+import { crearCapas2, TEC } from "./capas2.js";
 
 const $ = (s, r = document) => r.querySelector(s);
 const D = window.NODO_DATA, PR = window.NODO_PRES;
@@ -251,6 +252,7 @@ function escena() {
     if (S.enfoque) { const k = 1 - Math.exp(-dt * 3.2); camera.position.lerp(S.enfoque.pos, k); controls.target.lerp(S.enfoque.tgt, Math.min(1, k * 1.3)); if (camera.position.distanceTo(S.enfoque.pos) < 1) S.enfoque = null; }
     if (S.orient) aplicarOrientacion();
     if (S.modo === "recorrido") animTour(dt);
+    if (S.c2) { S.c2.tick(dt, uTiempo.value); if (S.simOn) animSim(dt); }
     if (S.pulso) { const k = .5 + .5 * Math.sin(uTiempo.value * 5); for (const m of S.pulso) m.material.emissive?.setRGB(.35 * k, .25 * k, .05 * k); }
     const dist = camera.position.distanceTo(controls.target); const nr = Math.max(.5, dist / 1500); if (Math.abs(nr - camera.near) / camera.near > .2) { camera.near = nr; camera.updateProjectionMatrix(); }
     controls.update(); renderer.render(scene, camera); etiquetas();
@@ -271,6 +273,11 @@ async function cargarCiudad() {
     for (const e of C.etiquetas) { S.etiqueta(e.t, e.p, e.cat, e.color); S.etq[S.etq.length - 1].cerca = e.cerca; }
     S.etiqueta("Nodo VAH · PTAR SIBRA<br><small>posición REFERENCIAL junto al PIL</small>", new THREE.Vector3(0, 60, 0), "ciudad", "#f3d27a");
     S.capasRed = new Set(Object.keys(REDES));
+    try { // capas nuevas 2026 (si fallan, el visor anterior sigue igual)
+      S.c2 = crearCapas2(S.scene, C, window.CIUDAD_OSM); S.capas2 ||= new Set();
+      for (const e of S.c2.etiquetas) { S.etiqueta(e.t, e.p, e.cat, e.color); const t = S.etq[S.etq.length - 1]; t.cerca = e.cerca; t.src = e; }
+      aplicarCapas2();
+    } catch (e) { console.error("capas2", e); }
     ponerMes(S.mes);
   } catch (e) { console.error("ciudad", e); }
 }
@@ -282,6 +289,7 @@ function etiquetas() {
     const red = S.modo === "ciudad" || S.modo === "recorrido";
     const capa = t.modo === "colonia" ? "sanitario" : t.modo;
     const show = t.modo === "sitio" ? (!enCiudad && S.modo !== "tratadora" && !lejos) : t.modo === "ciudad" ? (enCiudad || lejos) : t.modo === "nodo" ? red
+      : C2CAT.includes(t.modo) ? red && S.capas2?.has(t.modo) : t.modo === "sim" ? red && S.simOn && !t.src?.oculta
       : REDES[capa] ? red && S.capasRed?.has(capa) && (S.modo !== "recorrido" || S.tourCapa === capa) : t.modo === "etapa" ? S.modo === "tratadora" : t.modo === "tour" ? S.modo === "recorrido" : false;
     if (!show || (t.cerca && S.camera.position.distanceTo(S.controls.target) > 2200)) { t.e.style.display = "none"; continue; }
     const v = t.p.clone().project(S.camera); const vis = v.z < 1 && Math.abs(v.x) < 1.05 && Math.abs(v.y) < 1.05;
@@ -442,10 +450,17 @@ function panelCiudad() {
    <button class="btn mini oro" id="btn-tour">🌊 Recorrido del agua</button></div>
    <div class="real-ref"><div><span class="tag doc">REAL · OSM</span> Calles, edificios mapeados, Río Nazas, canales (Sacramento, Tlahualilo), drenes y arroyos, vía férrea, aeropuertos, área industrial del PIL, tanques elevados, obras hidráulicas, bombeo y la PTAR existente de OSM.</div>
    <div><span class="tag sup">REFERENCIAL</span> Posición del Nodo VAH junto al PIL; trazo y diámetros de las seis redes (van por calles reales); descarga al Nazas; toma al canal; colectores pluviales; ubicación de colonias (aprox.). Manzanas = huecos entre calles OSM con alturas ilustrativas.</div></div>
+   ${S.c2 ? `<div class="c2-bloque"><h3>Capas nuevas · Propuesta Integral 2026 <span class="tag sup">REFERENCIAL</span></h3>
+   <div class="capas">${C2CAT.map((k) => `<label class="c2-${k}"><input type="checkbox" data-c2="${k}" ${S.capas2.has(k) ? "checked" : ""}> ${C2NOM[k]}</label>`).join("")}
+   <button class="btn mini ${S.simOn ? "on" : ""}" id="btn-sim">${S.simOn ? "■ Detener simulación" : "▶ Simulación demostrativa de alerta"}</button></div>
+   <div class="c2-ley">${Object.values(TEC).map((t) => `<span style="--c:${t.c}" title="${t.d}"><i></i>${t.n}</span>`).join("")}</div>
+   <p class="nota tiny">Posiciones de equipos, zonas y conexiones: <b>referenciales</b>, no son levantamiento oficial. Precios de equipos: <b>por cotizar</b>. Las zonas industriales se muestran como beneficiarias y posibles aliadas, nunca como señaladas. Más detalle abajo, en «Propuesta integral 2026».</p></div>` : ""}
    <p class="nota tiny">Datos © colaboradores de OpenStreetMap (licencia ODbL), extracto Geofabrik México del 12-nov-2026. El PIL no tiene nombre en OSM; se identificó por sus calles (Guanaceví, Topia, Canelas, Tamazula, Piedras Negras, CP 35078). Las coordenadas UTM de la memoria (E 654 200–654 400, N 2 854 600–2 854 800) caen unos 26 km al norte de Gómez Palacio, así que no se usaron para ubicar el Nodo. El folleto es un mapa de época sin escala; su ajuste sobre OSM es aproximado (error de 1–2 km). Ningún documento menciona una descarga al Río Nazas: se dibuja como opción referencial que tendría que cumplir la NOM-001-SEMARNAT-2021.</p>`;
   $("#chk-xray").addEventListener("change", (e) => { S.xray = e.target.checked; C.xray(S.xray); });
   $("#chk-folleto").addEventListener("change", (e) => { C.cargarFolleto(); C.folleto.visible = e.target.checked; });
   $("#btn-tour").addEventListener("click", () => modo("recorrido"));
+  p.querySelectorAll("[data-c2]").forEach((c) => c.addEventListener("change", () => { c.checked ? S.capas2.add(c.dataset.c2) : S.capas2.delete(c.dataset.c2); if (!S.capas2.has("tec") && S.simOn) pararSim(); aplicarCapas2(); }));
+  $("#btn-sim")?.addEventListener("click", () => (S.simOn ? pararSim() : iniciarSim()));
   p.querySelectorAll("[data-red]").forEach((c) => c.addEventListener("change", () => { c.checked ? S.capasRed.add(c.dataset.red) : S.capasRed.delete(c.dataset.red); C.capa(c.dataset.red, c.checked); }));
 }
 /* ───────── Recorrido del agua ───────── */
@@ -555,6 +570,7 @@ function modo(n) {
     if (n !== "recorrido") { for (const k of Object.keys(REDES)) S.ciudad.capa(k, S.capasRed.has(k)); S.ciudad.resaltar(null); } }
   if (S.ciudad && n === "forma") for (const k of Object.keys(REDES)) S.ciudad.capa(k, false);
   if (S.gota) S.gota.visible = n === "recorrido"; S.tourCurva = null; S.tourCapa = null;
+  if (S.simOn && n !== "ciudad") pararSim(); aplicarCapas2();
   ambiente(false); S.tramoCam = -1;
   const lejosM = n === "ciudad" || n === "recorrido"; S.scene.fog.near = lejosM ? 9000 : 900; S.scene.fog.far = lejosM ? 30000 : 9000;
   if (n === "tuberias") { panelTuberias(); atenuar(true, []); S.enfoque = { pos: new THREE.Vector3(-60, 150, 140), tgt: new THREE.Vector3(-20, 0, -10) }; }
@@ -570,5 +586,54 @@ function modo(n) {
   if (n !== "forma") ponerMes(S.mes);
 }
 document.querySelectorAll(".modo").forEach((b) => b.addEventListener("click", () => modo(b.dataset.modo)));
-window.NodoVAH4D = { ponerMes, ponerJornada, modo, vista, get S() { return S; } };
+/* ───────── Capas nuevas · Propuesta Integral 2026 ───────── */
+const C2CAT = ["tec", "aliados", "colectivo"];
+const C2NOM = { tec: "📡 Tecnología de la red", aliados: "🤝 Aliados que ganan", colectivo: "🔗 De lo aislado a lo colectivo" };
+function aplicarCapas2() {
+  if (!S?.c2) return; const en = S.modo === "ciudad" || S.modo === "recorrido";
+  for (const k of C2CAT) S.c2[k].visible = en && S.capas2.has(k);
+  S.c2.sim.visible = en && !!S.simOn;
+}
+function iniciarSim() {
+  if (!S?.c2) return; if (S.modo !== "ciudad") modo("ciudad");
+  S.capas2.add("tec"); S.simOn = true; S.c2.iniciarSim(); aplicarCapas2();
+  const [x, z] = S.c2.foco.sim; S.enfoque = { tgt: new THREE.Vector3(x, 0, z), pos: new THREE.Vector3(x - 520, 760, z + 820) };
+  document.querySelectorAll("[data-c2='tec']").forEach((c) => (c.checked = true)); botonesSim();
+}
+function pararSim() { S.simOn = false; S.c2?.pararSim(); aplicarCapas2(); botonesSim(); if (S.modo === "ciudad") ponerMes(S.mes); }
+function botonesSim() {
+  const b = $("#btn-sim"); if (b) { b.textContent = S.simOn ? "■ Detener simulación" : "▶ Simulación demostrativa de alerta"; b.classList.toggle("on", !!S.simOn); }
+  document.querySelectorAll("[data-sim]").forEach((x) => (x.textContent = S.simOn ? "■ Detener simulación" : "▶ Simulación demostrativa de alerta"));
+}
+function animSim(dt) {
+  const r = S.c2.paso(dt);
+  for (const t of S.etq) if (t.src && t.src.cat === "sim") { if (t.e.innerHTML !== t.src.t) t.e.innerHTML = t.src.t; t.e.style.setProperty("--c", t.src.color); }
+  $("#hud").innerHTML = `<b>SIMULACIÓN DEMOSTRATIVA · ALERTA POR TAPÓN</b><br><span class="ob">No son datos reales: ejemplo en el colector C-2 (ruta referencial).</span><br>
+    Nivel en el pozo: <b>${Math.round(r.nivel)} %</b> · Caudal aguas abajo: <b>${Math.round(r.caudal)} %</b><br><span class="${r.alerta ? "ob" : "ok"}">${r.alerta ? "🚨 " : ""}${r.fase}</span>`;
+}
+function verEnMapa(k) {
+  if (!S) return; if (!S.c2) { $("#hud").innerHTML = "<b>Cargando la ciudad…</b>"; setTimeout(() => verEnMapa(k), 700); return; }
+  S.capas2.add(k); if (S.modo !== "ciudad") modo("ciudad"); else { aplicarCapas2(); panelCiudad(); }
+  const f = S.c2.foco; const P = k === "aliados" ? [-1300, 900] : k === "colectivo" ? [-600, 400] : null;
+  if (P) S.enfoque = { tgt: new THREE.Vector3(P[0], 0, P[1]), pos: new THREE.Vector3(P[0] - 1600, 3300, P[1] + 3900) };
+  document.querySelector(".visor").scrollIntoView({ behavior: "smooth", block: "start" });
+}
+function sellos() {
+  const F = window.NODO_CONFIG?.FRANJA_SELLOS;
+  const pintar = (src) => document.querySelectorAll("[data-sellos]").forEach((d) => { if (!src) { d.hidden = true; return; }
+    d.hidden = false; d.innerHTML = `<img src="${src}" alt="${F.alt || ""}" decoding="async" />`; });
+  if (!F || F.mostrar === false) return pintar("");
+  if (F.src) return pintar(F.src);
+  if (F.js) { const sc = document.createElement("script"); sc.src = F.js; sc.onload = () => pintar(window.FRANJA_SELLOS_PNG); sc.onerror = () => pintar(""); document.head.appendChild(sc); }
+}
+function pestanas() {
+  document.querySelectorAll(".pest").forEach((b) => b.addEventListener("click", () => {
+    document.querySelectorAll(".pest").forEach((x) => x.classList.toggle("on", x === b));
+    document.querySelectorAll("[data-pp]").forEach((p) => (p.hidden = p.dataset.pp !== b.dataset.pest));
+  }));
+  document.querySelectorAll("[data-mapa]").forEach((b) => b.addEventListener("click", () => verEnMapa(b.dataset.mapa)));
+  document.querySelectorAll("[data-sim]").forEach((b) => b.addEventListener("click", () => { if (!S?.c2) return verEnMapa("tec"); S.simOn ? pararSim() : (iniciarSim(), document.querySelector(".visor").scrollIntoView({ behavior: "smooth", block: "start" })); }));
+}
+sellos(); pestanas();
+window.NodoVAH4D = { ponerMes, ponerJornada, modo, vista, verEnMapa, iniciarSim, pararSim, get S() { return S; } };
 candado();
