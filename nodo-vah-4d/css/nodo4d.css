@@ -210,3 +210,6 @@ table.tz2 td{border-top:1px solid var(--borde);padding:6px 8px;vertical-align:to
 .benef-t td{white-space:normal;vertical-align:top;font-size:12.5px}.benef-t td:first-child{white-space:nowrap}
 .hecho.transp{margin-top:10px;border-left:4px solid #a35bff}
 .hecho span b{display:inline;font-size:inherit;font-family:inherit;color:#fff;letter-spacing:0;text-transform:none}
+#etq .e.e-calle{transform:translate(-50%,-50%);font-weight:500;background:rgba(10,12,16,.55);border:0;border-left:0;color:#cfd6dc;font-size:10.5px;padding:1px 5px;box-shadow:none;white-space:nowrap;pointer-events:none}
+#etq .e.e-calle.r1{font-size:12px;color:#fff;font-weight:600}#etq .e.e-calle.r4{font-size:9.5px;opacity:.85}
+.c2-mapa{align-items:center;gap:6px}.c2-ley.diam{margin-top:4px}
