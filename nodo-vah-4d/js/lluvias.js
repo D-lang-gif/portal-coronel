@@ -19,7 +19,7 @@ export function crearLluvias(par, Cd, osm, uT) {
   const g = new THREE.Group(); g.visible = false; par.add(g); const etiquetas = []; const ET = (t, p, color, cerca) => etiquetas.push({ t, p, cat: "lluvias", color, cerca });
   const can = (osm.canales || []).filter((c) => c.t === "canal" && /sacramento/i.test(c.n || "")).map((c) => dec(c.p)).sort((a, b) => largo(b) - largo(a));
   const riego = Cd.rutas?.riego || [[0, 0], [-600, 300]]; const EJ = riego[riego.length - 1];
-  let foco = EJ;
+  let foco = EJ, moradaPts = null;
   if (can.length) {
     const mC = new THREE.MeshBasicMaterial({ color: 0x3fd4c4, transparent: true, opacity: .35, depthWrite: false });
     for (const c of can.slice(0, 6)) { const m = tubo(c, 2, 26, mC); m && g.add(m); }
@@ -27,7 +27,7 @@ export function crearLluvias(par, Cd, osm, uT) {
     // sentido: tomar el lado más largo del canal a partir de la toma, hasta ~3.2 km
     const a = C.slice(iN), b = C.slice(0, iN + 1).reverse(); const lado = largo(a) >= largo(b) ? a : b;
     const sub = []; let acc = 0; sub.push(lado[0]); for (let i = 1; i < lado.length && acc < 3200; i++) { acc += Math.hypot(lado[i][0] - lado[i - 1][0], lado[i][1] - lado[i - 1][1]); sub.push(lado[i]); }
-    const bordo = offset(sub, 45); const morada = [...riego, ...bordo];
+    const bordo = offset(sub, 45); const morada = [...riego, ...bordo]; moradaPts = morada;
     const mm = tubo(morada, 10, 11, flujo(uT, "#a35bff")); mm && g.add(mm);
     const Lb = largo(bordo); const pm = enLinea(bordo, Lb * .45).p;
     ET("🟣 Línea morada · agua tratada del Nodo<br><small>por el bordo / derecho de vía, no dentro del canal · trazo referencial · permisos por gestionar</small>", new THREE.Vector3(pm[0], 90, pm[1]), "#a35bff");
@@ -50,5 +50,5 @@ export function crearLluvias(par, Cd, osm, uT) {
   const gp = new THREE.BufferGeometry(); gp.setAttribute("position", new THREE.BufferAttribute(pos, 3));
   const lluvia = new THREE.Points(gp, new THREE.PointsMaterial({ color: 0x9fd0ff, size: 6, transparent: true, opacity: .55, depthWrite: false })); g.add(lluvia);
   function tick(dt) { if (!g.visible) return; const a = gp.attributes.position.array; for (let i = 1; i < a.length; i += 3) { a[i] -= dt * 420; if (a[i] < 0) a[i] += 900; } gp.attributes.position.needsUpdate = true; }
-  return { g, etiquetas, tick, foco };
+  return { g, etiquetas, tick, foco, morada: moradaPts };
 }
