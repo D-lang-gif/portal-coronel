@@ -215,7 +215,7 @@ export function crearCiudad(scene, C, sitio) {
   // Marcador genérico del Nodo (no se inventa un predio ni se usan las UTM de la memoria)
   const nod = new THREE.Mesh(new THREE.BoxGeometry(80, 8, 80), new THREE.MeshStandardMaterial({ color: 0xf3d27a, transparent: true, opacity: .35, emissive: 0x5a4a10 }));
   nod.position.set(0, 4, 0);
-  nod.userData.attr = attrs("Nodo VAH · marcador genérico", { estado: "por confirmar", "cota/profundidad": PC, diámetro: "no aplica", material: "no aplica", "norma aplicable": PC, "fuente del dato": "Posición referencial junto al PIL; las UTM de la memoria no se usaron" }, { "ubicación": UBICACION.aviso, "superficie": UBICACION.areaLarga, "coordenadas memoria": UBICACION.memoria, "aviso": "Terreno real por definir. No se desplaza el marcador a un predio inventado." });
+  nod.userData.attr = attrs("Nodo VAH · marcador genérico", { Identificador: "NODO-VAH-REF", estado: "por confirmar", "cota/profundidad": PC, diámetro: "no aplica", material: "no aplica", "norma aplicable": PC, "fuente del dato": "Posición referencial junto al PIL; las UTM de la memoria no se usaron" }, { "ubicación": UBICACION.aviso, "superficie": UBICACION.areaLarga, "coordenadas memoria": UBICACION.memoria, "aviso": "Terreno real por definir. No se desplaza el marcador a un predio inventado." });
   pickables.push(nod); g.add(nod);
   ET("⚠ " + UBICACION.etiqueta + "<br><small>Las UTM de la memoria caen ~26 km al norte de la mancha urbana</small>", 0, 0, 90, "ciudad", "#ffb547", true);
 

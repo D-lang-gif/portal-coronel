@@ -17,19 +17,44 @@ export const UBICACION = {
   visor: "El marcador del Nodo en el mapa de la ciudad es genérico y referencial (junto al PIL). Las coordenadas UTM de la memoria no se usaron para ubicarlo.",
 };
 
-export const ATTR_CAMPOS = ["estado", "cota/profundidad", "diámetro", "material", "norma aplicable", "fuente del dato"];
+/* Nombres de la tabla 14.2 de la v4.9 (Del visor demostrativo a herramienta de gestión) */
+export const ATTR_CAMPOS = ["Estado", "Cota y profundidad", "Diámetro y material", "Norma aplicable", "Fuente del dato", "Identificador"];
 
 export const PC = "por confirmar";
 
+function pick(obj, keys, fb = PC) {
+  for (const k of keys) if (obj[k] != null && obj[k] !== "") return obj[k];
+  return fb;
+}
+function diametroMaterial(c) {
+  if (c["Diámetro y material"]) return c["Diámetro y material"];
+  const d = c.diámetro, m = c.material;
+  const parts = [d, m].filter((v) => v && v !== PC);
+  if (parts.length) return parts.join(" · ");
+  return d || m || PC;
+}
+
 export function attrs(titulo, campos = {}, extra = {}) {
-  const a = { titulo, tag: NIVEL.ante, estado: PC, "cota/profundidad": PC, diámetro: PC, material: PC, "norma aplicable": PC, "fuente del dato": PC, ...campos, ...extra };
+  const c = { ...campos };
+  const a = {
+    titulo,
+    tag: NIVEL.ante,
+    Estado: pick(c, ["Estado", "estado"]),
+    "Cota y profundidad": pick(c, ["Cota y profundidad", "cota/profundidad", "Cota", "Profundidad"]),
+    "Diámetro y material": diametroMaterial(c),
+    "Norma aplicable": pick(c, ["Norma aplicable", "norma aplicable", "Norma"]),
+    "Fuente del dato": pick(c, ["Fuente del dato", "fuente del dato"]),
+    Identificador: pick(c, ["Identificador", "identificador", "id"], PC),
+    ...extra,
+  };
   return a;
 }
 
 export function fichaHTML(a, extraRows = []) {
+  const skip = new Set(["titulo", "tag", "estado", "cota/profundidad", "diámetro", "material", "norma aplicable", "fuente del dato", "identificador", "id", ...ATTR_CAMPOS]);
   const filas = ATTR_CAMPOS.map((k) => [k, a[k] || PC]);
   for (const [k, v] of Object.entries(a)) {
-    if (k === "titulo" || k === "tag" || ATTR_CAMPOS.includes(k)) continue;
+    if (skip.has(k)) continue;
     filas.push([k, v]);
   }
   for (const row of extraRows) filas.push(row);
@@ -40,15 +65,16 @@ export function fichaHTML(a, extraRows = []) {
 }
 
 export function notaFinancieraHTML() {
+  const prelim = "preliminar, por conciliar con la corrida de Foster";
   return `<div class="fin-agua">
     <h3>Módulo de agua (independiente)</h3>
-    <p>Núcleo de agua (tratamiento SIBRA + automatización): <b>22.09 MDP</b> sin IVA (presupuesto real, 25-oct-2026; v4.8). El piloto de alcance del documento suma 80.52 MDP sin IVA e incluye la planta láctea, que se separa abajo.</p>
-    <p>Ingreso del módulo de agua, corrida formal: <b>por calcular (corrida 15–20 años pendiente)</b>.</p>
-    <p>Tarifa de <b>$7.70/m³</b>: <b>hipotética — sujeta a cartas de intención tipo take-and-pay (solo agua medida y entregada)</b>. El documento estima, como hipótesis y no como tarifa vigente, unos 5.5 MDP/año de saneamiento.</p>
+    <p>Proyecto hidráulico solo, sin planta láctea ni pozos de infiltración: <b>54.32 MDP</b> sin IVA (63.01 con IVA). Cifras de la v4.9, §13.1, a partir del presupuesto real del 25-oct-2026 (directo 45.27 + indirectos). Etiqueta: <b>${prelim}</b>.</p>
+    <p>Tarifa de <b>$7.70/m³</b>: <b>propuesta, sujeta a autorización</b>. Con esa tarifa el módulo <b>no cubre su operación</b>.</p>
+    <p>Equilibrio operativo ≈ <b>13.25 $/m³</b>. Para cubrir también la inversión ≈ <b>22–23 $/m³</b> (15 años: 23.31; 20 años: 22.24, supuesto base). Todas estas cifras son <b>${prelim}</b>.</p>
   </div>
   <div class="fin-lacteo">
     <h3>Negocio lácteo privado, fuera del alcance público</h3>
-    <p>Planta de proteína (lácteos): CAPEX <b>18.60 MDP</b>. Del ingreso proyectado del nodo integrado (36.5 MDP/año, Documento Ejecutivo Maestro), <b>26.0 MDP/año</b> vienen de productos lácteos. No forma parte de la infraestructura hidráulica pública ni de este módulo de agua.</p>
+    <p>Planta de proteína (lácteos), Anexo A de la v4.9: CAPEX <b>18.60 MDP</b> de la planta (25.58 MDP con solar térmico, redes e indirectos). Del ingreso proyectado del nodo integrado (36.5 MDP/año, Documento Maestro), <b>26.0 MDP/año</b> venían de productos lácteos. No forma parte de la infraestructura hidráulica pública ni de este módulo de agua. Sujeta a decisión del promovente.</p>
   </div>`;
 }
 
@@ -120,5 +146,6 @@ export function semaforoHTML(tramos) {
 }
 
 export const INF_TEORICO = "teóricos — pendiente muestreo compuesto y aforo con laboratorio acreditado EMA";
-export const TARIFA_NOTA = "hipotética — sujeta a cartas de intención tipo take-and-pay (solo agua medida y entregada)";
+export const TARIFA_NOTA = "propuesta, sujeta a autorización";
+export const PRELIM_FOSTER = "preliminar, por conciliar con la corrida de Foster";
 export const RECARGA_NOM = "Fase futura — condicionada a estudio hidrogeológico y NOM-014-CONAGUA-2003 (riesgo de arsénico)";

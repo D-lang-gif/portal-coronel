@@ -10,7 +10,7 @@ import { construir } from "./visor/constructores.js";
 import { crearFlujos, uTiempo } from "./visor/flujos.js";
 import { crearCiudad, REDES } from "./ciudad.js";
 import { crearCapas2, TEC } from "./capas2.js";
-import { LACTEOS_IDS, POZOS_RECARGA_IDS, NIVEL, UBICACION, attrs, fichaHTML, notaFinancieraHTML, rutaValidacionHTML, semaforoHTML, INF_TEORICO, TARIFA_NOTA, RECARGA_NOM, PC } from "./pliego.js";
+import { LACTEOS_IDS, POZOS_RECARGA_IDS, NIVEL, UBICACION, attrs, fichaHTML, notaFinancieraHTML, rutaValidacionHTML, semaforoHTML, INF_TEORICO, TARIFA_NOTA, PRELIM_FOSTER, RECARGA_NOM, PC } from "./pliego.js";
 
 const $ = (s, r = document) => r.querySelector(s);
 const D = window.NODO_DATA, PR = window.NODO_PRES;
@@ -61,9 +61,9 @@ const finAcum = (m) => COSTO_F.reduce((s, c, n) => s + c * progFase(n, m), 0);
 function kpis() {
   const k = D.kpi;
   const items = [
-    ["Módulo de agua (independiente)", "22.09 MDP", "núcleo SIBRA + automatización, sin IVA · presupuesto 25-oct-2026", "oro"],
-    ["Ingreso del módulo de agua", "por calcular", "corrida 15–20 años pendiente"],
-    ["Tarifa $7.70/m³", "hipotética", TARIFA_NOTA],
+    ["Módulo de agua (independiente)", "54.32 MDP", "sin IVA (63.01 con IVA) · v4.9 §13.1 · " + PRELIM_FOSTER, "oro"],
+    ["$7.70/m³ no cubre operación", "13.25 $/m³", "equilibrio operativo · inversión ≈ 22–23 $/m³ · " + PRELIM_FOSTER],
+    ["Tarifa $7.70/m³", TARIFA_NOTA, "Con esa tarifa el módulo no cubre su operación"],
     ["Caudal de diseño SIBRA", k["Caudal de diseño"], "DBO₅ 450 y SST 380 mg/L: " + INF_TEORICO],
     ["Ubicación del Nodo", "referencial", UBICACION.etiqueta],
     ["Superficie del predio", UBICACION.area, UBICACION.areaLarga],
@@ -416,7 +416,8 @@ function ficha(id) {
   const it = S.items.find((x) => x.f === f); const costo = PR.instalaciones[id];
   const recarga = POZOS_RECARGA_IDS.has(f.id);
   const a = attrs(`${f.id} · ${f.nombre}`, {
-    estado: recarga ? "fase futura · no forma parte del piloto" : (f.fuente === "doc" ? "proyectado (anteproyecto referencial)" : "por confirmar"),
+    Identificador: f.id,
+    estado: recarga ? "excluido del piloto (fase futura)" : (f.fuente === "doc" ? "proyectado (anteproyecto referencial)" : "por confirmar"),
     "cota/profundidad": (f.datos && (f.datos["Profundidad"] || f.datos["Cota"] || f.datos["Nivel"])) || PC,
     diámetro: (f.datos && (f.datos["Diámetro"] || f.datos["Ø"] || f.datos["Diametro"])) || PC,
     material: (f.datos && (f.datos["Material"] || f.datos["material"])) || PC,
@@ -803,6 +804,7 @@ function elegirTramo(i) { salvaTramo(i);
   S.enfoque = { tgt: new THREE.Vector3(p[0], 0, p[1]), pos: new THREE.Vector3(p[0] - 750, 1350, p[1] + 1500) };
   const diam = T[1] + "″";
   ficha(attrs(`Tramo T-${String(T[0]).padStart(2, "0")} · CAED-IPE-082-26`, {
+    Identificador: "T-" + String(T[0]).padStart(2, "0"),
     estado: "por confirmar (contrato en marcha a nivel de obra; avance de este tramo: sin dato oficial)",
     "cota/profundidad": PC,
     diámetro: diam,

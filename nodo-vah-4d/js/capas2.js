@@ -66,7 +66,7 @@ export function crearCapas2(scene, Cd, osm) {
     poste(g, h, m); halo(g, TEC[k].c, k === "scada" ? 90 : 55); tec.add(g);
     g.scale.setScalar(2.2);
     const norma = k === "calidad" ? "Calidad de proceso; contrastar con laboratorio EMA (NOM-001 / NOM-003 según el uso)" : k === "h2s" ? "Monitoreo de H₂S (corrosión); umbrales por confirmar" : PC;
-    reg(g, attrs(TEC[k].n, { estado: "proyectado (por cotizar)", "cota/profundidad": PC, diámetro: "no aplica", material: PC, "norma aplicable": norma, "fuente del dato": "Propuesta del visor · posición referencial · " + NIVEL.ante }));
+    reg(g, attrs(TEC[k].n, { Identificador: "TEC-" + k, estado: "proyectado (por cotizar)", "cota/profundidad": PC, diámetro: "no aplica", material: PC, "norma aplicable": norma, "fuente del dato": "Propuesta del visor · posición referencial · " + NIVEL.ante }));
     if (etq) ET(`${etq}<br><small>posición referencial · precio por cotizar · ${NIVEL.ante}</small>`, new THREE.Vector3(x, (h + 30) * 2.2, z), "tec", TEC[k].c, cerca);
     return g;
   }
@@ -176,6 +176,7 @@ export function crearCapas2(scene, Cd, osm) {
       const sem = new THREE.Mesh(new THREE.SphereGeometry(14, 16, 12), new THREE.MeshBasicMaterial({ color: 0x6b7280 }));
       sem.position.set(p[0], 48, p[1]); zanja.add(sem);
       const aT = attrs(`Tramo T-${String(t[0]).padStart(2, "0")} · CAED-IPE-082-26`, {
+        Identificador: "T-" + String(t[0]).padStart(2, "0"),
         estado: "por confirmar (contrato en marcha a nivel de obra; avance de este tramo: sin dato oficial)",
         "cota/profundidad": PC, diámetro: t[1] + "″", material: t[1] === "72" ? "PRFV en el tubo nuevo (expediente); pozos y conexiones por confirmar" : PC,
         "norma aplicable": PC, "fuente del dato": "Trazo referencial proporcional sobre CAED-IPE-082-26 · " + NIVEL.ante,
