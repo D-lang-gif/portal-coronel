@@ -1,0 +1,210 @@
+{
+  "type": "FeatureCollection",
+  "name": "hundimientos_hn_sentinel1_2022_2026",
+  "metadata": {
+    "producto": "Hundimientos del terreno, Sentinel-1 InSAR — solo núcleos (puntos HN)",
+    "periodo": "2022-04-27/2026-04-18",
+    "n_fechas": 86,
+    "fuente": "COMET LiCSAR (Universidad de Leeds), Sentinel-1 / ESA Copernicus, frame 012D_06537_131313",
+    "url": "https://gws-access.jasmin.ac.uk/public/nceo_geohazards/LiCSAR_products/12/012D_06537_131313/",
+    "nota": "Se cargan únicamente los 7 puntos HN; no se dibujan los polígonos. Mediana urbana ≈ 1 cm/año. No se carga encharcamientos_sentinel1_*_SIN_VALIDAR."
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -103.47994,
+          25.58294
+        ]
+      },
+      "properties": {
+        "id": "HN01",
+        "tipo": "hundimiento",
+        "intensidad": 57.2,
+        "fecha": "2022-04-27/2026-04-18",
+        "fuente": "Sentinel-1 (ESA/Copernicus), interferogramas COMET LiCSAR frame 012D_06537_131313 (descendente), velocidad por stacking SBAS (335 interferogramas, 86 fechas)",
+        "nota": "Zona prioritaria de inspección: el satélite mide el hundimiento del terreno, no ve dentro de los tubos. Revisar colector y red con cámara CCTV (SIDEAPA). Velocidad vertical aproximada suponiendo movimiento vertical.",
+        "etiqueta": "Zona prioritaria de inspección",
+        "clase_riesgo": "núcleo local (se hunde más rápido que el resto de la ciudad)",
+        "velocidad_mm_anio": -57.2,
+        "velocidad_media_zona_mm_anio": -36.2,
+        "velocidad_relativa_mm_anio": -26.0,
+        "mediana_urbana_mm_anio": -10.2,
+        "area_m2": 10174121,
+        "en_bbox_gomez_palacio": true,
+        "metodo": "píxeles <= mediana urbana (-10.2) − 15.0 mm/año; punto = píxel de mayor hundimiento",
+        "origen": "https://gws-access.jasmin.ac.uk/public/nceo_geohazards/LiCSAR_products/12/012D_06537_131313/"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -103.46994,
+          25.59594
+        ]
+      },
+      "properties": {
+        "id": "HN02",
+        "tipo": "hundimiento",
+        "intensidad": 27.4,
+        "fecha": "2022-04-27/2026-04-18",
+        "fuente": "Sentinel-1 (ESA/Copernicus), interferogramas COMET LiCSAR frame 012D_06537_131313 (descendente), velocidad por stacking SBAS (335 interferogramas, 86 fechas)",
+        "nota": "Zona prioritaria de inspección: el satélite mide el hundimiento del terreno, no ve dentro de los tubos. Revisar colector y red con cámara CCTV (SIDEAPA). Velocidad vertical aproximada suponiendo movimiento vertical.",
+        "etiqueta": "Zona prioritaria de inspección",
+        "clase_riesgo": "núcleo local (se hunde más rápido que el resto de la ciudad)",
+        "velocidad_mm_anio": -27.4,
+        "velocidad_media_zona_mm_anio": -26.6,
+        "velocidad_relativa_mm_anio": -16.4,
+        "mediana_urbana_mm_anio": -10.2,
+        "area_m2": 45093,
+        "en_bbox_gomez_palacio": true,
+        "metodo": "píxeles <= mediana urbana (-10.2) − 15.0 mm/año; punto = píxel de mayor hundimiento",
+        "origen": "https://gws-access.jasmin.ac.uk/public/nceo_geohazards/LiCSAR_products/12/012D_06537_131313/"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -103.45094,
+          25.57694
+        ]
+      },
+      "properties": {
+        "id": "HN03",
+        "tipo": "hundimiento",
+        "intensidad": 28.2,
+        "fecha": "2022-04-27/2026-04-18",
+        "fuente": "Sentinel-1 (ESA/Copernicus), interferogramas COMET LiCSAR frame 012D_06537_131313 (descendente), velocidad por stacking SBAS (335 interferogramas, 86 fechas)",
+        "nota": "Zona prioritaria de inspección: el satélite mide el hundimiento del terreno, no ve dentro de los tubos. Revisar colector y red con cámara CCTV (SIDEAPA). Velocidad vertical aproximada suponiendo movimiento vertical.",
+        "etiqueta": "Zona prioritaria de inspección",
+        "clase_riesgo": "núcleo local (se hunde más rápido que el resto de la ciudad)",
+        "velocidad_mm_anio": -28.2,
+        "velocidad_media_zona_mm_anio": -26.7,
+        "velocidad_relativa_mm_anio": -16.5,
+        "mediana_urbana_mm_anio": -10.2,
+        "area_m2": 54120,
+        "en_bbox_gomez_palacio": true,
+        "metodo": "píxeles <= mediana urbana (-10.2) − 15.0 mm/año; punto = píxel de mayor hundimiento",
+        "origen": "https://gws-access.jasmin.ac.uk/public/nceo_geohazards/LiCSAR_products/12/012D_06537_131313/"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -103.50494,
+          25.53394
+        ]
+      },
+      "properties": {
+        "id": "HN04",
+        "tipo": "hundimiento",
+        "intensidad": 46.3,
+        "fecha": "2022-04-27/2026-04-18",
+        "fuente": "Sentinel-1 (ESA/Copernicus), interferogramas COMET LiCSAR frame 012D_06537_131313 (descendente), velocidad por stacking SBAS (335 interferogramas, 86 fechas)",
+        "nota": "Zona prioritaria de inspección: el satélite mide el hundimiento del terreno, no ve dentro de los tubos. Revisar colector y red con cámara CCTV (SIDEAPA). Velocidad vertical aproximada suponiendo movimiento vertical.",
+        "etiqueta": "Zona prioritaria de inspección",
+        "clase_riesgo": "núcleo local (se hunde más rápido que el resto de la ciudad)",
+        "velocidad_mm_anio": -46.3,
+        "velocidad_media_zona_mm_anio": -33.6,
+        "velocidad_relativa_mm_anio": -23.4,
+        "mediana_urbana_mm_anio": -10.2,
+        "area_m2": 1389588,
+        "en_bbox_gomez_palacio": true,
+        "metodo": "píxeles <= mediana urbana (-10.2) − 15.0 mm/año; punto = píxel de mayor hundimiento",
+        "origen": "https://gws-access.jasmin.ac.uk/public/nceo_geohazards/LiCSAR_products/12/012D_06537_131313/"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -103.49394,
+          25.52194
+        ]
+      },
+      "properties": {
+        "id": "HN05",
+        "tipo": "hundimiento",
+        "intensidad": 29.0,
+        "fecha": "2022-04-27/2026-04-18",
+        "fuente": "Sentinel-1 (ESA/Copernicus), interferogramas COMET LiCSAR frame 012D_06537_131313 (descendente), velocidad por stacking SBAS (335 interferogramas, 86 fechas)",
+        "nota": "Zona prioritaria de inspección: el satélite mide el hundimiento del terreno, no ve dentro de los tubos. Revisar colector y red con cámara CCTV (SIDEAPA). Velocidad vertical aproximada suponiendo movimiento vertical.",
+        "etiqueta": "Zona prioritaria de inspección",
+        "clase_riesgo": "núcleo local (se hunde más rápido que el resto de la ciudad)",
+        "velocidad_mm_anio": -29.0,
+        "velocidad_media_zona_mm_anio": -26.8,
+        "velocidad_relativa_mm_anio": -16.6,
+        "mediana_urbana_mm_anio": -10.2,
+        "area_m2": 45121,
+        "en_bbox_gomez_palacio": true,
+        "metodo": "píxeles <= mediana urbana (-10.2) − 15.0 mm/año; punto = píxel de mayor hundimiento",
+        "origen": "https://gws-access.jasmin.ac.uk/public/nceo_geohazards/LiCSAR_products/12/012D_06537_131313/"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -103.51894,
+          25.52394
+        ]
+      },
+      "properties": {
+        "id": "HN06",
+        "tipo": "hundimiento",
+        "intensidad": 29.9,
+        "fecha": "2022-04-27/2026-04-18",
+        "fuente": "Sentinel-1 (ESA/Copernicus), interferogramas COMET LiCSAR frame 012D_06537_131313 (descendente), velocidad por stacking SBAS (335 interferogramas, 86 fechas)",
+        "nota": "Zona prioritaria de inspección: el satélite mide el hundimiento del terreno, no ve dentro de los tubos. Revisar colector y red con cámara CCTV (SIDEAPA). Velocidad vertical aproximada suponiendo movimiento vertical.",
+        "etiqueta": "Zona prioritaria de inspección",
+        "clase_riesgo": "núcleo local (se hunde más rápido que el resto de la ciudad)",
+        "velocidad_mm_anio": -29.9,
+        "velocidad_media_zona_mm_anio": -26.8,
+        "velocidad_relativa_mm_anio": -16.6,
+        "mediana_urbana_mm_anio": -10.2,
+        "area_m2": 45120,
+        "en_bbox_gomez_palacio": true,
+        "metodo": "píxeles <= mediana urbana (-10.2) − 15.0 mm/año; punto = píxel de mayor hundimiento",
+        "origen": "https://gws-access.jasmin.ac.uk/public/nceo_geohazards/LiCSAR_products/12/012D_06537_131313/"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -103.51394,
+          25.52194
+        ]
+      },
+      "properties": {
+        "id": "HN07",
+        "tipo": "hundimiento",
+        "intensidad": 27.3,
+        "fecha": "2022-04-27/2026-04-18",
+        "fuente": "Sentinel-1 (ESA/Copernicus), interferogramas COMET LiCSAR frame 012D_06537_131313 (descendente), velocidad por stacking SBAS (335 interferogramas, 86 fechas)",
+        "nota": "Zona prioritaria de inspección: el satélite mide el hundimiento del terreno, no ve dentro de los tubos. Revisar colector y red con cámara CCTV (SIDEAPA). Velocidad vertical aproximada suponiendo movimiento vertical.",
+        "etiqueta": "Zona prioritaria de inspección",
+        "clase_riesgo": "núcleo local (se hunde más rápido que el resto de la ciudad)",
+        "velocidad_mm_anio": -27.3,
+        "velocidad_media_zona_mm_anio": -26.5,
+        "velocidad_relativa_mm_anio": -16.3,
+        "mediana_urbana_mm_anio": -10.2,
+        "area_m2": 45121,
+        "en_bbox_gomez_palacio": true,
+        "metodo": "píxeles <= mediana urbana (-10.2) − 15.0 mm/año; punto = píxel de mayor hundimiento",
+        "origen": "https://gws-access.jasmin.ac.uk/public/nceo_geohazards/LiCSAR_products/12/012D_06537_131313/"
+      }
+    }
+  ]
+}

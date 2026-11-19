@@ -1,0 +1,156 @@
+{
+  "type": "FeatureCollection",
+  "name": "el_amigo_jabonoso",
+  "metadata": {
+    "nota": "Tramo de Boulevard Jabonoso (OSM) entre el cruce con Avenida Nacional y el acercamiento al Periférico Ejército Mexicano (Puente Jabonoso), según la nota de El Siglo de Torreón del 2 de octubre de 2026. No es un levantamiento del encharcamiento.",
+    "fuente_prensa": "El Siglo de Torreón, 2 oct 2026",
+    "precision": "tramo OSM de Boulevard Jabonoso entre Av. Nacional y Periférico Ejército Mexicano / Puente Jabonoso"
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -103.488002,
+            25.583045
+          ],
+          [
+            -103.48807,
+            25.583106
+          ],
+          [
+            -103.487618,
+            25.583577
+          ],
+          [
+            -103.487538,
+            25.583541
+          ],
+          [
+            -103.487342,
+            25.583865
+          ],
+          [
+            -103.487081,
+            25.583997
+          ],
+          [
+            -103.486909,
+            25.584201
+          ],
+          [
+            -103.486897,
+            25.584336
+          ],
+          [
+            -103.486777,
+            25.584338
+          ],
+          [
+            -103.486527,
+            25.584725
+          ],
+          [
+            -103.486319,
+            25.584812
+          ],
+          [
+            -103.486312,
+            25.58495
+          ],
+          [
+            -103.485756,
+            25.585522
+          ],
+          [
+            -103.485701,
+            25.585579
+          ],
+          [
+            -103.485513,
+            25.585642
+          ],
+          [
+            -103.485528,
+            25.585757
+          ],
+          [
+            -103.485482,
+            25.585805
+          ],
+          [
+            -103.485059,
+            25.586117
+          ],
+          [
+            -103.485124,
+            25.586173
+          ],
+          [
+            -103.484936,
+            25.586376
+          ],
+          [
+            -103.484633,
+            25.586704
+          ],
+          [
+            -103.484294,
+            25.587053
+          ],
+          [
+            -103.484097,
+            25.587121
+          ],
+          [
+            -103.484021,
+            25.587345
+          ],
+          [
+            -103.482939,
+            25.588342
+          ],
+          [
+            -103.482957,
+            25.588463
+          ],
+          [
+            -103.482819,
+            25.588615
+          ],
+          [
+            -103.482708,
+            25.588736
+          ],
+          [
+            -103.482487,
+            25.58882
+          ],
+          [
+            -103.482467,
+            25.588932
+          ],
+          [
+            -103.482553,
+            25.588905
+          ],
+          [
+            -103.482487,
+            25.58882
+          ]
+        ]
+      },
+      "properties": {
+        "id": "ENC-01",
+        "nombre": "Colonia El Amigo (El Amigo Britingham)",
+        "etiqueta": "Encharcamiento recurrente – 6 tormentas",
+        "tipo": "encharcamiento",
+        "tramo": "Boulevard Jabonoso, del Puente Jabonoso / Periférico a Avenida Nacional",
+        "fuente": "El Siglo de Torreón, 2 oct 2026; geometría OpenStreetMap",
+        "n_tormentas": 6
+      }
+    }
+  ]
+}
