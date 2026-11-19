@@ -30,18 +30,18 @@ export function crearLluvias(par, Cd, osm, uT) {
     const bordo = offset(sub, 45); const morada = [...riego, ...bordo]; moradaPts = morada;
     const mm = tubo(morada, 10, 11, flujo(uT, "#a35bff")); mm && g.add(mm);
     const Lb = largo(bordo); const pm = enLinea(bordo, Lb * .45).p;
-    ET("🟣 Línea morada · agua tratada del Nodo<br><small>por el bordo / derecho de vía, no dentro del canal · trazo referencial · permisos por gestionar</small>", new THREE.Vector3(pm[0], 90, pm[1]), "#a35bff");
+    ET("🟣 Línea morada · agua tratada del Nodo<br><small>por el bordo / derecho de vía, no dentro del canal · diseño preliminar · permisos por gestionar</small>", new THREE.Vector3(pm[0], 90, pm[1]), "#a35bff");
     const mP = new THREE.MeshBasicMaterial({ color: 0x5fbf4a, transparent: true, opacity: .45, depthWrite: false, side: THREE.DoubleSide });
     for (let k = 0; k < 4; k++) { const { p, dir } = enLinea(bordo, Lb * (.55 + k * .14)); const pl = new THREE.Mesh(new THREE.PlaneGeometry(320, 220).rotateX(-Math.PI / 2), mP);
       pl.position.set(p[0] - dir[1] * 260, 1.5, p[1] + dir[0] * 260); pl.rotation.y = Math.atan2(-dir[1], dir[0]); g.add(pl); }
-    const pe = enLinea(bordo, Lb * .76); ET("🌾 Parcelas ejidales<br><small>ubicación referencial</small>", new THREE.Vector3(pe.p[0] - pe.dir[1] * 260, 60, pe.p[1] + pe.dir[0] * 260), "#5fbf4a", true);
+    const pe = enLinea(bordo, Lb * .76); ET("🌾 Parcelas ejidales<br><small>ubicación de referencia</small>", new THREE.Vector3(pe.p[0] - pe.dir[1] * 260, 60, pe.p[1] + pe.dir[0] * 260), "#5fbf4a", true);
     const pc = enLinea(C, largo(C) * .2).p; ET("Canal de Sacramento · trazo OSM<br><small>línea morada por el bordo: requiere autorización CONAGUA y DR 017 · rehabilitación Conagua km 0+000–13+440: tramos no ubicados en el visor</small>", new THREE.Vector3(pc[0], 60, pc[1]), "#3fd4c4");
     // vasos de retención pluvial en la orilla de la ciudad, del lado opuesto a las parcelas (referencial)
     const mV = new THREE.MeshStandardMaterial({ color: 0x2f7bff, emissive: 0x0a2a66, transparent: true, opacity: .75 }), mR = new THREE.MeshBasicMaterial({ color: 0xd9dde0 });
     for (let k = 0; k < 3; k++) { const { p, dir } = enLinea(bordo, Lb * (.25 + k * .3)); const x = p[0] + dir[1] * 340, z = p[1] - dir[0] * 340;
       const v = new THREE.Mesh(new THREE.CylinderGeometry(110, 90, 10, 32), mV); v.position.set(x, 5, z); g.add(v);
       const rj = new THREE.Mesh(new THREE.TorusGeometry(112, 5, 6, 32), mR); rj.rotation.x = Math.PI / 2; rj.position.set(x, 12, z); g.add(rj);
-      if (k === 1) ET("🔵 Vaso de retención / captación pluvial<br><small>con rejas · ubicación referencial · sin infiltración en el piloto · recarga = fase futura (NOM-014-CONAGUA-2003, riesgo de arsénico)</small>", new THREE.Vector3(x, 80, z), "#2f7bff"); }
+      if (k === 1) ET("🔵 Vaso de retención / captación pluvial<br><small>con rejas · ubicación de referencia · sin infiltración en el piloto · recarga = fase futura (NOM-014-CONAGUA-2003, riesgo de arsénico)</small>", new THREE.Vector3(x, 80, z), "#2f7bff"); }
     foco = enLinea(bordo, Lb * .5).p;
   }
   // lluvia animada (ilustrativa)

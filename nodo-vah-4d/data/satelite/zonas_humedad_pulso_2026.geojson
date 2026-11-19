@@ -1,0 +1,787 @@
+{
+ "type": "FeatureCollection",
+ "metadata": {
+  "fuente": "Sentinel-2 L2A (ESA/Copernicus) vía Microsoft Planetary Computer; ESA WorldCover 2021",
+  "escenas": [
+   "2026-05-11",
+   "2026-05-06",
+   "2026-04-16",
+   "2026-03-27",
+   "2026-03-22",
+   "2026-03-17",
+   "2026-03-12",
+   "2026-03-02",
+   "2026-01-26",
+   "2025-12-27",
+   "2025-12-22",
+   "2025-12-17",
+   "2025-12-12",
+   "2025-12-07",
+   "2025-11-17",
+   "2025-11-12",
+   "2025-11-07",
+   "2025-11-02"
+  ],
+  "tile": "13RFJ",
+  "metodo": "NDMI (B8A,B11) mediana en temporada seca; zona urbana; anomalía z>2 en >=60% de escenas; NDVI<0.35",
+  "nota": "Zonas candidatas a revisar con cámara; no confirman fuga.",
+  "filtro": "Se excluyen las manchas al oriente del Río Nazas (Torreón). No se modifican los valores de area_m2, persist, ndmi ni ndvi.",
+  "n_original": 31,
+  "n_gomez_palacio": 16,
+  "archivo": "zonas_humedad_pulso_2026.geojson"
+ },
+ "features": [
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -103.488236,
+     25.549038
+    ]
+   },
+   "properties": {
+    "id": "H03",
+    "tipo": "humedad",
+    "intensidad": 0.983,
+    "fecha": "2025-11-02/2026-05-11",
+    "fuente": "Sentinel-2 L2A (ESA/Copernicus) vía Microsoft Planetary Computer; ESA WorldCover 2021",
+    "nota": "Zonas candidatas a revisar con cámara; no confirman fuga.",
+    "etiqueta": "Zona a revisar con cámara",
+    "area_m2": 4000,
+    "persist": 0.983,
+    "ndmi": 0.11,
+    "ndvi": 0.226,
+    "foto": "fotos/H03.png",
+    "origen": "Pulso · manchas_humedad_gp.geojson (solo zonas al poniente del Río Nazas, Gómez Palacio)",
+    "escenas": [
+     "2026-05-11",
+     "2026-05-06",
+     "2026-04-16",
+     "2026-03-27",
+     "2026-03-22",
+     "2026-03-17",
+     "2026-03-12",
+     "2026-03-02",
+     "2026-01-26",
+     "2025-12-27",
+     "2025-12-22",
+     "2025-12-17",
+     "2025-12-12",
+     "2025-12-07",
+     "2025-11-17",
+     "2025-11-12",
+     "2025-11-07",
+     "2025-11-02"
+    ],
+    "tile": "13RFJ",
+    "metodo": "NDMI (B8A,B11) mediana en temporada seca; zona urbana; anomalía z>2 en >=60% de escenas; NDVI<0.35"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -103.458711,
+     25.558896
+    ]
+   },
+   "properties": {
+    "id": "H05",
+    "tipo": "humedad",
+    "intensidad": 0.956,
+    "fecha": "2025-11-02/2026-05-11",
+    "fuente": "Sentinel-2 L2A (ESA/Copernicus) vía Microsoft Planetary Computer; ESA WorldCover 2021",
+    "nota": "Zonas candidatas a revisar con cámara; no confirman fuga.",
+    "etiqueta": "Zona a revisar con cámara",
+    "area_m2": 2000,
+    "persist": 0.956,
+    "ndmi": 0.068,
+    "ndvi": -0.037,
+    "foto": "fotos/H05.png",
+    "origen": "Pulso · manchas_humedad_gp.geojson (solo zonas al poniente del Río Nazas, Gómez Palacio)",
+    "escenas": [
+     "2026-05-11",
+     "2026-05-06",
+     "2026-04-16",
+     "2026-03-27",
+     "2026-03-22",
+     "2026-03-17",
+     "2026-03-12",
+     "2026-03-02",
+     "2026-01-26",
+     "2025-12-27",
+     "2025-12-22",
+     "2025-12-17",
+     "2025-12-12",
+     "2025-12-07",
+     "2025-11-17",
+     "2025-11-12",
+     "2025-11-07",
+     "2025-11-02"
+    ],
+    "tile": "13RFJ",
+    "metodo": "NDMI (B8A,B11) mediana en temporada seca; zona urbana; anomalía z>2 en >=60% de escenas; NDVI<0.35"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -103.47515,
+     25.557624
+    ]
+   },
+   "properties": {
+    "id": "H13",
+    "tipo": "humedad",
+    "intensidad": 0.924,
+    "fecha": "2025-11-02/2026-05-11",
+    "fuente": "Sentinel-2 L2A (ESA/Copernicus) vía Microsoft Planetary Computer; ESA WorldCover 2021",
+    "nota": "Zonas candidatas a revisar con cámara; no confirman fuga.",
+    "etiqueta": "Zona a revisar con cámara",
+    "area_m2": 3200,
+    "persist": 0.924,
+    "ndmi": 0.095,
+    "ndvi": 0.017,
+    "foto": "fotos/H13.png",
+    "origen": "Pulso · manchas_humedad_gp.geojson (solo zonas al poniente del Río Nazas, Gómez Palacio)",
+    "escenas": [
+     "2026-05-11",
+     "2026-05-06",
+     "2026-04-16",
+     "2026-03-27",
+     "2026-03-22",
+     "2026-03-17",
+     "2026-03-12",
+     "2026-03-02",
+     "2026-01-26",
+     "2025-12-27",
+     "2025-12-22",
+     "2025-12-17",
+     "2025-12-12",
+     "2025-12-07",
+     "2025-11-17",
+     "2025-11-12",
+     "2025-11-07",
+     "2025-11-02"
+    ],
+    "tile": "13RFJ",
+    "metodo": "NDMI (B8A,B11) mediana en temporada seca; zona urbana; anomalía z>2 en >=60% de escenas; NDVI<0.35"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -103.511067,
+     25.558716
+    ]
+   },
+   "properties": {
+    "id": "H14",
+    "tipo": "humedad",
+    "intensidad": 0.922,
+    "fecha": "2025-11-02/2026-05-11",
+    "fuente": "Sentinel-2 L2A (ESA/Copernicus) vía Microsoft Planetary Computer; ESA WorldCover 2021",
+    "nota": "Zonas candidatas a revisar con cámara; no confirman fuga.",
+    "etiqueta": "Zona a revisar con cámara",
+    "area_m2": 2000,
+    "persist": 0.922,
+    "ndmi": 0.07,
+    "ndvi": 0.22,
+    "foto": "fotos/H14.png",
+    "origen": "Pulso · manchas_humedad_gp.geojson (solo zonas al poniente del Río Nazas, Gómez Palacio)",
+    "escenas": [
+     "2026-05-11",
+     "2026-05-06",
+     "2026-04-16",
+     "2026-03-27",
+     "2026-03-22",
+     "2026-03-17",
+     "2026-03-12",
+     "2026-03-02",
+     "2026-01-26",
+     "2025-12-27",
+     "2025-12-22",
+     "2025-12-17",
+     "2025-12-12",
+     "2025-12-07",
+     "2025-11-17",
+     "2025-11-12",
+     "2025-11-07",
+     "2025-11-02"
+    ],
+    "tile": "13RFJ",
+    "metodo": "NDMI (B8A,B11) mediana en temporada seca; zona urbana; anomalía z>2 en >=60% de escenas; NDVI<0.35"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -103.492637,
+     25.552027
+    ]
+   },
+   "properties": {
+    "id": "H15",
+    "tipo": "humedad",
+    "intensidad": 0.911,
+    "fecha": "2025-11-02/2026-05-11",
+    "fuente": "Sentinel-2 L2A (ESA/Copernicus) vía Microsoft Planetary Computer; ESA WorldCover 2021",
+    "nota": "Zonas candidatas a revisar con cámara; no confirman fuga.",
+    "etiqueta": "Zona a revisar con cámara",
+    "area_m2": 2000,
+    "persist": 0.911,
+    "ndmi": 0.067,
+    "ndvi": 0.203,
+    "foto": "fotos/H15.png",
+    "origen": "Pulso · manchas_humedad_gp.geojson (solo zonas al poniente del Río Nazas, Gómez Palacio)",
+    "escenas": [
+     "2026-05-11",
+     "2026-05-06",
+     "2026-04-16",
+     "2026-03-27",
+     "2026-03-22",
+     "2026-03-17",
+     "2026-03-12",
+     "2026-03-02",
+     "2026-01-26",
+     "2025-12-27",
+     "2025-12-22",
+     "2025-12-17",
+     "2025-12-12",
+     "2025-12-07",
+     "2025-11-17",
+     "2025-11-12",
+     "2025-11-07",
+     "2025-11-02"
+    ],
+    "tile": "13RFJ",
+    "metodo": "NDMI (B8A,B11) mediana en temporada seca; zona urbana; anomalía z>2 en >=60% de escenas; NDVI<0.35"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -103.494394,
+     25.552671
+    ]
+   },
+   "properties": {
+    "id": "H16",
+    "tipo": "humedad",
+    "intensidad": 0.907,
+    "fecha": "2025-11-02/2026-05-11",
+    "fuente": "Sentinel-2 L2A (ESA/Copernicus) vía Microsoft Planetary Computer; ESA WorldCover 2021",
+    "nota": "Zonas candidatas a revisar con cámara; no confirman fuga.",
+    "etiqueta": "Zona a revisar con cámara",
+    "area_m2": 6000,
+    "persist": 0.907,
+    "ndmi": 0.066,
+    "ndvi": 0.175,
+    "foto": "fotos/H16.png",
+    "origen": "Pulso · manchas_humedad_gp.geojson (solo zonas al poniente del Río Nazas, Gómez Palacio)",
+    "escenas": [
+     "2026-05-11",
+     "2026-05-06",
+     "2026-04-16",
+     "2026-03-27",
+     "2026-03-22",
+     "2026-03-17",
+     "2026-03-12",
+     "2026-03-02",
+     "2026-01-26",
+     "2025-12-27",
+     "2025-12-22",
+     "2025-12-17",
+     "2025-12-12",
+     "2025-12-07",
+     "2025-11-17",
+     "2025-11-12",
+     "2025-11-07",
+     "2025-11-02"
+    ],
+    "tile": "13RFJ",
+    "metodo": "NDMI (B8A,B11) mediana en temporada seca; zona urbana; anomalía z>2 en >=60% de escenas; NDVI<0.35"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -103.48993,
+     25.5505
+    ]
+   },
+   "properties": {
+    "id": "H17",
+    "tipo": "humedad",
+    "intensidad": 0.906,
+    "fecha": "2025-11-02/2026-05-11",
+    "fuente": "Sentinel-2 L2A (ESA/Copernicus) vía Microsoft Planetary Computer; ESA WorldCover 2021",
+    "nota": "Zonas candidatas a revisar con cámara; no confirman fuga.",
+    "etiqueta": "Zona a revisar con cámara",
+    "area_m2": 4000,
+    "persist": 0.906,
+    "ndmi": 0.064,
+    "ndvi": 0.129,
+    "foto": "fotos/H17.png",
+    "origen": "Pulso · manchas_humedad_gp.geojson (solo zonas al poniente del Río Nazas, Gómez Palacio)",
+    "escenas": [
+     "2026-05-11",
+     "2026-05-06",
+     "2026-04-16",
+     "2026-03-27",
+     "2026-03-22",
+     "2026-03-17",
+     "2026-03-12",
+     "2026-03-02",
+     "2026-01-26",
+     "2025-12-27",
+     "2025-12-22",
+     "2025-12-17",
+     "2025-12-12",
+     "2025-12-07",
+     "2025-11-17",
+     "2025-11-12",
+     "2025-11-07",
+     "2025-11-02"
+    ],
+    "tile": "13RFJ",
+    "metodo": "NDMI (B8A,B11) mediana en temporada seca; zona urbana; anomalía z>2 en >=60% de escenas; NDVI<0.35"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -103.517674,
+     25.539462
+    ]
+   },
+   "properties": {
+    "id": "H18",
+    "tipo": "humedad",
+    "intensidad": 0.9,
+    "fecha": "2025-11-02/2026-05-11",
+    "fuente": "Sentinel-2 L2A (ESA/Copernicus) vía Microsoft Planetary Computer; ESA WorldCover 2021",
+    "nota": "Zonas candidatas a revisar con cámara; no confirman fuga.",
+    "etiqueta": "Zona a revisar con cámara",
+    "area_m2": 2000,
+    "persist": 0.9,
+    "ndmi": 0.068,
+    "ndvi": 0.165,
+    "foto": "fotos/H18.png",
+    "origen": "Pulso · manchas_humedad_gp.geojson (solo zonas al poniente del Río Nazas, Gómez Palacio)",
+    "escenas": [
+     "2026-05-11",
+     "2026-05-06",
+     "2026-04-16",
+     "2026-03-27",
+     "2026-03-22",
+     "2026-03-17",
+     "2026-03-12",
+     "2026-03-02",
+     "2026-01-26",
+     "2025-12-27",
+     "2025-12-22",
+     "2025-12-17",
+     "2025-12-12",
+     "2025-12-07",
+     "2025-11-17",
+     "2025-11-12",
+     "2025-11-07",
+     "2025-11-02"
+    ],
+    "tile": "13RFJ",
+    "metodo": "NDMI (B8A,B11) mediana en temporada seca; zona urbana; anomalía z>2 en >=60% de escenas; NDVI<0.35"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -103.511688,
+     25.551915
+    ]
+   },
+   "properties": {
+    "id": "H20",
+    "tipo": "humedad",
+    "intensidad": 0.889,
+    "fecha": "2025-11-02/2026-05-11",
+    "fuente": "Sentinel-2 L2A (ESA/Copernicus) vía Microsoft Planetary Computer; ESA WorldCover 2021",
+    "nota": "Zonas candidatas a revisar con cámara; no confirman fuga.",
+    "etiqueta": "Zona a revisar con cámara",
+    "area_m2": 4000,
+    "persist": 0.889,
+    "ndmi": 0.073,
+    "ndvi": 0.183,
+    "foto": "fotos/H20.png",
+    "origen": "Pulso · manchas_humedad_gp.geojson (solo zonas al poniente del Río Nazas, Gómez Palacio)",
+    "escenas": [
+     "2026-05-11",
+     "2026-05-06",
+     "2026-04-16",
+     "2026-03-27",
+     "2026-03-22",
+     "2026-03-17",
+     "2026-03-12",
+     "2026-03-02",
+     "2026-01-26",
+     "2025-12-27",
+     "2025-12-22",
+     "2025-12-17",
+     "2025-12-12",
+     "2025-12-07",
+     "2025-11-17",
+     "2025-11-12",
+     "2025-11-07",
+     "2025-11-02"
+    ],
+    "tile": "13RFJ",
+    "metodo": "NDMI (B8A,B11) mediana en temporada seca; zona urbana; anomalía z>2 en >=60% de escenas; NDVI<0.35"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -103.519354,
+     25.539208
+    ]
+   },
+   "properties": {
+    "id": "H21",
+    "tipo": "humedad",
+    "intensidad": 0.885,
+    "fecha": "2025-11-02/2026-05-11",
+    "fuente": "Sentinel-2 L2A (ESA/Copernicus) vía Microsoft Planetary Computer; ESA WorldCover 2021",
+    "nota": "Zonas candidatas a revisar con cámara; no confirman fuga.",
+    "etiqueta": "Zona a revisar con cámara",
+    "area_m2": 5600,
+    "persist": 0.885,
+    "ndmi": 0.08,
+    "ndvi": 0.211,
+    "foto": "fotos/H21.png",
+    "origen": "Pulso · manchas_humedad_gp.geojson (solo zonas al poniente del Río Nazas, Gómez Palacio)",
+    "escenas": [
+     "2026-05-11",
+     "2026-05-06",
+     "2026-04-16",
+     "2026-03-27",
+     "2026-03-22",
+     "2026-03-17",
+     "2026-03-12",
+     "2026-03-02",
+     "2026-01-26",
+     "2025-12-27",
+     "2025-12-22",
+     "2025-12-17",
+     "2025-12-12",
+     "2025-12-07",
+     "2025-11-17",
+     "2025-11-12",
+     "2025-11-07",
+     "2025-11-02"
+    ],
+    "tile": "13RFJ",
+    "metodo": "NDMI (B8A,B11) mediana en temporada seca; zona urbana; anomalía z>2 en >=60% de escenas; NDVI<0.35"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -103.509025,
+     25.562848
+    ]
+   },
+   "properties": {
+    "id": "H23",
+    "tipo": "humedad",
+    "intensidad": 0.867,
+    "fecha": "2025-11-02/2026-05-11",
+    "fuente": "Sentinel-2 L2A (ESA/Copernicus) vía Microsoft Planetary Computer; ESA WorldCover 2021",
+    "nota": "Zonas candidatas a revisar con cámara; no confirman fuga.",
+    "etiqueta": "Zona a revisar con cámara",
+    "area_m2": 2000,
+    "persist": 0.867,
+    "ndmi": 0.073,
+    "ndvi": 0.104,
+    "foto": "fotos/H23.png",
+    "origen": "Pulso · manchas_humedad_gp.geojson (solo zonas al poniente del Río Nazas, Gómez Palacio)",
+    "escenas": [
+     "2026-05-11",
+     "2026-05-06",
+     "2026-04-16",
+     "2026-03-27",
+     "2026-03-22",
+     "2026-03-17",
+     "2026-03-12",
+     "2026-03-02",
+     "2026-01-26",
+     "2025-12-27",
+     "2025-12-22",
+     "2025-12-17",
+     "2025-12-12",
+     "2025-12-07",
+     "2025-11-17",
+     "2025-11-12",
+     "2025-11-07",
+     "2025-11-02"
+    ],
+    "tile": "13RFJ",
+    "metodo": "NDMI (B8A,B11) mediana en temporada seca; zona urbana; anomalía z>2 en >=60% de escenas; NDVI<0.35"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -103.512338,
+     25.600802
+    ]
+   },
+   "properties": {
+    "id": "H25",
+    "tipo": "humedad",
+    "intensidad": 0.856,
+    "fecha": "2025-11-02/2026-05-11",
+    "fuente": "Sentinel-2 L2A (ESA/Copernicus) vía Microsoft Planetary Computer; ESA WorldCover 2021",
+    "nota": "Zonas candidatas a revisar con cámara; no confirman fuga.",
+    "etiqueta": "Zona a revisar con cámara",
+    "area_m2": 2000,
+    "persist": 0.856,
+    "ndmi": 0.067,
+    "ndvi": 0.234,
+    "foto": "fotos/H25.png",
+    "origen": "Pulso · manchas_humedad_gp.geojson (solo zonas al poniente del Río Nazas, Gómez Palacio)",
+    "escenas": [
+     "2026-05-11",
+     "2026-05-06",
+     "2026-04-16",
+     "2026-03-27",
+     "2026-03-22",
+     "2026-03-17",
+     "2026-03-12",
+     "2026-03-02",
+     "2026-01-26",
+     "2025-12-27",
+     "2025-12-22",
+     "2025-12-17",
+     "2025-12-12",
+     "2025-12-07",
+     "2025-11-17",
+     "2025-11-12",
+     "2025-11-07",
+     "2025-11-02"
+    ],
+    "tile": "13RFJ",
+    "metodo": "NDMI (B8A,B11) mediana en temporada seca; zona urbana; anomalía z>2 en >=60% de escenas; NDVI<0.35"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -103.50492,
+     25.580773
+    ]
+   },
+   "properties": {
+    "id": "H27",
+    "tipo": "humedad",
+    "intensidad": 0.854,
+    "fecha": "2025-11-02/2026-05-11",
+    "fuente": "Sentinel-2 L2A (ESA/Copernicus) vía Microsoft Planetary Computer; ESA WorldCover 2021",
+    "nota": "Zonas candidatas a revisar con cámara; no confirman fuga.",
+    "etiqueta": "Zona a revisar con cámara",
+    "area_m2": 3200,
+    "persist": 0.854,
+    "ndmi": 0.09,
+    "ndvi": 0.258,
+    "foto": "fotos/H27.png",
+    "origen": "Pulso · manchas_humedad_gp.geojson (solo zonas al poniente del Río Nazas, Gómez Palacio)",
+    "escenas": [
+     "2026-05-11",
+     "2026-05-06",
+     "2026-04-16",
+     "2026-03-27",
+     "2026-03-22",
+     "2026-03-17",
+     "2026-03-12",
+     "2026-03-02",
+     "2026-01-26",
+     "2025-12-27",
+     "2025-12-22",
+     "2025-12-17",
+     "2025-12-12",
+     "2025-12-07",
+     "2025-11-17",
+     "2025-11-12",
+     "2025-11-07",
+     "2025-11-02"
+    ],
+    "tile": "13RFJ",
+    "metodo": "NDMI (B8A,B11) mediana en temporada seca; zona urbana; anomalía z>2 en >=60% de escenas; NDVI<0.35"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -103.490281,
+     25.549475
+    ]
+   },
+   "properties": {
+    "id": "H28",
+    "tipo": "humedad",
+    "intensidad": 0.844,
+    "fecha": "2025-11-02/2026-05-11",
+    "fuente": "Sentinel-2 L2A (ESA/Copernicus) vía Microsoft Planetary Computer; ESA WorldCover 2021",
+    "nota": "Zonas candidatas a revisar con cámara; no confirman fuga.",
+    "etiqueta": "Zona a revisar con cámara",
+    "area_m2": 2000,
+    "persist": 0.844,
+    "ndmi": 0.068,
+    "ndvi": 0.237,
+    "foto": "fotos/H28.png",
+    "origen": "Pulso · manchas_humedad_gp.geojson (solo zonas al poniente del Río Nazas, Gómez Palacio)",
+    "escenas": [
+     "2026-05-11",
+     "2026-05-06",
+     "2026-04-16",
+     "2026-03-27",
+     "2026-03-22",
+     "2026-03-17",
+     "2026-03-12",
+     "2026-03-02",
+     "2026-01-26",
+     "2025-12-27",
+     "2025-12-22",
+     "2025-12-17",
+     "2025-12-12",
+     "2025-12-07",
+     "2025-11-17",
+     "2025-11-12",
+     "2025-11-07",
+     "2025-11-02"
+    ],
+    "tile": "13RFJ",
+    "metodo": "NDMI (B8A,B11) mediana en temporada seca; zona urbana; anomalía z>2 en >=60% de escenas; NDVI<0.35"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -103.504219,
+     25.549076
+    ]
+   },
+   "properties": {
+    "id": "H29",
+    "tipo": "humedad",
+    "intensidad": 0.844,
+    "fecha": "2025-11-02/2026-05-11",
+    "fuente": "Sentinel-2 L2A (ESA/Copernicus) vía Microsoft Planetary Computer; ESA WorldCover 2021",
+    "nota": "Zonas candidatas a revisar con cámara; no confirman fuga.",
+    "etiqueta": "Zona a revisar con cámara",
+    "area_m2": 2000,
+    "persist": 0.844,
+    "ndmi": 0.071,
+    "ndvi": 0.209,
+    "foto": "fotos/H29.png",
+    "origen": "Pulso · manchas_humedad_gp.geojson (solo zonas al poniente del Río Nazas, Gómez Palacio)",
+    "escenas": [
+     "2026-05-11",
+     "2026-05-06",
+     "2026-04-16",
+     "2026-03-27",
+     "2026-03-22",
+     "2026-03-17",
+     "2026-03-12",
+     "2026-03-02",
+     "2026-01-26",
+     "2025-12-27",
+     "2025-12-22",
+     "2025-12-17",
+     "2025-12-12",
+     "2025-12-07",
+     "2025-11-17",
+     "2025-11-12",
+     "2025-11-07",
+     "2025-11-02"
+    ],
+    "tile": "13RFJ",
+    "metodo": "NDMI (B8A,B11) mediana en temporada seca; zona urbana; anomalía z>2 en >=60% de escenas; NDVI<0.35"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -103.523166,
+     25.529767
+    ]
+   },
+   "properties": {
+    "id": "H31",
+    "tipo": "humedad",
+    "intensidad": 0.722,
+    "fecha": "2025-11-02/2026-05-11",
+    "fuente": "Sentinel-2 L2A (ESA/Copernicus) vía Microsoft Planetary Computer; ESA WorldCover 2021",
+    "nota": "Zonas candidatas a revisar con cámara; no confirman fuga.",
+    "etiqueta": "Zona a revisar con cámara",
+    "area_m2": 2000,
+    "persist": 0.722,
+    "ndmi": 0.064,
+    "ndvi": 0.202,
+    "foto": "fotos/H31.png",
+    "origen": "Pulso · manchas_humedad_gp.geojson (solo zonas al poniente del Río Nazas, Gómez Palacio)",
+    "escenas": [
+     "2026-05-11",
+     "2026-05-06",
+     "2026-04-16",
+     "2026-03-27",
+     "2026-03-22",
+     "2026-03-17",
+     "2026-03-12",
+     "2026-03-02",
+     "2026-01-26",
+     "2025-12-27",
+     "2025-12-22",
+     "2025-12-17",
+     "2025-12-12",
+     "2025-12-07",
+     "2025-11-17",
+     "2025-11-12",
+     "2025-11-07",
+     "2025-11-02"
+    ],
+    "tile": "13RFJ",
+    "metodo": "NDMI (B8A,B11) mediana en temporada seca; zona urbana; anomalía z>2 en >=60% de escenas; NDVI<0.35"
+   }
+  }
+ ]
+}

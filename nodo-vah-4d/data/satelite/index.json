@@ -1,0 +1,6 @@
+{
+  "archivos": [
+    "zonas_humedad_pulso_2026.geojson"
+  ],
+  "nota": "El panel carga cualquier *.geojson listado aquí. Un motor automático podrá añadir más adelante zonas_humedad.geojson (nombre reservado). El archivo de Pulso se llama de forma distinta: zonas_humedad_pulso_2026.geojson."
+}
