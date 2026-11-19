@@ -4,17 +4,17 @@ export const LACTEOS_IDS = new Set(["PL-501", "TQ-501A", "TQ-501B", "AN-501"]);
 export const POZOS_RECARGA_IDS = new Set(["PI-803A", "PI-803B", "PI-803C", "PI-803D"]);
 
 export const NIVEL = {
-  ante: "Anteproyecto referencial",
+  ante: "Anteproyecto preventivo",
   ejec: "Proyecto ejecutivo validado",
 };
 
 export const UBICACION = {
-  etiqueta: "Ubicación referencial, terreno real por definir",
-  aviso: "Ubicación referencial — polígono georreferenciado y acreditación de propiedad pendientes. Terreno real por definir; no se inventa un predio.",
+  etiqueta: "Ubicación de referencia",
+  aviso: "Ubicación de referencia — polígono georreferenciado y acreditación de propiedad pendientes. Terreno real por definir; no se inventa un predio.",
   area: "por confirmar (20,000 / 40,000 m²)",
   areaLarga: "por confirmar (el polígono de la memoria es 200 × 200 m = 40,000 m²; otra versión indica 20,000 m²; terreno real por definir)",
   memoria: "UTM 13R 654,200–654,400 E / 2,854,600–2,854,800 N (≈ 25.80° N, 103.46° W), unos 26 km al norte de la mancha urbana de Gómez Palacio. El visor no coloca el Nodo en esas coordenadas.",
-  visor: "El marcador del Nodo en el mapa de la ciudad es genérico y referencial (junto al PIL). Las coordenadas UTM de la memoria no se usaron para ubicarlo.",
+  visor: "El marcador del Nodo en el mapa de la ciudad es genérico (junto al PIL): ubicación de referencia. Las coordenadas UTM de la memoria no se usaron para ubicarlo.",
 };
 
 /* Nombres de la tabla 14.2 de la v4.9 (Del visor demostrativo a herramienta de gestión) */
@@ -60,6 +60,7 @@ export function fichaHTML(a, extraRows = []) {
   for (const row of extraRows) filas.push(row);
   const tag = a.tag || NIVEL.ante;
   return `<button class="x" onclick="this.parentNode.hidden=true">×</button>
+    <p class="ficha-kicker">Fichas técnicas</p>
     <h3>${a.titulo}<span class="tag ref">${tag}</span></h3>
     <table>${filas.map(([k, v]) => `<tr><td>${k}</td><td>${v}</td></tr>`).join("")}</table>`;
 }
@@ -67,16 +68,34 @@ export function fichaHTML(a, extraRows = []) {
 export function notaFinancieraHTML() {
   const est = "estimado · corrida de Foster";
   return `<div class="fin-agua">
-    <h3>Módulo de agua (independiente)</h3>
-    <p>CAPEX: <b>56.34 MDP</b> sin IVA, sin planta láctea ni pozos de infiltración (<b>${est}</b>). Los pozos de infiltración (0.48 MDP) quedan <b>excluidos del piloto</b>.</p>
+    <h3>Precio mínimo take-and-pay: <b>21.67 $/m³</b> (15 años)</h3>
+    <p>Cifra de cabecera del módulo de agua (<b>${est}</b>): 100 % de compra, sin IVA, tasa real 10 %. A 20 años: <b>20.56 $/m³</b>. Con un 40 % de PROAGUA (<b>no aprobado</b>): <b>17.49 $/m³</b> a 15 años. Con contratos de compra (~$21.67/m³) o apoyo PROAGUA, la operación se puede sostener. No se afirma que el módulo se pague solo.</p>
+    <p>CAPEX: <b>56.34 MDP</b> sin IVA, sin planta láctea ni pozos de infiltración. Los pozos de infiltración (0.48 MDP) quedan <b>excluidos del piloto</b>.</p>
     <p>OPEX de agua, caso base: <b>7.97 MDP/año = 11.23 $/m³</b> (estimado; 709,560 m³/año al 100 % del caudal de diseño).</p>
-    <p>Tarifa de <b>$7.75/m³</b> (5.5 MDP ÷ 709,560 m³): <b>propuesta, sujeta a autorización</b>. <b>No cubre ni el OPEX</b> (11.23 $/m³); a esa tarifa el flujo de operación es negativo.</p>
-    <p>Precio mínimo take-and-pay (100 % de compra, sin IVA, tasa real 10 %, estimado): <b>21.67 $/m³ a 15 años</b>; <b>20.56 $/m³ a 20 años</b>. Con un 40 % hipotético de PROAGUA (<b>no aprobado</b>): <b>17.49 $/m³</b> a 15 años. Con contratos de compra (~$21.67/m³) o apoyo PROAGUA, la operación se puede sostener. No se afirma que el módulo se pague solo.</p>
+    <p>La tarifa de <b>$7.75/m³</b> (5.5 MDP ÷ 709,560 m³) es <b>propuesta, sujeta a autorización</b>. <b>No es ingreso del caso base</b>: no cubre ni el OPEX (11.23 $/m³) y a esa tarifa el flujo de operación es negativo.</p>
   </div>
   <div class="fin-lacteo">
     <h3>Negocio lácteo privado, fuera del alcance público</h3>
     <p>CAPEX del vehículo lácteo: <b>23.61 MDP</b> sin IVA (<b>${est}</b>). Del ingreso proyectado del nodo integrado (36.5 MDP/año, Documento Maestro), <b>26.0 MDP/año</b> venían de productos lácteos. No forma parte de la infraestructura hidráulica pública ni de este módulo de agua. Sujeta a decisión del promovente.</p>
   </div>`;
+}
+
+export const FICHA_MANCHA = "Una mancha de humedad puede deberse también a lavaderos, autolavados o llaves que chorrean. No es una fuga confirmada.";
+
+export function fichaFinancieraHTML() {
+  const filas = [
+    ["Precio mínimo (15 años)", "21.67 $/m³ · 100 % compra, sin IVA, tasa real 10 % · estimado · corrida de Foster"],
+    ["A 20 años", "20.56 $/m³ (estimado)"],
+    ["PROAGUA 40 % (no aprobado)", "17.49 $/m³ a 15 años (estimado; no es un ingreso comprometido)"],
+    ["CAPEX del módulo de agua", "56.34 MDP sin IVA (estimado · corrida de Foster)"],
+    ["OPEX de agua", "7.97 MDP/año = 11.23 $/m³ (estimado; 709,560 m³/año)"],
+    ["Tarifa $7.75/m³", "No es ingreso del caso base. Propuesta sujeta a autorización (5.5 MDP ÷ 709,560 m³); no cubre el OPEX."],
+    ["Sostén de la operación", "Con contratos de compra (~$21.67/m³) o apoyo PROAGUA, la operación se puede sostener. No se afirma que el módulo se pague solo."],
+  ];
+  return `<button class="x" onclick="this.parentNode.hidden=true">×</button>
+    <p class="ficha-kicker">Fichas técnicas</p>
+    <h3>Precio mínimo take-and-pay<span class="tag ref">${NIVEL.ante}</span></h3>
+    <table>${filas.map(([k, v]) => `<tr><td>${k}</td><td>${v}</td></tr>`).join("")}</table>`;
 }
 
 export function rutaValidacionHTML() {
