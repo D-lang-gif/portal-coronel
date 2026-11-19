@@ -165,7 +165,7 @@ export function initSatelite(ctx) {
     }
     const foto = document.getElementById("sat-foto");
     if (p.foto) {
-      const src = DATA + p.foto.replace(/^\.\//, "");
+      const src = (window.SAT_FOTOS && (window.SAT_FOTOS[p.id] || window.SAT_FOTOS[p.foto])) || (DATA + p.foto.replace(/^\.\//, ""));
       foto.hidden = false;
       foto.innerHTML = `<p class="nota tiny">Par de evidencia: color real y humedad (NDMI). ${et}.</p><img src="${src}" alt="Color real y humedad de la zona ${p.id || ""}">`;
       foto.scrollIntoView({ block: "nearest" });
