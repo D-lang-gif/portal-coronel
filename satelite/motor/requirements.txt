@@ -1,0 +1,9 @@
+numpy==2.5.5
+scipy==1.18.1
+rasterio==1.5.2
+pyproj==3.8.0
+shapely==2.2.0
+pystac==1.15.2
+pystac-client==0.9.1
+requests==2.34.2
+matplotlib==3.11.2
