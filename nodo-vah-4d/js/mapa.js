@@ -2,10 +2,10 @@
    Puntos: motor satelital (zonas_humedad.geojson) + GP-001 fusionado con GP-H006.
    Encharcamientos: oficial Nova + prensa Crownteer. Hundimientos: 7 puntos HN (Nano / LiCSAR).
    El Nodo permanece visible. El visor 3D/4D no se elimina: se abre con «Ver Nodo VAH 3D/4D». */
+import { fusionarZonas, centroideLL, esNueva } from "./zonas.js";
+
 const DATA = "data/satelite/";
 const NODO = { lat: 25.583829, lon: -103.446190, label: "Nodo VAH – Ubicación de referencia" };
-
-const RANK = { alta: 3, media: 2, baja: 1 };
 
 function esc(s) {
   return String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
@@ -17,24 +17,7 @@ function gm(la, lo) {
   return `<a class="gbtn maps" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=${la},${lo}">Abrir en Google Maps</a>`
     + `<a class="gbtn dir" target="_blank" rel="noopener" href="https://www.google.com/maps/dir/?api=1&destination=${la},${lo}">Cómo llegar</a>`;
 }
-function centroide(f) {
-  if (f.properties?.lat != null && f.properties?.lon != null) return [+f.properties.lat, +f.properties.lon];
-  const c = f.properties?.centro;
-  if (Array.isArray(c) && c.length >= 2) {
-    const a = +c[0], b = +c[1];
-    // engine uses [lon, lat]
-    if (Math.abs(a) > 40 && Math.abs(b) < 40) return [b, a];
-    return [a, b];
-  }
-  const g = L.geoJSON(f).getBounds().getCenter();
-  return [g.lat, g.lng];
-}
-function distM(a, b) {
-  const R = 6371000, p1 = a[0] * Math.PI / 180, p2 = b[0] * Math.PI / 180;
-  const dp = p2 - p1, dl = (b[1] - a[1]) * Math.PI / 180;
-  const h = Math.sin(dp / 2) ** 2 + Math.cos(p1) * Math.cos(p2) * Math.sin(dl / 2) ** 2;
-  return 2 * R * Math.asin(Math.min(1, Math.sqrt(h)));
-}
+const centroide = centroideLL;
 function fechasUnicas(lista) {
   return [...new Set(lista.filter(Boolean))].sort();
 }
@@ -78,14 +61,23 @@ export function ocultarMapa() {
 }
 
 function construir(root) {
-  map = L.map("m", { zoomControl: false, keyboard: true, zoomAnimation: true, fadeAnimation: true })
+  map = L.map("m", { zoomControl: false, keyboard: true, zoomAnimation: true, fadeAnimation: true, maxZoom: 19 })
     .setView([25.575, -103.495], 13);
+  // Imagen: nativa hasta 19, sin pedir teselas inventadas ni estirar de más.
   const sat = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", {
-    maxZoom: 19, attribution: "Esri · Earthstar Geographics",
+    maxZoom: 19, maxNativeZoom: 19, attribution: "Esri · Earthstar Geographics",
   });
-  const lab = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Transportation/MapServer/tile/{z}/{y}/{x}", { maxZoom: 19 });
-  const lab2 = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}", { maxZoom: 19 });
-  const osm = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 19, attribution: "© OpenStreetMap" });
+  // Referencia Esri (carreteras salmón y topónimos): nativa y visible solo hasta z16.
+  // A z17–19 esas teselas ráster se ven gruesas y borrosas; no se estiran.
+  const lab = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Transportation/MapServer/tile/{z}/{y}/{x}", {
+    maxZoom: 16, maxNativeZoom: 16,
+  });
+  const lab2 = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}", {
+    maxZoom: 16, maxNativeZoom: 16,
+  });
+  const osm = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    maxZoom: 19, maxNativeZoom: 19, attribution: "© OpenStreetMap",
+  });
   sat.addTo(map); lab.addTo(map); lab2.addTo(map);
 
   const F = L.layerGroup().addTo(map);
@@ -140,6 +132,7 @@ function construir(root) {
   });
 
   ponerNodo(N);
+  map.on("zoomend", () => { for (const rec of poligonos) rec.layer.setStyle(estiloZona(rec.nueva)); });
   Promise.all([
     cargar(DATA + "zonas_humedad.geojson").catch(() => ({ features: [] })),
     cargar(DATA + "zona_humedad_motor_fugas_gp001.geojson").catch(() => ({ features: [] })),
@@ -180,58 +173,27 @@ function ponerNodo(N) {
   markers["Nodo"] = mk;
 }
 
-function fusionarZonas(engine, pulso) {
-  const gp = pulso.find((f) => (f.properties || {}).id === "GP-001");
-  const list = [];
-  let merged = false;
-  for (const f of engine) {
-    const p = { ...(f.properties || {}) };
-    if (p.id && /^SH-/i.test(p.id)) continue; // Crownteer SH: no se muestran
-    const ll = centroide({ ...f, properties: p });
-    if (gp && p.id === "GP-H006") {
-      const gll = centroide(gp);
-      if (distM(ll, gll) < 40) {
-        const pg = gp.properties || {};
-        p.id_motor = "GP-H006";
-        p.id_pulso = "GP-001";
-        p.id = "GP-001";
-        p.fuentes_fusion = "Motor satelital (GP-H006) y motor de humedad Pulso (GP-001)";
-        p.explicacion_pulso = pg.explicacion || "";
-        p.foto = pg.foto;
-        p.img = (typeof window !== "undefined" && window.SAT_FOTOS && window.SAT_FOTOS["GP-001"]) || pg.img;
-        p.clase = p.clase || "nueva";
-        p.categoria = p.categoria || "nueva";
-        merged = true;
-      }
-    }
-    list.push({ ...f, properties: p, _ll: ll });
-  }
-  if (gp && !merged) {
-    const pg = { ...(gp.properties || {}) };
-    pg.clase = "nueva";
-    pg.categoria = "nueva";
-    pg.img = (typeof window !== "undefined" && window.SAT_FOTOS && window.SAT_FOTOS["GP-001"]) || pg.img;
-    list.push({ ...gp, properties: pg, _ll: centroide(gp) });
-  }
-  const nuevas = list.filter((f) => f.properties.clase === "nueva" || f.properties.categoria === "nueva");
-  const constan = list.filter((f) => !nuevas.includes(f));
-  const ordenN = (a, b) => {
-    if (a.properties.id === "GP-001") return -1;
-    if (b.properties.id === "GP-001") return 1;
-    return (RANK[b.properties.confianza] || 0) - (RANK[a.properties.confianza] || 0)
-      || (b.properties.intensidad || 0) - (a.properties.intensidad || 0);
+function estiloZona(nueva) {
+  const z = map.getZoom();
+  const cerca = z >= 16;
+  const muyCerca = z >= 17;
+  return {
+    color: nueva ? "#e11d2e" : "#f59e0b",
+    weight: muyCerca ? 0 : (cerca ? 1.25 : 1.75),
+    opacity: muyCerca ? 0 : 0.85,
+    fillColor: nueva ? "#e11d2e" : "#f59e0b",
+    fillOpacity: cerca ? 0 : 0.22,
+    interactive: !muyCerca,
   };
-  const ordenC = (a, b) => (RANK[b.properties.confianza] || 0) - (RANK[a.properties.confianza] || 0)
-    || (b.properties.intensidad || 0) - (a.properties.intensidad || 0)
-    || String(a.properties.id).localeCompare(String(b.properties.id));
-  return [...nuevas.sort(ordenN), ...constan.sort(ordenC)];
 }
 
+const poligonos = [];
 function pintarZonas(zonas, F, C) {
+  poligonos.length = 0;
   for (const f of zonas) {
     const p = f.properties || {};
     const [la, lo] = f._ll || centroide(f);
-    const nueva = p.clase === "nueva" || p.categoria === "nueva";
+    const nueva = esNueva(p);
     const col = nueva ? "#e11d2e" : "#f59e0b";
     const titulo = p.id === "GP-001" ? "GP-001 · Humedad nueva" : `${p.id} · ${nueva ? "Humedad nueva" : "Humedad constante"}`;
     const fuentes = p.fuentes_fusion
@@ -251,7 +213,8 @@ function pintarZonas(zonas, F, C) {
       iconSize: [22, 22], iconAnchor: [11, 14],
     });
     if (f.geometry && f.geometry.type && f.geometry.type !== "Point") {
-      L.geoJSON(f, { style: { color: col, weight: 2, fillColor: col, fillOpacity: 0.28 } }).bindPopup(html, { maxWidth: 340 }).addTo(nueva ? F : C);
+      const gj = L.geoJSON(f, { style: estiloZona(nueva), interactive: true }).bindPopup(html, { maxWidth: 340 }).addTo(nueva ? F : C);
+      poligonos.push({ layer: gj, nueva });
     }
     const mk = L.marker([la, lo], { icon, zIndexOffset: nueva ? 800 : 400, title: p.id }).bindPopup(html, { maxWidth: 340 });
     (nueva ? F : C).addLayer(mk);
@@ -376,7 +339,7 @@ function listaZonas(zonas) {
   if (!ul) return;
   ul.innerHTML = zonas.map((f) => {
     const p = f.properties || {};
-    const nueva = p.clase === "nueva" || p.categoria === "nueva";
+    const nueva = esNueva(p);
     const top = p.id === "GP-001" ? " top" : "";
     const det = [nueva ? "Humedad nueva" : "Humedad constante", p.confianza ? `confianza ${p.confianza}` : "", p.calle_cercana || ""].filter(Boolean).join(" · ");
     return `<li><button type="button" class="${nueva ? "nueva" : ""}${top}" data-z="${esc(p.id)}"><b>${esc(p.id)}</b><small>${esc(det)}</small></button></li>`;

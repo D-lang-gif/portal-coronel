@@ -1,6 +1,7 @@
 /* Vigilancia satelital: escenas Sentinel-2 (Element84 Earth Search, sin clave) y zonas GeoJSON. */
 import * as THREE from "three";
 import { attrs, fichaHTML, NIVEL, PC, FICHA_MANCHA } from "./pliego.js";
+import { fusionarZonas, esNueva } from "./zonas.js";
 
 const STAC = "https://earth-search.aws.element84.com/v1/search";
 const BBOX = [-103.53, 25.54, -103.43, 25.62]; // Gómez Palacio urbana
@@ -46,7 +47,7 @@ export function initSatelite(ctx) {
 
   root.innerHTML = `
     <h3>Zonas para revisar primero (satelital)</h3>
-    <p class="nota tiny">Manchas de humedad en temporada seca (Sentinel-2). Cada una es una <b>zona a revisar con cámara</b>; no se afirma que sea una fuga. Fuentes en Fichas técnicas.</p>
+    <p class="nota tiny">Listado del motor satelital automático (25 zonas). GP-001 está fusionado con GP-H006. Cada una es una <b>zona a revisar con cámara</b>; no se afirma que sea una fuga. No se mezclan aquí las 16 manchas de temporada seca de Pulso ni zonas SH.</p>
     <div id="sat-zonas" class="sat-lista"><p class="nota">Sin datos cargados</p></div>
     <div class="sat-acciones"><button type="button" class="btn mini" id="sat-export-geo">Exportar zonas (GeoJSON)</button>
       <button type="button" class="btn mini" id="sat-export-csv">Exportar zonas (CSV)</button></div>
@@ -65,16 +66,17 @@ export function initSatelite(ctx) {
   async function cargarZonas() {
     const box = document.getElementById("sat-zonas");
     try {
-      const idx = await fetch(DATA + "index.json", { cache: "no-store" }).then((r) => r.ok ? r.json() : { archivos: [] });
-      const files = idx.archivos || [];
-      const all = [];
-      for (const name of files) {
-        const url = DATA + name;
-        const gj = await fetch(url, { cache: "no-store" }).then((r) => r.ok ? r.json() : null);
-        if (!gj || !gj.features) continue;
-        for (const f of gj.features) all.push({ f, archivo: name });
-      }
-      zonas = all;
+      const [zh, gp001] = await Promise.all([
+        fetch(DATA + "zonas_humedad.geojson", { cache: "no-store" }).then((r) => r.ok ? r.json() : { features: [] }),
+        fetch(DATA + "zona_humedad_motor_fugas_gp001.geojson", { cache: "no-store" }).then((r) => r.ok ? r.json() : { features: [] }),
+      ]);
+      const fused = fusionarZonas(zh.features || [], gp001.features || []);
+      zonas = fused.map((f) => ({
+        f,
+        archivo: f.properties?.fuentes_fusion
+          ? "zonas_humedad.geojson + GP-001"
+          : "zonas_humedad.geojson",
+      }));
       pintarZonas();
     } catch (e) {
       box.innerHTML = `<p class="nota">Sin datos cargados</p><p class="nota tiny">${e.message}</p>`;
@@ -88,11 +90,12 @@ export function initSatelite(ctx) {
     if (!zonas.length) { box.innerHTML = `<p class="nota">Sin datos cargados</p>`; return; }
     box.innerHTML = zonas.map(({ f, archivo }, i) => {
       const p = f.properties || {};
-      const et = p.etiqueta || (p.tipo === "humedad" ? "Zona a revisar con cámara" : (p.id || "Zona"));
-      const cloud = p.tipo === "humedad" ? "hum" : "hun";
-      return `<button type="button" class="sat-item ${cloud}" data-zi="${i}">
+      const nueva = esNueva(p);
+      const et = p.id === "GP-001" ? "Humedad nueva" : (nueva ? "Humedad nueva" : "Humedad constante");
+      const det = [p.confianza ? `confianza ${p.confianza}` : "", p.calle_cercana || "", archivo].filter(Boolean).join(" · ");
+      return `<button type="button" class="sat-item ${nueva ? "hum" : "hun"}" data-zi="${i}">
         <b>${p.id || "—"}</b> · ${et}
-        <small>${p.fecha || ""} · ${p.tipo || ""} · ${archivo}</small>
+        <small>${det}</small>
       </button>`;
     }).join("");
     box.querySelectorAll("[data-zi]").forEach((b) => b.addEventListener("click", () => abrirZona(+b.dataset.zi)));
@@ -159,17 +162,18 @@ export function initSatelite(ctx) {
         "Cota y profundidad": PC,
         "Diámetro y material": "no aplica",
         "Norma aplicable": PC,
-        "Fuente del dato": p.fuente || PC,
+        "Fuente del dato": p.fuentes_fusion || p.fuente || PC,
         Identificador: p.id || PC,
       }, extra)));
     }
     const foto = document.getElementById("sat-foto");
-    if (p.foto) {
-      const src = (window.SAT_FOTOS && (window.SAT_FOTOS[p.id] || window.SAT_FOTOS[p.foto])) || (DATA + p.foto.replace(/^\.\//, ""));
+    const src = p.img || (window.SAT_FOTOS && (window.SAT_FOTOS[p.id] || (p.foto && window.SAT_FOTOS[p.foto]))) || (p.foto ? DATA + p.foto.replace(/^\.\//, "") : "");
+    if (src) {
       foto.hidden = false;
       foto.innerHTML = `<p class="nota tiny">Par de evidencia: color real y humedad (NDMI). ${et}.</p><img src="${src}" alt="Color real y humedad de la zona ${p.id || ""}">`;
       foto.scrollIntoView({ block: "nearest" });
     } else { foto.hidden = true; foto.innerHTML = ""; }
+
   }
 
   async function buscarEscenas() {
