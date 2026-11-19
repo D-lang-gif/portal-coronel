@@ -1,0 +1,64 @@
+{
+ "version_motor": "1.0.0",
+ "ultima_corrida": "2026-11-19T09:26:37+00:00",
+ "tile": "MGRS-13RFJ",
+ "escena_mas_reciente_usada": "2026-11-07",
+ "escenas_consultadas": 58,
+ "escenas_secas_usadas": 36,
+ "escenas_tras_lluvia": 17,
+ "zonas_humedad": 25,
+ "encharcamientos": 6,
+ "zonas_por_confianza": {
+  "alta": 4,
+  "media": 12,
+  "baja": 9
+ },
+ "zonas_retiradas_historico": 0,
+ "parametros": {
+  "coleccion": "sentinel-2-l2a",
+  "bbox": [
+   -103.56,
+   25.5,
+   -103.42,
+   25.63
+  ],
+  "punto_lluvia": [
+   25.56,
+   -103.5
+  ],
+  "meses_secos": [
+   11,
+   12,
+   1,
+   2,
+   3,
+   4,
+   5
+  ],
+  "ventana_dias": 365,
+  "nubes_tile_max": 40,
+  "claro_aoi_min": 0.7,
+  "scl_validos": [
+   4,
+   5,
+   6
+  ],
+  "dias_recientes": 45,
+  "delta_ndmi_lluvia": 0.04,
+  "z_nueva": 2.5,
+  "z_sobre_historia": 2.0,
+  "z_cronica": 2.0,
+  "historia_max_nueva": 0.2,
+  "lluvia_3d_max": 2.0,
+  "lluvia_7d_max": 5.0,
+  "persistencia_min": 0.6,
+  "ndvi_max": 0.35,
+  "min_pixeles": 4,
+  "buffer_mascara_m": 20,
+  "max_zonas": 200,
+  "union_m": 60,
+  "iou_min": 0.1,
+  "corridas_para_retirar": 3,
+  "modo": "normal"
+ }
+}
