@@ -7,6 +7,12 @@
   <meta name="theme-color" content="#0b0b10" />
   <link rel="icon" type="image/svg+xml" href="../img/favicon.svg" />
   <link rel="stylesheet" href="css/nodo4d.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="css/mapa.css" />
+  <script defer src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
   <script type="importmap">
   { "imports": {
       "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.min.js",
@@ -42,6 +48,44 @@
     </div>
   </div>
 
+
+  <div id="vista-mapa" hidden>
+    <div id="m" role="application" aria-label="Mapa de vigilancia de Gómez Palacio"></div>
+    <div id="vm-brand" class="vm-glass">
+      <button type="button" id="vm-menu-btn" aria-label="Abrir menú">☰</button>
+      <div class="vm-tit"><b>Nodo VAH</b><small>Vigilancia satelital · Gómez Palacio</small></div>
+    </div>
+    <button type="button" id="vm-nodo4d"><strong>Ver Nodo VAH 3D/4D</strong><span>Modelo, cronograma y recorrido</span></button>
+    <div id="vm-controles">
+      <button type="button" id="vm-zoomin" aria-label="Acercar">+</button>
+      <button type="button" id="vm-zoomout" aria-label="Alejar">−</button>
+      <div id="vm-flechas">
+        <button type="button" id="vm-n" class="n" aria-label="Norte">▲</button>
+        <button type="button" id="vm-o" class="o" aria-label="Oeste">◀</button>
+        <button type="button" id="vm-s" class="s" aria-label="Sur">▼</button>
+        <button type="button" id="vm-e" class="e" aria-label="Este">▶</button>
+      </div>
+    </div>
+    <button type="button" id="vm-yo" aria-label="Mi ubicación">◎</button>
+    <aside id="vm-menu" class="vm-glass">
+      <h3>Capas</h3>
+      <label><input type="checkbox" id="cS" checked> Imagen de satélite</label>
+      <label><input type="checkbox" id="cF" checked> <i class="sw" style="background:#e11d2e"></i> Humedad nueva</label>
+      <label><input type="checkbox" id="cC" checked> <i class="sw" style="background:#f59e0b"></i> Humedad constante</label>
+      <label><input type="checkbox" id="cE" checked> <i class="sw" style="background:#2563eb"></i> Encharcamientos</label>
+      <label><input type="checkbox" id="cN" checked> <i class="sw" style="background:#d4a63a"></i> Nodo VAH (ubicación de referencia)</label>
+      <label><input type="checkbox" id="cH"> <i class="sw" style="background:#7c3aed"></i> Hundimientos (radar Sentinel-1, 2022-2026)</label>
+      <h3 style="margin-top:16px">Ir a coordenada</h3>
+      <input id="busca" placeholder="lat, lon  ·  p. ej. 25.5889, -103.5129" autocomplete="off" />
+      <h3>Zonas a revisar</h3>
+      <ul class="vm-lista" id="vm-zonas"></ul>
+      <h3 style="margin-top:14px">Encharcamientos sin coordenada</h3>
+      <ul class="vm-sin" id="vm-enc-sin"></ul>
+      <p class="vm-nota">Ninguna mancha es una fuga confirmada. Hay que revisarla con cámara. El Nodo VAH se mantiene: el botón superior abre el modelo 3D/4D, el cronograma de obra y el recorrido guiado. El cárcamo del Paso 11-40 no se marca: no hay un punto unívoco en el mapa de calles.</p>
+      <p class="vm-nota"><button type="button" id="vm-salir">Salir</button></p>
+    </aside>
+  </div>
+
   <main id="app" hidden>
     <header class="top">
       <a class="marca" href="../index.html" title="Volver al Gabinete">
@@ -57,6 +101,7 @@
         <span class="led" id="led-mes">MES 0</span>
       </div>
       <nav class="nav">
+        <button class="btn mini oro" id="btn-mapa-zonas" type="button">← Mapa de zonas</button>
         <a class="btn mini" href="../index.html">← Gabinete</a>
         <button class="btn mini" id="btn-salir" type="button">Salir</button>
       </nav>

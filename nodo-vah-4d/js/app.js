@@ -14,6 +14,7 @@ import { LACTEOS_IDS, POZOS_RECARGA_IDS, NIVEL, UBICACION, attrs, fichaHTML, fic
 import { crearGestion } from "./gestion.js";
 import { initSatelite } from "./satelite.js";
 import { crearEncharcamientos } from "./encharcamientos.js";
+import { initMapa, mostrarMapa, ocultarMapa } from "./mapa.js";
 
 const $ = (s, r = document) => r.querySelector(s);
 const D = window.NODO_DATA, PR = window.NODO_PRES;
@@ -30,8 +31,32 @@ async function hashPw(pw) {
   const bits = await crypto.subtle.deriveBits({ name: "PBKDF2", salt, iterations: GATE.ITER, hash: "SHA-256" }, km, 256);
   return [...new Uint8Array(bits)].map((b) => b.toString(16).padStart(2, "0")).join("");
 }
-let abierto = false;
-function abrir() { sessionStorage.setItem(GATE.KEY, "1"); $("#gate").hidden = true; $("#app").hidden = false; if (!abierto) { abierto = true; iniciar(); } }
+let abierto = false, visorIniciado = false;
+function quiereVisor4D() {
+  const q = new URLSearchParams(location.search);
+  return q.get("modo") === "presentacion" || q.get("vista") === "4d";
+}
+function abrir() {
+  sessionStorage.setItem(GATE.KEY, "1");
+  $("#gate").hidden = true;
+  if (!abierto) {
+    abierto = true;
+    if (quiereVisor4D()) mostrarVisor4D();
+    else mostrarMapaInicio();
+  }
+}
+function mostrarMapaInicio() {
+  $("#app").hidden = true;
+  initMapa({ onVisor4D: () => mostrarVisor4D() });
+  mostrarMapa();
+}
+function mostrarVisor4D() {
+  ocultarMapa();
+  $("#app").hidden = false;
+  $("#app").classList.add("desde-mapa");
+  if (!visorIniciado) { visorIniciado = true; iniciar(); }
+  requestAnimationFrame(() => window.dispatchEvent(new Event("resize")));
+}
 function candado() {
   if (sessionStorage.getItem(GATE.KEY) === "1" || localStorage.getItem(GATE.REC) === "1") return abrir();
   $("#gate-form").addEventListener("submit", async (e) => {
@@ -47,6 +72,7 @@ function candado() {
   });
 }
 $("#btn-salir").addEventListener("click", () => { sessionStorage.removeItem(GATE.KEY); localStorage.removeItem(GATE.REC); location.reload(); });
+$("#btn-mapa-zonas")?.addEventListener("click", () => { mostrarMapaInicio(); });
 
 /* ───────── Cronograma (Documento Maestro §11) ───────── */
 // Fases 0–3 = renglones 1–4 del cronograma T1–T8 (semestres); mapeo de fases según S-12 del proyecto.
