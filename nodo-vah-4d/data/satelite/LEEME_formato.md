@@ -76,3 +76,10 @@ Ejemplo mínimo:
 - Cada mancha de humedad se etiqueta **Zona a revisar con cámara**. No se afirma que sea una fuga.
 - En **Fichas técnicas** se recuerda que una mancha también puede ser un lavadero, un autolavado o una llave que chorrea.
 - Al pulsar una zona, el visor vuela hasta ella, abre el par de fotos si existe y señala calles, tuberías y la obra del Plan Fluye más cercana.
+
+
+## Zona GP-001 (motor de humedad Pulso)
+
+Además de las manchas de temporada seca (`zonas_humedad_pulso_2026.geojson`), el índice carga `zona_humedad_motor_fugas_gp001.geojson`: una zona de humedad nueva (posible fuga) del motor de Pulso, corrida 19-nov-2026. Se etiqueta «Zona a revisar con cámara». El nombre `zonas_humedad.geojson` sigue reservado para el motor automático.
+
+Los encharcamientos (oficial + prensa) no van en este índice: son la capa «Encharcamientos». Ver `LEEME_encharcamientos.md`.
