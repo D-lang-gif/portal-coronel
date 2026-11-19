@@ -61,9 +61,10 @@ const finAcum = (m) => COSTO_F.reduce((s, c, n) => s + c * progFase(n, m), 0);
 function kpis() {
   const k = D.kpi;
   const items = [
-    ["Módulo de agua (independiente)", "54.32 MDP", "sin IVA (63.01 con IVA) · v4.9 §13.1 · " + PRELIM_FOSTER, "oro"],
-    ["$7.70/m³ no cubre operación", "13.25 $/m³", "equilibrio operativo · inversión ≈ 22–23 $/m³ · " + PRELIM_FOSTER],
-    ["Tarifa $7.70/m³", TARIFA_NOTA, "Con esa tarifa el módulo no cubre su operación"],
+    ["Módulo de agua (independiente)", "56.34 MDP", "sin IVA · " + PRELIM_FOSTER, "oro"],
+    ["OPEX agua (estimado)", "11.23 $/m³", "7.97 MDP/año · 709,560 m³ · " + PRELIM_FOSTER],
+    ["Tarifa $7.75/m³", TARIFA_NOTA, "5.5 MDP ÷ 709,560 m³ · no cubre ni el OPEX (11.23 $/m³)"],
+    ["Take-and-pay mínimo (estimado)", "21.67 $/m³", "15 años, 100 % compra, sin IVA, tasa real 10 % · 20 años: 20.56 · PROAGUA 40 % (no aprobado): 17.49"],
     ["Caudal de diseño SIBRA", k["Caudal de diseño"], "DBO₅ 450 y SST 380 mg/L: " + INF_TEORICO],
     ["Ubicación del Nodo", "referencial", UBICACION.etiqueta],
     ["Superficie del predio", UBICACION.area, UBICACION.areaLarga],
@@ -90,7 +91,7 @@ function porFase() {
   $("#porfase").innerHTML = `<p class="nota tiny">Cifras del expediente del 25-oct-2026 (plan maestro). El total incluye partidas que el Documento Maestro agrupa con el nodo integrado; la planta láctea se detalla aparte, como negocio privado. No se inventa un total de agua a 15–20 años.</p>
     <table class="tz"><tr><th>Fase</th><th>MDP</th><th>%</th></tr>${filas}<tr><td><span style="color:${FASE[4].color}">■</span> F4 · Expansión futura</td><td>—</td><td>sin presupuesto</td></tr><tr><td><b>Total expediente (sin IVA)</b></td><td><b>${mdp(PR.subtotal, 2)}</b></td><td>incluye lácteo, ver nota</td></tr></table>`;
   const ZN = { "BLQ-A": "Bloque A · SIBRA (módulo de agua)", "BLQ-B": "Bloque B · Energía", "BLQ-C": "Negocio lácteo privado, fuera del alcance público", "BLQ-D": "Bloque D · Admin + IA", PATIO: "Patio y acceso", NORTE: "Franja Norte (sup.)", "ZONA-E": "Zona E · Pulimento (recarga = fase futura, no incluida)", Redes: "Redes", Vialidades: "Vialidades", Predio: "Predio / urbanización", "Instr.": "Instrumentación", Global: "Ingeniería, permisos, contingencias" };
-  const z = Object.entries(PR.zonas).sort((a, b) => b[1] - a[1]).map(([k, v]) => `<tr><td>${ZN[k] || k}</td><td>${k === "BLQ-C" ? "18.60 (CAPEX lácteo, privado)" : mdp(v, 2)}</td><td>${k === "BLQ-C" ? "fuera del alcance público" : (v / PR.subtotal * 100).toFixed(1) + "%"}</td></tr>`).join("");
+  const z = Object.entries(PR.zonas).sort((a, b) => b[1] - a[1]).map(([k, v]) => `<tr><td>${ZN[k] || k}</td><td>${k === "BLQ-C" ? "23.61 (CAPEX lácteo, privado, corrida de Foster)" : mdp(v, 2)}</td><td>${k === "BLQ-C" ? "fuera del alcance público" : (v / PR.subtotal * 100).toFixed(1) + "%"}</td></tr>`).join("");
   $("#zonas").innerHTML = `<table class="tz"><tr><th>Zona</th><th>MDP</th><th>%</th></tr>${z}</table>`;
 }
 function planos() {

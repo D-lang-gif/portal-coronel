@@ -65,16 +65,17 @@ export function fichaHTML(a, extraRows = []) {
 }
 
 export function notaFinancieraHTML() {
-  const prelim = "preliminar, por conciliar con la corrida de Foster";
+  const est = "estimado · corrida de Foster";
   return `<div class="fin-agua">
     <h3>Módulo de agua (independiente)</h3>
-    <p>Proyecto hidráulico solo, sin planta láctea ni pozos de infiltración: <b>54.32 MDP</b> sin IVA (63.01 con IVA). Cifras de la v4.9, §13.1, a partir del presupuesto real del 25-oct-2026 (directo 45.27 + indirectos). Etiqueta: <b>${prelim}</b>.</p>
-    <p>Tarifa de <b>$7.70/m³</b>: <b>propuesta, sujeta a autorización</b>. Con esa tarifa el módulo <b>no cubre su operación</b>.</p>
-    <p>Equilibrio operativo ≈ <b>13.25 $/m³</b>. Para cubrir también la inversión ≈ <b>22–23 $/m³</b> (15 años: 23.31; 20 años: 22.24, supuesto base). Todas estas cifras son <b>${prelim}</b>.</p>
+    <p>CAPEX: <b>56.34 MDP</b> sin IVA, sin planta láctea ni pozos de infiltración (<b>${est}</b>). Los pozos de infiltración (0.48 MDP) quedan <b>excluidos del piloto</b>.</p>
+    <p>OPEX de agua, caso base: <b>7.97 MDP/año = 11.23 $/m³</b> (estimado; 709,560 m³/año al 100 % del caudal de diseño).</p>
+    <p>Tarifa de <b>$7.75/m³</b> (5.5 MDP ÷ 709,560 m³): <b>propuesta, sujeta a autorización</b>. <b>No cubre ni el OPEX</b> (11.23 $/m³); a esa tarifa el flujo de operación es negativo.</p>
+    <p>Precio mínimo take-and-pay (100 % de compra, sin IVA, tasa real 10 %, estimado): <b>21.67 $/m³ a 15 años</b>; <b>20.56 $/m³ a 20 años</b>. Con un 40 % hipotético de PROAGUA (<b>no aprobado</b>): <b>17.49 $/m³</b> a 15 años.</p>
   </div>
   <div class="fin-lacteo">
     <h3>Negocio lácteo privado, fuera del alcance público</h3>
-    <p>Planta de proteína (lácteos), Anexo A de la v4.9: CAPEX <b>18.60 MDP</b> de la planta (25.58 MDP con solar térmico, redes e indirectos). Del ingreso proyectado del nodo integrado (36.5 MDP/año, Documento Maestro), <b>26.0 MDP/año</b> venían de productos lácteos. No forma parte de la infraestructura hidráulica pública ni de este módulo de agua. Sujeta a decisión del promovente.</p>
+    <p>CAPEX del vehículo lácteo: <b>23.61 MDP</b> sin IVA (<b>${est}</b>). Del ingreso proyectado del nodo integrado (36.5 MDP/año, Documento Maestro), <b>26.0 MDP/año</b> venían de productos lácteos. No forma parte de la infraestructura hidráulica pública ni de este módulo de agua. Sujeta a decisión del promovente.</p>
   </div>`;
 }
 
@@ -147,5 +148,5 @@ export function semaforoHTML(tramos) {
 
 export const INF_TEORICO = "teóricos — pendiente muestreo compuesto y aforo con laboratorio acreditado EMA";
 export const TARIFA_NOTA = "propuesta, sujeta a autorización";
-export const PRELIM_FOSTER = "preliminar, por conciliar con la corrida de Foster";
+export const PRELIM_FOSTER = "estimado · corrida de Foster";
 export const RECARGA_NOM = "Fase futura — condicionada a estudio hidrogeológico y NOM-014-CONAGUA-2003 (riesgo de arsénico)";
