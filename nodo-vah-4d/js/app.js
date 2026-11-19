@@ -64,7 +64,7 @@ function kpis() {
     ["Módulo de agua (independiente)", "56.34 MDP", "sin IVA · " + PRELIM_FOSTER, "oro"],
     ["OPEX agua (estimado)", "11.23 $/m³", "7.97 MDP/año · 709,560 m³ · " + PRELIM_FOSTER],
     ["Tarifa $7.75/m³", TARIFA_NOTA, "5.5 MDP ÷ 709,560 m³ · no cubre ni el OPEX (11.23 $/m³)"],
-    ["Take-and-pay mínimo (estimado)", "21.67 $/m³", "15 años, 100 % compra, sin IVA, tasa real 10 % · 20 años: 20.56 · PROAGUA 40 % (no aprobado): 17.49"],
+    ["Take-and-pay mínimo (estimado)", "21.67 $/m³", "Con contratos de compra (~$21.67/m³) o apoyo PROAGUA, la operación se puede sostener · 15 años, 100 % compra, sin IVA, tasa real 10 % · 20 años: 20.56 · PROAGUA 40 % (no aprobado): 17.49"],
     ["Caudal de diseño SIBRA", k["Caudal de diseño"], "DBO₅ 450 y SST 380 mg/L: " + INF_TEORICO],
     ["Ubicación del Nodo", "referencial", UBICACION.etiqueta],
     ["Superficie del predio", UBICACION.area, UBICACION.areaLarga],
@@ -695,14 +695,14 @@ function conectarNodo() {
 }
 /* ───── Modo presentación (?modo=presentacion): recorrido guiado en lenguaje sencillo ───── */
 const PRES = [
-  { t: "Gómez Palacio, en 3D", d: "Este visor muestra la ciudad real (OpenStreetMap) y, encima, lo que proponemos sumar al Plan Fluye. Lo verde es lo que el gobierno ya está construyendo.", capas: ["gob"], cam: [-3500, 1500, 9000] },
+  { t: "Gómez Palacio, en 3D", d: "El Plan Fluye pone la base y el Nodo la protege a futuro. Este visor muestra la ciudad real (OpenStreetMap) y, encima, lo que proponemos sumar. Lo verde es lo que el gobierno ya está construyendo.", capas: ["gob"], cam: [-3500, 1500, 9000] },
   { t: "El problema", d: "El Emisor Central y el colector San Ignacio llevan cerca del 80 % del agua residual de la ciudad. Los tubos viejos se corroyeron y ya hubo colapsos. Por eso el gobierno ya los está cambiando.", capas: ["gob", "zanja"], ver: "zanja" },
-  { t: "Cavar una sola vez", d: "Si la calle ya está abierta para el tubo nuevo, en la misma zanja se pueden dejar ductos para fibra y sensores. Así no se vuelve a romper la calle después.", capas: ["zanja"], ver: "zanja" },
+  { t: "Cavar una sola vez", d: "Si la calle ya está abierta para el tubo nuevo, en la misma zanja se pueden dejar ductos para fibra y pozos de sensores (por cotizar). Así no se vuelve a romper la calle después. La coordinación con la contratista, si procede, es solo a través de la CAED y SIDEAPA en la mesa técnica.", capas: ["zanja"], ver: "zanja" },
   { t: "Obra por tramos, con cuidado de los vecinos", d: "La obra avanza de 100 en 100 metros, de la planta hacia las colonias. En cada tramo: desvío vial señalizado, bombeo provisional para que nadie se quede sin drenaje y acceso para emergencias.", capas: ["zanja"], obra: true },
   { t: "Colonias que se benefician", d: "Cuando el sistema completo esté terminado, unas 262 mil personas tendrán un drenaje más seguro. Atención primero donde ya hubo fallas, como Las Luisas, Leticia Herrera y Centenario.", capas: ["zanja", "gob"], ver: "zanja" },
   { t: "Lluvia y campo", d: "La lluvia fuerte puede guardarse en vasos de retención que en secas sirven como parques. El campo de Gómez Palacio sembró 21 % menos en 2025: el agua tratada puede ayudar.", capas: ["lluvias"], ver: "lluvias" },
   { t: "Agua tratada para parques y ejidos", d: "El Nodo limpia el agua hasta cumplir la norma: apta para riego e industria, no para beber. Primero va a parques y árboles; después, a los ejidos por la línea morada.", capas: ["agua", "lluvias"], ver: "agua", conectar: true },
-  { t: "Nos sumamos a las obras del gobierno", d: "En verde, lo que ya está en marcha: el emisor de la CAED, Agua Saludable y las plantas Norte y Oriente. Esta propuesta suma a esas obras; no las sustituye.", capas: ["gob"], cam: [-3000, 0, 10500] },
+  { t: "Nos sumamos a las obras del gobierno", d: "El Plan Fluye pone la base y el Nodo la protege a futuro. En verde, lo que ya está en marcha: el emisor de la CAED, Agua Saludable y las plantas Norte y Oriente. Esta propuesta suma a esas obras; no las sustituye.", capas: ["gob"], cam: [-3000, 0, 10500] },
   { t: "Transparencia", d: "Sensores en la red y un tablero público con el avance, el gasto y la calidad del agua. Una herramienta que el Municipio puede tener como propia para informar a todos.", capas: ["tec"], sim: true },
 ];
 let presI = 0;

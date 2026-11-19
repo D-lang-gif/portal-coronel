@@ -71,7 +71,7 @@ export function notaFinancieraHTML() {
     <p>CAPEX: <b>56.34 MDP</b> sin IVA, sin planta láctea ni pozos de infiltración (<b>${est}</b>). Los pozos de infiltración (0.48 MDP) quedan <b>excluidos del piloto</b>.</p>
     <p>OPEX de agua, caso base: <b>7.97 MDP/año = 11.23 $/m³</b> (estimado; 709,560 m³/año al 100 % del caudal de diseño).</p>
     <p>Tarifa de <b>$7.75/m³</b> (5.5 MDP ÷ 709,560 m³): <b>propuesta, sujeta a autorización</b>. <b>No cubre ni el OPEX</b> (11.23 $/m³); a esa tarifa el flujo de operación es negativo.</p>
-    <p>Precio mínimo take-and-pay (100 % de compra, sin IVA, tasa real 10 %, estimado): <b>21.67 $/m³ a 15 años</b>; <b>20.56 $/m³ a 20 años</b>. Con un 40 % hipotético de PROAGUA (<b>no aprobado</b>): <b>17.49 $/m³</b> a 15 años.</p>
+    <p>Precio mínimo take-and-pay (100 % de compra, sin IVA, tasa real 10 %, estimado): <b>21.67 $/m³ a 15 años</b>; <b>20.56 $/m³ a 20 años</b>. Con un 40 % hipotético de PROAGUA (<b>no aprobado</b>): <b>17.49 $/m³</b> a 15 años. Con contratos de compra (~$21.67/m³) o apoyo PROAGUA, la operación se puede sostener. No se afirma que el módulo se pague solo.</p>
   </div>
   <div class="fin-lacteo">
     <h3>Negocio lácteo privado, fuera del alcance público</h3>
@@ -106,7 +106,7 @@ export function rutaValidacionHTML() {
     <details>
       <summary>Nivel 2 · Estatal (CAED)</summary>
       <ul>
-        ${item("Mesa técnica con la CAED y, en su caso, la contratista del Emisor Central (CAED-IPE-082-26), sin alterar programa ni techo financiero")}
+        ${item("Mesa técnica con la CAED y SIDEAPA (Emisor Central, CAED-IPE-082-26), sin alterar programa ni techo financiero. La coordinación con la contratista, si procede, es solo a través de esa mesa")}
         ${item("Validación técnica del módulo de saneamiento e inscripción en cartera estatal")}
       </ul>
     </details>
@@ -137,7 +137,7 @@ export function semaforoHTML(tramos) {
   }).join("");
   return `<div class="semaforo">
     <h3>Semáforo de obra por tramo <small>CAED-IPE-082-26 · 100 m</small></h3>
-    <p class="nota tiny">El avance de cada tramo se muestra como <b>sin dato oficial</b> mientras no haya un reporte de la CAED o de la contratista. No se asigna un porcentaje inventado. Los campos de cierres viales, rutas alternas, registros o ductos de reserva e interferencias quedan como placeholders, todos <b>por confirmar</b>.</p>
+    <p class="nota tiny">El avance de cada tramo se muestra como <b>sin dato oficial</b> mientras no haya un reporte oficial de la CAED (o de la contratista, solo a través de la mesa técnica con CAED y SIDEAPA). No se asigna un porcentaje inventado. Los campos de cierres viales, rutas alternas, registros o ductos de reserva e interferencias quedan como placeholders, todos <b>por confirmar</b>.</p>
     <div class="ley"><span><i class="sem-off"></i>Sin dato oficial</span><span><i class="sem-obra"></i>En obra (solo si hay fuente)</span><span><i class="sem-ok"></i>Terminado (solo si hay fuente)</span></div>
     <div class="tabla-wrap t100-tabla"><table class="tz2">
       <thead><tr><th>Tramo</th><th>Sección</th><th>Metros</th><th>Avance</th><th>Cierres viales</th><th>Rutas alternas</th><th>Registros / ductos de reserva</th><th>Interferencias</th></tr></thead>
