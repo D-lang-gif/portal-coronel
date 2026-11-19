@@ -1,7 +1,7 @@
 // Copia de Nodo_VAH/visor_3d/data/sitio.json (generado por scripts/sitio.py, Rev. 0, 2026-10-25). No editar a mano.
 window.NODO_DATA = {
 "proyecto": "NODO VAH — Nodo de Valor Agregado Hídrico-Energético (piloto)",
-"ubicacion": "Gómez Palacio, Durango — Comarca Lagunera",
+"ubicacion": "Ubicación referencial, terreno real por definir — Gómez Palacio, Durango (polígono y propiedad pendientes)",
 "utm": {
 "zona": "13R",
 "E0": 654200.0,
@@ -31,7 +31,8 @@ window.NODO_DATA = {
 0
 ]
 ],
-"area_m2": 40000
+"area_m2": 40000,
+"area_nota": "por confirmar (20,000 / 40,000 m²)"
 },
 "fases": [
 {
@@ -44,14 +45,14 @@ window.NODO_DATA = {
 {
 "n": 1,
 "nombre": "Fase 1 · Obra civil núcleo y tratamiento SIBRA",
-"detalle": "Cárcamo, RAFA, biológico, clarificación, pulimento y recarga",
+"detalle": "Cárcamo, RAFA, biológico, clarificación y pulimento (recarga excluida del piloto: fase futura)",
 "periodo": "T3–T4 (meses 7–12)",
 "color": "#5b6b7c"
 },
 {
 "n": 2,
 "nombre": "Fase 2 · Procesamiento y energía",
-"detalle": "Equipamiento eléctrico, FV 500 kWp, BESS, térmico y planta láctea",
+"detalle": "Equipamiento eléctrico, FV 500 kWp, BESS y térmico. La planta láctea es un negocio privado, fuera del alcance público.",
 "periodo": "T5–T6 (meses 13–18)",
 "color": "#d9824b"
 },
@@ -151,7 +152,7 @@ window.NODO_DATA = {
 },
 {
 "id": "ZONA-E",
-"nombre": "Zona E · Pulimento, regulación y recarga (supuesto)",
+"nombre": "Zona E · Pulimento y regulación (recarga = fase futura, no incluida en el piloto)",
 "x0": 120,
 "y0": 95,
 "x1": 200,
@@ -787,7 +788,7 @@ window.NODO_DATA = {
 },
 {
 "id": "PI-803A",
-"nombre": "Pozo de infiltración inducida 1",
+"nombre": "Pozo de infiltración inducida 1 (fase futura, no forma parte del piloto)",
 "tipo": "well",
 "geom": "circ",
 "cx": 192,
@@ -798,13 +799,13 @@ window.NODO_DATA = {
 "fuente": "doc",
 "bloque": "ZONA-E",
 "datos": {
-"Función": "Recarga del acuífero (doc)",
+"Función": "Recarga del acuífero — fase futura, condicionada a estudio hidrogeológico y NOM-014-CONAGUA-2003 (riesgo de arsénico)",
 "Ubicación y número": "4 pozos (SUPUESTO)"
 }
 },
 {
 "id": "PI-803B",
-"nombre": "Pozo de infiltración inducida 2",
+"nombre": "Pozo de infiltración inducida 2 (fase futura, no forma parte del piloto)",
 "tipo": "well",
 "geom": "circ",
 "cx": 192,
@@ -815,12 +816,12 @@ window.NODO_DATA = {
 "fuente": "doc",
 "bloque": "ZONA-E",
 "datos": {
-"Función": "Recarga del acuífero (doc)"
+"Función": "Recarga del acuífero — fase futura, condicionada a estudio hidrogeológico y NOM-014-CONAGUA-2003 (riesgo de arsénico)"
 }
 },
 {
 "id": "PI-803C",
-"nombre": "Pozo de infiltración inducida 3",
+"nombre": "Pozo de infiltración inducida 3 (fase futura, no forma parte del piloto)",
 "tipo": "well",
 "geom": "circ",
 "cx": 192,
@@ -831,12 +832,12 @@ window.NODO_DATA = {
 "fuente": "doc",
 "bloque": "ZONA-E",
 "datos": {
-"Función": "Recarga del acuífero (doc)"
+"Función": "Recarga del acuífero — fase futura, condicionada a estudio hidrogeológico y NOM-014-CONAGUA-2003 (riesgo de arsénico)"
 }
 },
 {
 "id": "PI-803D",
-"nombre": "Pozo de infiltración inducida 4",
+"nombre": "Pozo de infiltración inducida 4 (fase futura, no forma parte del piloto)",
 "tipo": "well",
 "geom": "circ",
 "cx": 192,
@@ -847,7 +848,7 @@ window.NODO_DATA = {
 "fuente": "doc",
 "bloque": "ZONA-E",
 "datos": {
-"Función": "Recarga del acuífero (doc)"
+"Función": "Recarga del acuífero — fase futura, condicionada a estudio hidrogeológico y NOM-014-CONAGUA-2003 (riesgo de arsénico)"
 }
 },
 {
@@ -1103,7 +1104,7 @@ window.NODO_DATA = {
 },
 {
 "capa": "agua_tratada",
-"nombre": "Agua tratada / reúso y recarga",
+"nombre": "Agua tratada / reúso (recarga = fase futura)",
 "color": "#2fd3e6",
 "tramos": [
 {

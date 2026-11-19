@@ -41,7 +41,7 @@ export function crearLluvias(par, Cd, osm, uT) {
     for (let k = 0; k < 3; k++) { const { p, dir } = enLinea(bordo, Lb * (.25 + k * .3)); const x = p[0] + dir[1] * 340, z = p[1] - dir[0] * 340;
       const v = new THREE.Mesh(new THREE.CylinderGeometry(110, 90, 10, 32), mV); v.position.set(x, 5, z); g.add(v);
       const rj = new THREE.Mesh(new THREE.TorusGeometry(112, 5, 6, 32), mR); rj.rotation.x = Math.PI / 2; rj.position.set(x, 12, z); g.add(rj);
-      if (k === 1) ET("🔵 Vaso de retención / captación pluvial<br><small>con rejas · ubicación referencial · infiltrar solo con estudio (arsénico)</small>", new THREE.Vector3(x, 80, z), "#2f7bff"); }
+      if (k === 1) ET("🔵 Vaso de retención / captación pluvial<br><small>con rejas · ubicación referencial · sin infiltración en el piloto · recarga = fase futura (NOM-014-CONAGUA-2003, riesgo de arsénico)</small>", new THREE.Vector3(x, 80, z), "#2f7bff"); }
     foco = enLinea(bordo, Lb * .5).p;
   }
   // lluvia animada (ilustrativa)

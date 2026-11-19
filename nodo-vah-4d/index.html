@@ -46,7 +46,10 @@
         <div><b>NODO VAH</b> <span>4D</span><small>Centro de mando de obra · Gómez Palacio, Dgo.</small></div>
       </a>
       <div class="leds">
-        <span class="led amb">ANTEPROYECTO CONCEPTUAL</span>
+        <div class="nivel-proy" role="group" aria-label="Nivel de validación del proyecto">
+          <button type="button" class="on" id="btn-anteproyecto" aria-pressed="true">Anteproyecto referencial</button>
+          <button type="button" id="btn-ejecutivo" disabled title="Aún no hay elementos con validación de proyecto ejecutivo">Proyecto ejecutivo validado</button>
+        </div>
         <span class="led" id="led-fase">FASE —</span>
         <span class="led" id="led-mes">MES 0</span>
       </div>
@@ -77,7 +80,8 @@
     <div class="grid">
       <section class="panel visor">
         <div class="visor-cab">
-          <h2>Modelo 3D + tiempo <small id="sub-visor">PL-01 Conjunto · coordenadas del documento</small></h2>
+          <h2>Modelo 3D + tiempo <small id="sub-visor">Anteproyecto referencial · Ubicación referencial, terreno real por definir</small></h2>
+          <p class="aviso-ubi" id="aviso-ubicacion"><b>Ubicación referencial, terreno real por definir.</b> El polígono georreferenciado y la acreditación de propiedad están pendientes. Superficie <b>por confirmar (20,000 / 40,000 m²)</b>: el polígono de la memoria es 200 × 200 m = 40,000 m²; otra versión indica 20,000 m². Las coordenadas UTM 13R de la memoria (654,200–654,400 E / 2,854,600–2,854,800 N, ≈ 25.80° N, 103.46° W) caen unos 26 km al norte de la mancha urbana; el marcador del Nodo en este visor es genérico y no se mueve a un predio inventado.</p>
           <div class="vistas">
             <button class="btn mini" data-vista="aerea">Aérea</button>
             <button class="btn mini" data-vista="iso">Isométrica</button>
@@ -176,10 +180,9 @@
         </div>
         <div class="gp">
           <h3>Gómez Palacio: cuánta agua le llega</h3>
-          <div class="gp-fila"><span>Comprometido</span><div class="barra azul"><i style="width:100%"></i><span>1,900 L/s</span></div></div>
-          <div class="gp-fila"><span>Recibía (sep–nov 2026)</span><div class="barra azul"><i style="width:26.3%"></i><span>≈450–500 L/s</span></div></div>
-          <div class="gp-fila"><span>6 nov 2026</span><div class="barra rojo"><i style="width:13.2%"></i><span>250 L/s · fuga por vandalismo</span></div></div>
-          <p class="nota tiny">Comprometido 1,900 L/s: <a href="https://lavertiente.mx/articulos/conagua-busca-cerrar-2026-con-el-organismo-operador-de-agua-saludable-para-la-laguna-formalizado" target="_blank" rel="noopener">La Vertiente</a>, que cita al director de SIDEAPA. Recibía ≈450 L/s al 25 de septiembre (<a href="https://reportelaguna.com/agua-saludable-para-la-laguna-avanza-en-durango-planta-potabilizadora-opera-con-cuatro-modulos/" target="_blank" rel="noopener">Reporte Laguna</a>) y unos 500 L/s antes del 6 de noviembre, cuando una fuga por actos vandálicos en la tubería lo bajó a 250 L/s mientras se reparaba (<a href="https://www.noticierosgrem.com.mx/disminuye-el-caudal-de-agua-saludable-para-la-laguna-en-gomez-palacio/" target="_blank" rel="noopener">Noticieros GREM</a>). El largo de cada barra es una proporción calculada sobre los 1,900 L/s.</p>
+          <div class="gp-fila"><span>Recibe (24 ago 2026 · SIDEAPA)</span><div class="barra azul"><i style="width:30.7%"></i><span>460 L/s</span></div></div>
+          <div class="gp-fila"><span>Su red puede recibir</span><div class="barra azul"><i style="width:100%"></i><span>hasta 1,500 L/s</span></div></div>
+          <p class="nota tiny">Gómez Palacio recibe <b>460 L/s</b>, y su red puede recibir hasta <b>1,500 L/s</b> (director de SIDEAPA, <a href="https://www.milenio.com/estados/gomez-palacio-recibe-460-litros-agua-saludable" target="_blank" rel="noopener">Milenio, 24-ago-2026</a>), por los tanques El Consuelo y Cerro de la Cruz, el Sistema Transporte, la colonia 4 de Diciembre y el sector rural. No se usa la cifra «450–500 de 1,900 L/s».</p>
         </div>
       </div>
 
@@ -236,8 +239,9 @@
           <div class="t100-ley"><span style="--c:#f3d27a"><i></i>Emisor Central 72″</span><span style="--c:#2fd3e6"><i></i>Colector San Ignacio 42″</span><span style="--c:#c58bff"><i></i>Rehabilitación 60″</span></div>
           <div class="t100-barra" id="t100-barra"></div>
           <div class="tabla-wrap t100-tabla"><table class="tz2"><thead><tr><th>Tramo</th><th>Sección</th><th>Metros</th><th>Inicio estimado</th><th>Fin estimado</th><th>Costo estimado a ritmo parejo (MDP con IVA)</th></tr></thead><tbody id="t100-filas"></tbody></table></div>
-          <p class="nota tiny"><b>Estimación, no calendario oficial:</b> 49 tramos con un calendario uniforme de un solo frente, de unos 3.7 días por tramo, y ~3.9 MDP con IVA (~3.3 MDP sin IVA) por tramo, estimado a ritmo parejo (188.3 MDP con IVA y 162.3 MDP sin IVA ÷ 49). El calendario y el orden reales los define la CAED con la contratista. Tabla compartida con el documento (Crownteer). En el mapa los tramos se reparten en proporción sobre el trazo referencial de la zanja, empezando por el extremo aguas abajo.</p>
+          <p class="nota tiny"><b>Estimación, no calendario oficial:</b> 49 tramos con un calendario uniforme de un solo frente, de unos 3.7 días por tramo, y ~3.9 MDP con IVA (~3.4 sin IVA) por cada 100 m, estimado a ritmo parejo (188.27 MDP con IVA y 162.31 MDP sin IVA ÷ 4.81 km). El último tramo mide 60 m. El calendario y el orden reales los define la CAED con la contratista. Tabla compartida con el documento (Crownteer). En el mapa los tramos se reparten en proporción sobre el trazo referencial de la zanja, empezando por el extremo aguas abajo.</p>
         </div>
+        <div id="semaforo-tramos"></div>
         <div class="obra-sim" id="obra-sim">
           <h3>Simulación de obra por tramo <small class="muted">propuesta / estimado</small></h3>
           <div class="obra-ctl"><button class="btn mini" id="btn-obra">▶ Simular obra por tramos</button><button class="btn mini" id="btn-fase" title="Avanza una fase: excavar → ademe y bombeo de desvío → tubo → ductos → relleno → repavimentar">⏭ Siguiente fase</button><input type="range" id="obra-rango" min="0" max="48.999" step="0.01" value="0" aria-label="Avance de la obra por tramos" /><span id="obra-txt">T-01 · Excavar</span></div>
@@ -298,7 +302,7 @@
         <ul class="lista">
           <li>Colectores pluviales separados, para que el agua de lluvia no sature el emisor ni el colector San Ignacio.</li>
           <li>Vasos de retención y captación en la orilla de la ciudad, cerca de los ejidos, con rejas a la entrada para detener basura.</li>
-          <li>Infiltrar al acuífero solo después de un estudio: el agua subterránea de La Laguna tiene problemas de arsénico.</li>
+          <li>La recarga al acuífero <b>no forma parte del piloto</b>. Queda como fase futura opcional, apagada por defecto: condicionada a estudio hidrogeológico y NOM-014-CONAGUA-2003 (riesgo de arsénico).</li>
         </ul>
         <p>Los vasos pueden diseñarse como <b>parques inundables</b>: en secas son canchas y áreas verdes; en lluvias guardan agua. Arbolado con especies nativas (mezquite, huizache, palo verde). Propuesta.</p>
         <h3>Diámetro estimado de colectores pluviales <small class="muted">estimado, por validar con SIDEAPA y CAED</small></h3>
@@ -343,7 +347,7 @@
         <h3>Agua potable: Agua Saludable para La Laguna</h3>
         <div class="cards hechos">
           <div class="hecho"><b>Potabilizadora a ~30 %</b><span>Ejido San Jacinto, Lerdo, junto al cerro San Jacinto (~32 km de la cabecera; fuera del mapa). Capacidad de 7,200 L/s; trabaja a ~30 % de su capacidad (<a href="https://www.milenio.com/estados/agua-saludable-laguna-opera-30-ciento" target="_blank" rel="noopener">Milenio</a>).</span></div>
-          <div class="hecho"><b>Menos de la mitad de lo asignado</b><span>Gómez Palacio recibe menos de la mitad de lo asignado (según notas de Milenio y El Siglo, 2024–2026).</span></div>
+          <div class="hecho"><b>460 L/s, red hasta 1,500</b><span>Gómez Palacio recibe 460 L/s de Agua Saludable y su red puede recibir hasta 1,500 L/s (SIDEAPA, Milenio, 24-ago-2026). Es capacidad sin aprovechar, no tanques vacíos.</span></div>
           <div class="hecho"><b>Megatanques: capacidad sin aprovechar</b><span>El Consuelo (cerro, col. Campestre), Cerro de la Cruz y Fidel Velázquez / Chapala son tanques de <b>agua potable</b>: nunca para agua tratada ni pluvial. Propuesta: aprovechar la zanja abierta del drenaje para tender las líneas internas que faltan, para que se llenen y lleguen a más colonias (hacerlo de una vez).</span></div>
         </div>
         <p class="nota tiny">Solo un tanque que SIDEAPA haya dado de baja podría guardar agua tratada: por confirmar con SIDEAPA.</p>
@@ -390,12 +394,13 @@
 
     <div class="grid3">
       <section class="panel">
-        <h2>Presupuesto por partida <small>MDP sin IVA</small></h2>
+        <h2>Presupuesto por partida <small>MDP sin IVA · Anteproyecto referencial</small></h2>
+        <div id="nota-fin"></div>
         <div id="partidas"></div>
         <p class="ley tiny"><i class="l1"></i>Plan maestro completo <i class="l2"></i>Solo alcance del documento <i class="l3"></i>Rango del documento</p>
       </section>
       <section class="panel">
-        <h2>Presupuesto por fase y zona</h2>
+        <h2>Presupuesto por fase y zona <small>módulo de agua independiente</small></h2>
         <div id="porfase"></div>
         <div id="zonas"></div>
       </section>
@@ -406,6 +411,11 @@
         <div id="calidad"></div>
       </section>
     </div>
+
+    <section class="panel" id="ruta-institucional">
+      <h2>Ruta de validación institucional <small>Anteproyecto referencial · todos los pasos pendientes</small></h2>
+      <div id="ruta-val"></div>
+    </section>
 
     <section class="panel">
       <details>
@@ -420,9 +430,9 @@
         <div>
           <h3>Lo que dice el proyecto Nodo VAH</h3>
           <ul>
-            <li>El predio del nodo piloto está en la franja periurbana <b>colindante con el PIL</b> y los canales de riego ejidal (Especificaciones, §1).</li>
+            <li>El predio se muestra como <b>ubicación referencial, terreno real por definir</b> (polígono georreferenciado y acreditación de propiedad pendientes). El documento lo sitúa en la franja periurbana colindante con el PIL y los canales de riego ejidal (Especificaciones, §1); las coordenadas UTM de la memoria no caen en la mancha urbana. Superficie <b>por confirmar (20,000 / 40,000 m²)</b>.</li>
             <li>Las <b>descargas del PIL</b> se estiman en <b>40–80 L/s</b> (1.25–2.50 Mm³/año) y requieren la Fase 1 SIBRA: trampas de grasa y separadores coalescentes para grasas e hidrocarburos (Documento Maestro, §5).</li>
-            <li>La entrada de diseño es un efluente mixto municipal e industrial SIDEAPA/PIL con DBO₅ de 450 mg/L.</li>
+            <li>La entrada de diseño SIBRA es 22.5 L/s con DBO₅ 450 mg/L y SST 380 mg/L: valores <b>teóricos — pendiente muestreo compuesto y aforo con laboratorio acreditado EMA</b>.</li>
             <li>Recomendación del documento: firmar convenios marco entre SIDEAPA, el PIL y la A.C. promotora (§14).</li>
           </ul>
         </div>
@@ -439,7 +449,7 @@
       <p class="nota tiny">Fuente histórica: <a href="https://www.torreon.gob.mx/archivo/pdf/libros/Parque%20Industrial%20Lagunero%20de%20G%C3%B3mez%20Palacio.pdf" target="_blank" rel="noopener">«Parque Industrial Lagunero de Gómez Palacio», Archivo Municipal de Torreón Eduardo Guerra · Biblioteca Digital</a>. Es un folleto de época: sus datos describen el parque como era entonces y no son cifras actuales. En el modo «Ciudad y redes de agua» la página 13 del folleto se puede encender como capa, con un ajuste aproximado sobre el mapa real de OpenStreetMap.</p>
     </section>
 
-    <footer class="pie tiny muted">Fuente: Documento Ejecutivo Maestro Integral (§6, §11), planos PL-01…PL-06 Rev. 0 y presupuesto del 25-oct-2026. Mapa de la ciudad: © colaboradores de <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> (ODbL). ANTEPROYECTO CONCEPTUAL – NO VÁLIDO PARA CONSTRUCCIÓN; requiere validación y firma de perito/DRO.</footer>
+    <footer class="pie tiny muted">Fuente: Documento Ejecutivo Maestro Integral (§6, §11), planos PL-01…PL-06 Rev. 0 y presupuesto del 25-oct-2026. Mapa de la ciudad: © colaboradores de <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> (ODbL). ANTEPROYECTO REFERENCIAL — ningún elemento está en «Proyecto ejecutivo validado». NO VÁLIDO PARA CONSTRUCCIÓN; requiere validación y firma de perito/DRO.</footer>
   </main>
 </body>
 </html>

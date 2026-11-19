@@ -213,3 +213,45 @@ table.tz2 td{border-top:1px solid var(--borde);padding:6px 8px;vertical-align:to
 #etq .e.e-calle{transform:translate(-50%,-50%);font-weight:500;background:rgba(10,12,16,.55);border:0;border-left:0;color:#cfd6dc;font-size:10.5px;padding:1px 5px;box-shadow:none;white-space:nowrap;pointer-events:none}
 #etq .e.e-calle.r1{font-size:12px;color:#fff;font-weight:600}#etq .e.e-calle.r4{font-size:9.5px;opacity:.85}
 .c2-mapa{align-items:center;gap:6px}.c2-ley.diam{margin-top:4px}
+#pres{position:fixed;left:0;right:0;bottom:0;z-index:50;display:flex;justify-content:center;padding:12px;pointer-events:none}
+#pres .pres-card{pointer-events:auto;max-width:820px;width:100%;background:rgba(12,13,18,.94);border:2px solid var(--oro,#f3d27a);border-radius:16px;padding:16px 20px;box-shadow:0 10px 40px rgba(0,0,0,.6)}
+#pres .pres-top{display:flex;gap:10px;align-items:center;font-size:13px;color:#cfc8b6}#pres .pres-tag{flex:1}
+#pres h2{margin:6px 0 4px;font-size:26px;color:#f3d27a;line-height:1.15}#pres p{margin:0 0 12px;font-size:19px;line-height:1.4;color:#f1ede4}
+#pres .pres-btns{display:flex;gap:10px;justify-content:flex-end}#pres .pres-btns .btn{font-size:17px;padding:10px 18px}
+@media (max-width:600px){#pres h2{font-size:21px}#pres p{font-size:16px}#pres .pres-card{padding:12px 14px}}
+
+/* ── Pliego de observaciones: nivel de proyecto, avisos, fichas, semáforo, ruta ── */
+.nivel-proy{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.nivel-proy button{border:1px solid var(--borde);background:#16181f;color:#cfc8b6;border-radius:999px;padding:5px 11px;font:600 11px/1.2 inherit;letter-spacing:.02em;text-transform:uppercase}
+.nivel-proy button.on{border-color:var(--oro);color:var(--oro2);background:#2b2516}
+.nivel-proy button:disabled{opacity:.55;cursor:not-allowed;text-decoration:line-through;text-decoration-color:#6a6458}
+.aviso-ubi,.aviso-nivel{margin:8px 0;padding:9px 12px;border-radius:9px;border:1px solid #ffb547;background:rgba(80,50,10,.35);font-size:13px;line-height:1.4;color:#f3ead8}
+.aviso-ubi b,.aviso-nivel b{color:var(--oro2)}
+.tag.ref{background:#3a2e14;color:var(--oro2);border:1px solid var(--oro)}
+.tag.fut{background:#123445;color:#8ee7ff;border:1px solid #36d6ff}
+.tag.pend{background:#3a2214;color:#ffb547}
+.tag.priv{background:#2a2030;color:#e0b4ff;border:1px solid #a35bff}
+.fin-agua,.fin-lacteo{margin-top:10px;padding:10px 12px;border-radius:9px;font-size:13px;line-height:1.45}
+.fin-agua{border:1px solid #2fd3e6;background:rgba(20,40,48,.5)}
+.fin-lacteo{border:1px solid #a35bff;background:rgba(40,20,50,.45)}
+.fin-agua h3,.fin-lacteo h3{margin:0 0 6px;font-size:14px;text-transform:none;letter-spacing:0}
+.ruta-val details{margin:8px 0;border:1px solid var(--borde);border-radius:9px;padding:8px 12px;background:#101117}
+.ruta-val summary{cursor:pointer;font-weight:700;color:var(--oro2)}
+.ruta-val ul{margin:8px 0 4px;padding-left:20px;font-size:13px}
+.ruta-val li{margin:4px 0}
+.ruta-val .pend{color:#ffb547;font-weight:700;font-size:11px;letter-spacing:.04em;text-transform:uppercase;margin-left:6px}
+.semaforo{margin-top:12px}
+.semaforo .ley{display:flex;flex-wrap:wrap;gap:8px;font-size:12px;margin:6px 0 8px}
+.semaforo .ley i{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:4px;vertical-align:middle}
+.sem-off{background:#6b7280}.sem-obra{background:#f5a524}.sem-ok{background:#3fd46b}.sem-risk{background:#e0457b}
+.sem-dot{display:inline-block;width:11px;height:11px;border-radius:50%;background:#6b7280;margin-right:6px;vertical-align:middle}
+#ficha .nivel-mini{display:inline-block;margin-left:6px;font-size:10px;text-transform:uppercase;letter-spacing:.04em;color:var(--oro2)}
+.toggle-fut{display:flex;align-items:flex-start;gap:8px;margin:8px 0;padding:8px 10px;border:1px dashed #36d6ff;border-radius:9px;font-size:12.5px;line-height:1.4;background:rgba(10,30,40,.4)}
+.toggle-fut input{margin-top:3px}
+.chk-futuro:not(:checked) + span{opacity:.95}
+#sub-visor{display:block;white-space:normal;font-weight:500}
+@media (max-width:700px){
+  .nivel-proy{width:100%;order:4}
+  .nivel-proy button{font-size:10px;padding:5px 8px}
+  #ficha{font-size:12px}
+}
