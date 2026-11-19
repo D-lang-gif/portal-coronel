@@ -1,0 +1,283 @@
+{
+  "type": "FeatureCollection",
+  "name": "zona_humedad_motor_fugas_gp001",
+  "metadata": {
+    "origen": "motor_fugas/salida/zonas.geojson",
+    "aviso": "El satélite no ve el tubo: señala dónde revisar primero. Cada zona se confirma en campo o con cámara.",
+    "metodo": "Índice de humedad NDMI (bandas B8A y B11, 20 m). Zona urbana del municipio. Anomalía: >2 desviaciones sobre la ciudad y +0.06 sobre la historia del propio pixel. NDVI<0.35 para descartar pasto y árboles.",
+    "ultima_escena": "2026-11-14",
+    "escenas_usadas": 46,
+    "nota": "Solo se incorpora GP-001 (posible fuga nueva). Las zonas crónicas GP-002 a GP-006 no se cargan en esta versión. El nombre zonas_humedad.geojson queda reservado para el motor automático."
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -103.51304013883701,
+              25.58912739443424
+            ],
+            [
+              -103.5130423709704,
+              25.588946848100612
+            ],
+            [
+              -103.51324146042832,
+              25.588948872188887
+            ],
+            [
+              -103.51324369224172,
+              25.588768325834316
+            ],
+            [
+              -103.5130446030824,
+              25.588766301762348
+            ],
+            [
+              -103.513046835173,
+              25.588585755419448
+            ],
+            [
+              -103.51284774633365,
+              25.588583731092974
+            ],
+            [
+              -103.51284551394446,
+              25.58876427741957
+            ],
+            [
+              -103.51264642482792,
+              25.588762252805974
+            ],
+            [
+              -103.51264419211873,
+              25.58894279911162
+            ],
+            [
+              -103.51284328153386,
+              25.58894482374152
+            ],
+            [
+              -103.51284104910188,
+              25.589125370058838
+            ],
+            [
+              -103.51304013883701,
+              25.58912739443424
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "tipo": "humedad",
+        "prioridad": "media",
+        "explicacion": "Humedad nueva en una zona que el último año estuvo seca, sin vegetación que la explique. Húmeda desde 2026-10-23 (≈22 días).",
+        "desde": "2026-10-23",
+        "dias_humeda": 22,
+        "area_m2": 2000,
+        "persistencia_anual": 0.09,
+        "serie_z": [
+          [
+            "2025-12-07",
+            -0.14
+          ],
+          [
+            "2025-12-12",
+            -0.4
+          ],
+          [
+            "2025-12-17",
+            -0.27
+          ],
+          [
+            "2025-12-22",
+            -0.29
+          ],
+          [
+            "2025-12-27",
+            -0.35
+          ],
+          [
+            "2026-01-06",
+            -0.31
+          ],
+          [
+            "2026-01-16",
+            -0.38
+          ],
+          [
+            "2026-01-26",
+            -0.58
+          ],
+          [
+            "2026-02-20",
+            -0.55
+          ],
+          [
+            "2026-03-02",
+            -0.83
+          ],
+          [
+            "2026-03-12",
+            -0.65
+          ],
+          [
+            "2026-03-17",
+            -0.66
+          ],
+          [
+            "2026-03-22",
+            -0.78
+          ],
+          [
+            "2026-03-27",
+            -0.68
+          ],
+          [
+            "2026-04-01",
+            -0.62
+          ],
+          [
+            "2026-04-16",
+            -0.34
+          ],
+          [
+            "2026-04-21",
+            -0.16
+          ],
+          [
+            "2026-04-26",
+            -0.35
+          ],
+          [
+            "2026-05-06",
+            -0.47
+          ],
+          [
+            "2026-05-11",
+            -0.5
+          ],
+          [
+            "2026-05-16",
+            -0.6
+          ],
+          [
+            "2026-06-05",
+            -0.49
+          ],
+          [
+            "2026-06-10",
+            -0.61
+          ],
+          [
+            "2026-06-17",
+            -0.77
+          ],
+          [
+            "2026-06-20",
+            -0.84
+          ],
+          [
+            "2026-06-25",
+            -0.75
+          ],
+          [
+            "2026-07-05",
+            -0.8
+          ],
+          [
+            "2026-07-25",
+            -1.01
+          ],
+          [
+            "2026-07-30",
+            -0.97
+          ],
+          [
+            "2026-08-04",
+            -1.04
+          ],
+          [
+            "2026-08-09",
+            -1.03
+          ],
+          [
+            "2026-08-14",
+            -0.85
+          ],
+          [
+            "2026-08-19",
+            -0.94
+          ],
+          [
+            "2026-08-24",
+            -0.86
+          ],
+          [
+            "2026-08-26",
+            -0.98
+          ],
+          [
+            "2026-08-29",
+            -0.92
+          ],
+          [
+            "2026-09-03",
+            -0.98
+          ],
+          [
+            "2026-09-08",
+            -0.91
+          ],
+          [
+            "2026-09-13",
+            -0.98
+          ],
+          [
+            "2026-09-18",
+            -0.96
+          ],
+          [
+            "2026-09-28",
+            -1.03
+          ],
+          [
+            "2026-10-13",
+            0.78
+          ],
+          [
+            "2026-10-23",
+            3.31
+          ],
+          [
+            "2026-10-25",
+            3.46
+          ],
+          [
+            "2026-11-07",
+            3.47
+          ],
+          [
+            "2026-11-14",
+            3.01
+          ]
+        ],
+        "lat": 25.588856,
+        "lon": -103.512944,
+        "z_ultima": 3.01,
+        "id": "GP-001",
+        "foto": "fotos/GP-001.png",
+        "tipo_motor": "posible_fuga",
+        "etiqueta": "Zona a revisar con cámara",
+        "intensidad": 0.09,
+        "fecha": "2026-10-23",
+        "fuente": "Sentinel-2 L2A (ESA/Copernicus) vía Microsoft Planetary Computer; ESA WorldCover 2021; límite municipal OpenStreetMap",
+        "nota": "Humedad nueva en una zona que el último año estuvo seca, sin vegetación que la explique. Húmeda desde 2026-10-23 (≈22 días). El satélite no ve el tubo: señala dónde revisar primero. No es una fuga confirmada.",
+        "origen": "Aportes_Pliego/motor_fugas/salida (corrida 2026-11-19). No se usa el nombre reservado zonas_humedad.geojson."
+      }
+    }
+  ]
+}

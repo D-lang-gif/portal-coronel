@@ -1,0 +1,337 @@
+{
+  "type": "FeatureCollection",
+  "name": "encharcamientos_oficiales_gp",
+  "metadata": {
+    "origen": "Nova, Aportes_Pliego/satelite/encharcamientos_oficiales_gp.geojson",
+    "nota": "Se conservan los atributos originales. Donde geometry era null y hubo un objeto OSM inequívoco en Gómez Palacio (poniente del Nazas) se añadió un punto de referencia y se documentó la precisión. No se geocodificaron El Amigo, El Campanario, Abraham Rosales ni el paso 11-40 (no hay objeto OSM claro; el Campanario de OSM está en Torreón). ENC-15 es hundimiento, no encharcamiento. No se usó encharcamientos_prensa_lerdo."
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": null,
+      "properties": {
+        "id": "ENC-01",
+        "nombre": "Colonia El Amigo (El Amigo Britingham)",
+        "tipo": "encharcamiento recurrente",
+        "fuente_oficial": "Protección Civil municipal (Dir. Alfonso J. Mijares Ramírez) y Atlas de Riesgos 2014; vulnerable en la actualización del Atlas 2025",
+        "nota": "Atlas 2014: inundación 6-sep-2014. Reportada de nuevo en las lluvias de 2026; Tránsito cerró el bulevar Jabonoso del puente Jabonoso a av. Nacional.",
+        "urls": [
+          "https://periodicoelcentaurodelnorte.com.mx/lluvias-en-gomez-palacio-ocasionaron-diversos-encharcamientos-atendidos-de-inmediato/",
+          "https://periodicoelcentaurodelnorte.com.mx/gobierno-de-gomez-palacio-activa-plan-de-contingencia-por-lluvias-no-se-registran-afectaciones-mayores/",
+          "https://www.elsiglodetorreon.com.mx/noticia/2026/lluvias-causan-afectaciones-en-21-sectores-urbanos-de-gomez-palacio.html",
+          "https://www.alcaldesdemexico.com/ciudadania/lluvias-en-gomez-palacio-dejan-viviendas-inundadas-activan-rescate-y-albergue/",
+          "http://rmgir.proyectomesoamerica.org/PDFMunicipales/10007_Gomez_Palacio.pdf",
+          "https://www.milenio.com/estados/gomez-palacio-actualizan-atlas-riesgo-anos"
+        ],
+        "ubicacion": "sin coordenada: ubicar con el buscador de calles del visor",
+        "precision": "solo nombre de colonia o calle"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -103.49706,
+          25.59498
+        ]
+      },
+      "properties": {
+        "id": "ENC-02",
+        "nombre": "Fracc. Hamburgo / Rinconada Hamburgo / Puente Hamburgo",
+        "tipo": "encharcamiento recurrente",
+        "fuente_oficial": "Protección Civil municipal y Atlas de Riesgos 2014",
+        "nota": "Atlas 2014: inundaciones de unos 20 cm desde hace unos 14 años. Puente Hamburgo: dos carriles Torreón-Lerdo afectados. Milenio 16-oct-2026: pipas y motobombas.",
+        "urls": [
+          "https://periodicoelcentaurodelnorte.com.mx/lluvias-en-gomez-palacio-ocasionaron-diversos-encharcamientos-atendidos-de-inmediato/",
+          "https://periodicoelcentaurodelnorte.com.mx/gobierno-de-gomez-palacio-activa-plan-de-contingencia-por-lluvias-no-se-registran-afectaciones-mayores/",
+          "https://www.milenio.com/estados/despliega-gomez-palacio-operativo-emergencia-lluvias",
+          "http://rmgir.proyectomesoamerica.org/PDFMunicipales/10007_Gomez_Palacio.pdf"
+        ],
+        "ubicacion": "Plaza Hamburgo (OSM), referencia cercana",
+        "precision": "referencia OpenStreetMap cercana, no levantamiento"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -103.49417,
+          25.59546
+        ]
+      },
+      "properties": {
+        "id": "ENC-03",
+        "nombre": "Rinconada Bugambilias",
+        "tipo": "desbordamiento de canal",
+        "fuente_oficial": "Atlas de Riesgos 2014",
+        "nota": "Vecinos pusieron costaleras para que el agua no entrara a las casas.",
+        "urls": [
+          "http://rmgir.proyectomesoamerica.org/PDFMunicipales/10007_Gomez_Palacio.pdf"
+        ],
+        "ubicacion": "Calle Rinconada de las Bugambilias (OSM)",
+        "precision": "referencia OpenStreetMap cercana, no levantamiento"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": null,
+      "properties": {
+        "id": "ENC-04",
+        "nombre": "Residencial El Campanario",
+        "tipo": "encharcamiento con ingreso de agua a viviendas",
+        "fuente_oficial": "Protección Civil municipal",
+        "nota": "Lluvia de unos 15 mm. Los vecinos lo atribuyen a un desarrollo nuevo; se encontró una alcantarilla abierta.",
+        "urls": [
+          "https://periodicoelcentaurodelnorte.com.mx/lluvias-en-gomez-palacio-ocasionaron-diversos-encharcamientos-atendidos-de-inmediato/"
+        ],
+        "ubicacion": "sin coordenada: ubicar con el buscador de calles del visor",
+        "precision": "solo nombre de colonia o calle"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -103.454763,
+          25.590666
+        ]
+      },
+      "properties": {
+        "id": "ENC-05",
+        "nombre": "Cerradas Marbella y Jaén",
+        "tipo": "encharcamiento",
+        "fuente_oficial": "Protección Civil municipal",
+        "nota": "Mayores encharcamientos en la lluvia de unos 15 mm.",
+        "urls": [
+          "https://periodicoelcentaurodelnorte.com.mx/lluvias-en-gomez-palacio-ocasionaron-diversos-encharcamientos-atendidos-de-inmediato/"
+        ],
+        "ubicacion": "Calle Marbella (OSM), referencia de colonia aproximada",
+        "precision": "centroide de la calle OSM «Calle Marbella»; no aparece «Jaén» ni un polígono de colonia",
+        "geocodificacion": "OSM extracto Gómez Palacio (visor), 19 nov 2026"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -103.47091,
+          25.54734
+        ]
+      },
+      "properties": {
+        "id": "ENC-06",
+        "nombre": "Colonia Felipe Ángeles",
+        "tipo": "encharcamiento leve",
+        "fuente_oficial": "Protección Civil municipal",
+        "nota": "Lluvia de 30 a 35 mm.",
+        "urls": [
+          "https://periodicoelcentaurodelnorte.com.mx/gobierno-de-gomez-palacio-activa-plan-de-contingencia-por-lluvias-no-se-registran-afectaciones-mayores/"
+        ],
+        "ubicacion": "Felipe Ángeles, Blvd. Miguel Alemán (OSM)",
+        "precision": "referencia OpenStreetMap cercana, no levantamiento"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -103.46137,
+          25.58924
+        ]
+      },
+      "properties": {
+        "id": "ENC-07",
+        "nombre": "Colonia Torremolinos",
+        "tipo": "encharcamiento moderado",
+        "fuente_oficial": "Protección Civil municipal",
+        "nota": "Lluvia de 30 a 35 mm.",
+        "urls": [
+          "https://periodicoelcentaurodelnorte.com.mx/gobierno-de-gomez-palacio-activa-plan-de-contingencia-por-lluvias-no-se-registran-afectaciones-mayores/"
+        ],
+        "ubicacion": "Plaza Torremolinos (OSM), referencia cercana",
+        "precision": "referencia OpenStreetMap cercana, no levantamiento"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -103.514525,
+          25.595891
+        ]
+      },
+      "properties": {
+        "id": "ENC-08",
+        "nombre": "Avenida Morelos (El Refugio / Nuevo Refugio)",
+        "tipo": "encharcamiento y cierre vial",
+        "fuente_oficial": "Protección Civil y Tránsito municipal",
+        "nota": "Cierre de av. Morelos desde calle La Laguna hasta bulevar Ejército Mexicano.",
+        "urls": [
+          "https://periodicoelcentaurodelnorte.com.mx/gobierno-de-gomez-palacio-activa-plan-de-contingencia-por-lluvias-no-se-registran-afectaciones-mayores/",
+          "https://www.elsiglodetorreon.com.mx/noticia/2026/lluvias-causan-afectaciones-en-21-sectores-urbanos-de-gomez-palacio.html",
+          "https://www.alcaldesdemexico.com/ciudadania/lluvias-en-gomez-palacio-dejan-viviendas-inundadas-activan-rescate-y-albergue/"
+        ],
+        "ubicacion": "Boulevard Refugio / Calle Refugio (OSM), centroide de colonia aproximado",
+        "precision": "centroide de las vialidades OSM Boulevard Refugio y Calle Refugio (no hay polígono de colonia). Prolongación Morelos cruza el Periférico Ejército Mexicano a unos 500–800 m; «Calle La Laguna» no aparece junto a esa colonia en OSM",
+        "geocodificacion": "OSM extracto Gómez Palacio (visor), 19 nov 2026"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -103.48815,
+          25.56378
+        ]
+      },
+      "properties": {
+        "id": "ENC-09",
+        "nombre": "Paso a desnivel Urrea",
+        "tipo": "acumulación en desnivel con bombeo pluvial",
+        "fuente_oficial": "Protección Civil municipal",
+        "nota": "Se acumula agua cuando falla la luz de CFE y para el bombeo; quedó atendido hacia las 9:30.",
+        "urls": [
+          "https://www.elsiglodetorreon.com.mx/noticia/2026/lluvias-causan-afectaciones-en-21-sectores-urbanos-de-gomez-palacio.html",
+          "https://www.alcaldesdemexico.com/ciudadania/lluvias-en-gomez-palacio-dejan-viviendas-inundadas-activan-rescate-y-albergue/",
+          "https://periodicoelcentaurodelnorte.com.mx/lluvias-en-gomez-palacio-ocasionaron-diversos-encharcamientos-atendidos-de-inmediato/"
+        ],
+        "ubicacion": "Calle Mariano Urrea (OSM), sobre la calle, no el desnivel exacto",
+        "precision": "referencia OpenStreetMap cercana, no levantamiento"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": null,
+      "properties": {
+        "id": "ENC-10",
+        "nombre": "Paso a desnivel 11-40",
+        "tipo": "acumulación en desnivel con bombeo pluvial",
+        "fuente_oficial": "Protección Civil municipal",
+        "nota": "Mismo evento que Urrea, por falla eléctrica de CFE.",
+        "urls": [
+          "https://www.elsiglodetorreon.com.mx/noticia/2026/lluvias-causan-afectaciones-en-21-sectores-urbanos-de-gomez-palacio.html",
+          "https://www.alcaldesdemexico.com/ciudadania/lluvias-en-gomez-palacio-dejan-viviendas-inundadas-activan-rescate-y-albergue/",
+          "https://periodicoelcentaurodelnorte.com.mx/lluvias-en-gomez-palacio-ocasionaron-diversos-encharcamientos-atendidos-de-inmediato/"
+        ],
+        "ubicacion": "sin coordenada: ubicar con el buscador de calles del visor",
+        "precision": "solo nombre de colonia o calle"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -103.505124,
+          25.585082
+        ]
+      },
+      "properties": {
+        "id": "ENC-11",
+        "nombre": "Avenida Madero (de calle Sarabia a Japón)",
+        "tipo": "cierre vial por agua",
+        "fuente_oficial": "Tránsito municipal (Subdir. Juan Manuel Zúñiga Torres)",
+        "nota": "Cierre preventivo.",
+        "urls": [
+          "https://www.alcaldesdemexico.com/ciudadania/lluvias-en-gomez-palacio-dejan-viviendas-inundadas-activan-rescate-y-albergue/"
+        ],
+        "ubicacion": "Av. Francisco I. Madero, tramo Sarabia–Japón (OSM)",
+        "precision": "centroide del tramo OSM de Avenida / Prolongación Francisco I. Madero entre el cruce con (Francisco) Sarabia y el cruce con Calle Japón; no es un levantamiento del encharcamiento",
+        "geocodificacion": "OSM extracto Gómez Palacio (visor), 19 nov 2026"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -103.50365,
+          25.58565
+        ]
+      },
+      "properties": {
+        "id": "ENC-12",
+        "nombre": "Colonia Carlos Herrera",
+        "tipo": "zona vulnerable a lluvias",
+        "fuente_oficial": "Atlas de Riesgos vigente, según la actualización de 2025 (Dir. de Bienestar)",
+        "nota": "Uno de los unos 50 puntos urbanos vulnerables.",
+        "urls": [
+          "https://www.milenio.com/estados/gomez-palacio-actualizan-atlas-riesgo-anos"
+        ],
+        "ubicacion": "Parque Carlos Herrera (OSM), referencia cercana",
+        "precision": "referencia OpenStreetMap cercana, no levantamiento"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": null,
+      "properties": {
+        "id": "ENC-13",
+        "nombre": "Colonia Abraham Rosales",
+        "tipo": "zona vulnerable a lluvias",
+        "fuente_oficial": "Atlas de Riesgos vigente, según la actualización de 2025",
+        "nota": "Uno de los unos 50 puntos urbanos vulnerables.",
+        "urls": [
+          "https://www.milenio.com/estados/gomez-palacio-actualizan-atlas-riesgo-anos"
+        ],
+        "ubicacion": "sin coordenada: ubicar con el buscador de calles del visor",
+        "precision": "solo nombre de colonia o calle"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -103.477434,
+          25.565443
+        ]
+      },
+      "properties": {
+        "id": "ENC-14",
+        "nombre": "Colonia Rebollo Acosta",
+        "tipo": "zona vulnerable a lluvias",
+        "fuente_oficial": "Atlas de Riesgos vigente, según la actualización de 2025",
+        "nota": "Uno de los unos 50 puntos urbanos vulnerables. El drenaje pluvial del bulevar Rebollo Acosta operó bien en 2026, según Protección Civil.",
+        "urls": [
+          "https://www.milenio.com/estados/gomez-palacio-actualizan-atlas-riesgo-anos",
+          "https://periodicoelcentaurodelnorte.com.mx/lluvias-en-gomez-palacio-ocasionaron-diversos-encharcamientos-atendidos-de-inmediato/"
+        ],
+        "ubicacion": "Boulevard José Rebollo Acosta (OSM), centroide de colonia aproximado",
+        "precision": "centroide de las vialidades OSM «Boulevard José Rebollo Acosta» / «José Rebollo Acosta» (no hay polígono de colonia)",
+        "geocodificacion": "OSM extracto Gómez Palacio (visor), 19 nov 2026"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -103.496036,
+          25.591721
+        ]
+      },
+      "properties": {
+        "id": "ENC-15",
+        "nombre": "Av. Francisco Villa frente a Fracc. Granjas 1",
+        "tipo": "hundimiento",
+        "fuente_oficial": "Atlas de Riesgos 2014",
+        "nota": "Sirve para la capa de hundimientos (Nano).",
+        "urls": [
+          "http://rmgir.proyectomesoamerica.org/PDFMunicipales/10007_Gomez_Palacio.pdf"
+        ],
+        "ubicacion": "Av. Francisco Villa frente a Las Granjas (OSM)",
+        "precision": "intersección OSM de Avenida Francisco Villa con Avenida Granjas del Norte/Sur (aparece «Las Granjas 2»; no hay polígono «Granjas 1»). No es un levantamiento del hundimiento",
+        "tipo_oficial": "hundimiento de vialidad (no encharcamiento)",
+        "geocodificacion": "OSM extracto Gómez Palacio (visor), 19 nov 2026"
+      }
+    }
+  ]
+}

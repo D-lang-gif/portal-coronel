@@ -1,8 +1,7 @@
 {
- "archivos": [
-  "zonas_humedad_pulso_2026.geojson",
-  "zonas_humedad.geojson",
-  "encharcamientos.geojson"
- ],
- "nota": "El panel carga cualquier *.geojson listado aquí. Un motor automático podrá añadir más adelante zonas_humedad.geojson (nombre reservado). El archivo de Pulso se llama de forma distinta: zonas_humedad_pulso_2026.geojson."
+  "archivos": [
+    "zonas_humedad_pulso_2026.geojson",
+    "zona_humedad_motor_fugas_gp001.geojson"
+  ],
+  "nota": "El panel carga cualquier *.geojson listado aquí. El nombre zonas_humedad.geojson queda reservado para un motor automático. Pulso (manchas secas 2025-2026) está en zonas_humedad_pulso_2026.geojson; GP-001 (posible humedad nueva, motor_fugas) está en zona_humedad_motor_fugas_gp001.geojson. Los encharcamientos van en una capa aparte y no se listan aquí."
 }
