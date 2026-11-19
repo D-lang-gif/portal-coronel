@@ -10,6 +10,7 @@ import { construir } from "./visor/constructores.js";
 import { crearFlujos, uTiempo } from "./visor/flujos.js";
 import { crearCiudad, REDES } from "./ciudad.js";
 import { crearCapas2, TEC } from "./capas2.js";
+import { LACTEOS_IDS, POZOS_RECARGA_IDS, NIVEL, UBICACION, attrs, fichaHTML, notaFinancieraHTML, rutaValidacionHTML, semaforoHTML, INF_TEORICO, TARIFA_NOTA, RECARGA_NOM, PC } from "./pliego.js";
 
 const $ = (s, r = document) => r.querySelector(s);
 const D = window.NODO_DATA, PR = window.NODO_PRES;
@@ -19,7 +20,7 @@ const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
 const ease = (t) => t * t * (3 - 2 * t);
 
 /* ───────── Candado (mismo hash PBKDF2 del portal; no se guarda la contraseña) ───────── */
-const GATE = { SALT: "f5683dd503d323855db92b852f5f1ff4", HASH: "7e5a33ce72990d7df64c18c5b9bf4dbfd945eb8111148b2deb4240f967688cf8", ITER: 120000, KEY: "portal_coronel_ok_v1", REC: "coronel_nodo4d_recordar_v1" };
+const GATE = { SALT: "f5683dd503d323855db92b852f5f1ff4", HASH: "7e5a33ce72990d7df64c18c5b9bf4dbfd945eb8111148b2deb4240f967688cf8", HASH_PRES: "4847e6bd0fc0e638bd6b68a6235325dbd54ce68b9ace13bd8a97cf8f7bf9d969", ITER: 120000, KEY: "portal_coronel_ok_v1", REC: "coronel_nodo4d_recordar_v1" };
 async function hashPw(pw) {
   const km = await crypto.subtle.importKey("raw", new TextEncoder().encode(pw), "PBKDF2", false, ["deriveBits"]);
   const salt = new Uint8Array(GATE.SALT.match(/.{2}/g).map((b) => parseInt(b, 16)));
@@ -34,7 +35,8 @@ function candado() {
     e.preventDefault();
     const err = $("#gate-err"); err.textContent = "Verificando…";
     try {
-      if ((await hashPw($("#gate-pw").value)) === GATE.HASH) {
+      const hh = await hashPw($("#gate-pw").value);
+      if (hh === GATE.HASH || hh === GATE.HASH_PRES) {
         if ($("#gate-recordar").checked) localStorage.setItem(GATE.REC, "1");
         err.textContent = ""; abrir();
       } else err.textContent = "Contraseña incorrecta.";
@@ -59,23 +61,25 @@ const finAcum = (m) => COSTO_F.reduce((s, c, n) => s + c * progFase(n, m), 0);
 function kpis() {
   const k = D.kpi;
   const items = [
-    ["Presupuesto plan maestro", "$" + mdp(PR.subtotal) + " MDP", "sin IVA · con IVA $" + mdp(PR.total) + " MDP", "oro"],
-    ["Alcance del documento", "$" + mdp(PR.doc_scope.subtotal) + " MDP", "sin IVA · CAPEX ref. doc §6: 70 (55–85)", "oro"],
-    ["Duración (cronograma §11)", "24 meses", "T1–T8 · doc: 18 a 24 meses"],
-    ["Caudal de diseño", k["Caudal de diseño"], "Volumen " + k["Volumen tratado"]],
-    ["Energía", k["FV"], k["BESS"] + " · " + k["Subestación"]],
-    ["Predio (coordenadas)", "200 × 200 m", "40,000 m² · doc dice 20,000 m² (S-01)"],
-    ["Instalaciones modeladas", String(D.instalaciones.length), D.instalaciones.filter((f) => f.fuente === "doc").length + " del documento · " + D.instalaciones.filter((f) => f.fuente !== "doc").length + " supuestas"],
-    ["Empleos (doc)", k["Empleos"], "Leche " + k["Leche"]],
+    ["Módulo de agua (independiente)", "22.09 MDP", "núcleo SIBRA + automatización, sin IVA · presupuesto 25-oct-2026", "oro"],
+    ["Ingreso del módulo de agua", "por calcular", "corrida 15–20 años pendiente"],
+    ["Tarifa $7.70/m³", "hipotética", TARIFA_NOTA],
+    ["Caudal de diseño SIBRA", k["Caudal de diseño"], "DBO₅ 450 y SST 380 mg/L: " + INF_TEORICO],
+    ["Ubicación del Nodo", "referencial", UBICACION.etiqueta],
+    ["Superficie del predio", UBICACION.area, UBICACION.areaLarga],
+    ["Nivel del visor", NIVEL.ante, "Nada está en «" + NIVEL.ejec + "»"],
+    ["Energía (expediente)", k["FV"], k["BESS"] + " · " + k["Subestación"]],
   ];
   $("#kpis").innerHTML = items.map(([t, v, i, c]) => `<div class="kpi ${c || ""}"><small>${t}</small><b>${v}</b><i>${i}</i></div>`).join("");
 }
 function partidas() {
-  const ent = Object.entries(PR.partidas);
+  const nota = $("#nota-fin"); if (nota) nota.innerHTML = notaFinancieraHTML();
+  const ent = Object.entries(PR.partidas).filter(([k]) => !/proteína|lácte/i.test(k));
   const maxv = Math.max(...ent.map(([, v]) => Math.max(v.importe, v.doc[1] * 1e6)));
   $("#partidas").innerHTML = ent.map(([k, v]) => {
     const [mn, mx, rf] = v.doc; const ds = PR.doc_scope_partidas[k] || 0;
-    return `<div class="pb"><div class="pn">${k}</div><div class="pt">
+    const nom = k.replace(/^1 /, "1 ").includes("SIBRA") ? "Módulo de agua (independiente) · " + k : k;
+    return `<div class="pb"><div class="pn">${nom}</div><div class="pt">
       <span class="rg" style="left:${mn * 1e6 / maxv * 100}%;width:${(mx - mn) * 1e6 / maxv * 100}%"></span>
       <span class="bv" style="left:0;width:${v.importe / maxv * 100}%"></span><span class="bv d" style="left:0;width:${ds / maxv * 100}%"></span></div>
       <div class="pv"><b>${mdp(v.importe, 2)}</b> completo · <b>${mdp(ds, 2)}</b> alcance doc · rango doc ${mn}–${mx} (ref. ${rf})</div></div>`;
@@ -83,9 +87,10 @@ function partidas() {
 }
 function porFase() {
   const filas = [0, 1, 2, 3].map((n) => `<tr><td><span style="color:${FASE[n].color}">■</span> ${FASE[n].nombre.replace(/^Fase \d · /, "F" + n + " · ")}<br><small class="muted">${FASE[n].periodo}</small></td><td>${mdp(COSTO_F[n], 2)}</td><td>${(COSTO_F[n] / PR.subtotal * 100).toFixed(1)}%</td></tr>`).join("");
-  $("#porfase").innerHTML = `<table class="tz"><tr><th>Fase</th><th>MDP</th><th>%</th></tr>${filas}<tr><td><span style="color:${FASE[4].color}">■</span> F4 · Expansión futura</td><td>—</td><td>sin presupuesto</td></tr><tr><td><b>Total sin IVA</b></td><td><b>${mdp(PR.subtotal, 2)}</b></td><td>100%</td></tr></table>`;
-  const ZN = { "BLQ-A": "Bloque A · SIBRA", "BLQ-B": "Bloque B · Energía", "BLQ-C": "Bloque C · Lácteos", "BLQ-D": "Bloque D · Admin + IA", PATIO: "Patio y acceso", NORTE: "Franja Norte (sup.)", "ZONA-E": "Zona E · Pulimento/recarga", Redes: "Redes", Vialidades: "Vialidades", Predio: "Predio / urbanización", "Instr.": "Instrumentación", Global: "Ingeniería, permisos, contingencias" };
-  const z = Object.entries(PR.zonas).sort((a, b) => b[1] - a[1]).map(([k, v]) => `<tr><td>${ZN[k] || k}</td><td>${mdp(v, 2)}</td><td>${(v / PR.subtotal * 100).toFixed(1)}%</td></tr>`).join("");
+  $("#porfase").innerHTML = `<p class="nota tiny">Cifras del expediente del 25-oct-2026 (plan maestro). El total incluye partidas que el Documento Maestro agrupa con el nodo integrado; la planta láctea se detalla aparte, como negocio privado. No se inventa un total de agua a 15–20 años.</p>
+    <table class="tz"><tr><th>Fase</th><th>MDP</th><th>%</th></tr>${filas}<tr><td><span style="color:${FASE[4].color}">■</span> F4 · Expansión futura</td><td>—</td><td>sin presupuesto</td></tr><tr><td><b>Total expediente (sin IVA)</b></td><td><b>${mdp(PR.subtotal, 2)}</b></td><td>incluye lácteo, ver nota</td></tr></table>`;
+  const ZN = { "BLQ-A": "Bloque A · SIBRA (módulo de agua)", "BLQ-B": "Bloque B · Energía", "BLQ-C": "Negocio lácteo privado, fuera del alcance público", "BLQ-D": "Bloque D · Admin + IA", PATIO: "Patio y acceso", NORTE: "Franja Norte (sup.)", "ZONA-E": "Zona E · Pulimento (recarga = fase futura, no incluida)", Redes: "Redes", Vialidades: "Vialidades", Predio: "Predio / urbanización", "Instr.": "Instrumentación", Global: "Ingeniería, permisos, contingencias" };
+  const z = Object.entries(PR.zonas).sort((a, b) => b[1] - a[1]).map(([k, v]) => `<tr><td>${ZN[k] || k}</td><td>${k === "BLQ-C" ? "18.60 (CAPEX lácteo, privado)" : mdp(v, 2)}</td><td>${k === "BLQ-C" ? "fuera del alcance público" : (v / PR.subtotal * 100).toFixed(1) + "%"}</td></tr>`).join("");
   $("#zonas").innerHTML = `<table class="tz"><tr><th>Zona</th><th>MDP</th><th>%</th></tr>${z}</table>`;
 }
 function planos() {
@@ -155,6 +160,10 @@ function tablero(m) {
 let S = null;
 function iniciar() {
   kpis(); partidas(); porFase(); planos(); gantt();
+  const rv = $("#ruta-val"); if (rv) rv.innerHTML = rutaValidacionHTML();
+  const sm = $("#semaforo-tramos"); if (sm) sm.innerHTML = semaforoHTML(window.TRAMOS_100M);
+  bindTramos();
+  $("#btn-ejecutivo")?.addEventListener("click", (e) => { e.preventDefault(); alert("Aún no hay elementos en «Proyecto ejecutivo validado». Todo el visor permanece como anteproyecto referencial."); });
   try { escena(); } catch (e) { $("#cargando").textContent = "No se pudo iniciar el 3D en este navegador (WebGL)."; console.error(e); }
   ponerMes(0);
 }
@@ -186,6 +195,7 @@ function escena() {
   const add = (obj, ini, fin, fase, tipo, f) => { scene.add(obj); items.push({ obj, ini, fin, fase, tipo, f }); };
   const [a0, b0] = VENT[0];
   D.bloques.forEach((b, i) => {
+    if (b.id === "BLQ-C") return; // negocio lácteo privado: fuera de las capas de infraestructura
     const w = b.x1 - b.x0, d = b.y1 - b.y0; const g = new THREE.Group();
     const m = new THREE.Mesh(new THREE.BoxGeometry(w, .5, d), M.terraplen); m.position.y = .25; m.receiveShadow = true; g.add(m);
     const borde = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(w, .5, d)), new THREE.LineBasicMaterial({ color: new THREE.Color(b.color) })); borde.position.y = .26; g.add(borde);
@@ -209,9 +219,17 @@ function escena() {
   for (const [nf, lista] of Object.entries(porF)) {
     const n = +nf, [a, b] = VENT[n]; const span = b - a; const dur = n === 4 ? 1 : Math.max(1.2, span * .35);
     lista.forEach((f, i) => {
+      if (LACTEOS_IDS.has(f.id) || f.bloque === "BLQ-C") return;
       const ini = n === 0 ? a + 4.6 + i * .4 : n === 4 ? 24.5 + i * .5 : a + (span - dur) * (lista.length > 1 ? i / (lista.length - 1) : 0);
-      const g = construir(f); fac[f.id] = g; g.traverse((m) => { if (m.isMesh || m.isInstancedMesh) pick.push(m); });
-      add(g, ini, Math.min(n === 4 ? MAXM : b, ini + dur), n, "inst", f);
+      const g = construir(f); fac[f.id] = g;
+      const recarga = POZOS_RECARGA_IDS.has(f.id);
+      g.traverse((m) => {
+        if (m.isMesh || m.isInstancedMesh) {
+          m.userData.fid = f.id;
+          pick.push(m);
+        }
+      });
+      add(g, ini, Math.min(n === 4 ? MAXM : b, ini + dur), recarga ? "pozo-fut" : "inst", f);
     });
   }
   const matF = new THREE.LineBasicMaterial({ color: 0x4aa8ff, transparent: true, opacity: .28 });
@@ -226,7 +244,14 @@ function escena() {
   const flujos = crearFlujos(scene, D);
   const etq = []; const cE = $("#etq");
   const etiqueta = (txt, p, modo, color) => { const e = document.createElement("div"); e.className = "e"; e.style.setProperty("--c", color); e.innerHTML = txt; cE.appendChild(e); etq.push({ e, p, modo }); };
-  for (const b of D.bloques) etiqueta(b.nombre.replace(" (supuesto)", ""), W((b.x0 + b.x1) / 2, (b.y0 + b.y1) / 2, 10), "sitio", b.color);
+  for (const b of D.bloques) {
+    if (b.id === "BLQ-C") continue;
+    const nom = b.id === "ZONA-E" ? "Zona E · Pulimento (recarga = fase futura)" : b.nombre.replace(" (supuesto)", "");
+    etiqueta(nom, W((b.x0 + b.x1) / 2, (b.y0 + b.y1) / 2, 10), "sitio", b.color);
+  }
+  etiqueta("Nodo VAH<br><small>" + UBICACION.etiqueta + "<br>Superficie " + UBICACION.area + "</small>", W(100, 100, 16), "sitio", "#f3d27a");
+  pad.userData.attr = attrs("Nodo VAH · marcador genérico", { estado: "por confirmar", "cota/profundidad": "BM 1,112.50 msnm (documento; por confirmar en campo)", diámetro: "no aplica", material: "no aplica", "norma aplicable": PC, "fuente del dato": "Memoria MT-NVAH-01 y sitio.js; coordenadas UTM del documento no se usan para el mapa de ciudad" }, { "ubicación": UBICACION.aviso, "superficie": UBICACION.areaLarga, "coordenadas memoria": UBICACION.memoria });
+  pick.push(pad);
 
   S = { renderer, scene, camera, controls, items, fac, flujos, pick, etq, etiqueta, fantasma: true, modo: "obra", mes: 0, jor: 0, play: false, vel: 1, enfoque: null, hemi, sol, FONDO, NOCHE, ciudad: null, pad, rej, lind };
   vista("aerea", true);
@@ -241,7 +266,7 @@ function escena() {
     if (!down || Math.hypot(e.clientX - down[0], e.clientY - down[1]) > 6) return;
     const r = renderer.domElement.getBoundingClientRect(); ptr.set((e.clientX - r.left) / r.width * 2 - 1, -(e.clientY - r.top) / r.height * 2 + 1);
     ray.setFromCamera(ptr, camera); const hit = ray.intersectObjects(pick.filter((m) => { let o = m; while (o) { if (!o.visible) return false; o = o.parent; } return true; }), false)[0];
-    if (hit) ficha(hit.object.userData.fid); else $("#ficha").hidden = true;
+    if (hit) ficha(hit.object.userData.fid || hit.object.userData.attr); else $("#ficha").hidden = true;
   });
 
   const reloj = new THREE.Clock();
@@ -271,11 +296,15 @@ async function cargarCiudad() {
     const pozos = D.instalaciones.filter((f) => /^PI-803/.test(f.id)).map((f) => [f.cx - 100, 100 - f.cy]);
     const C = crearCiudad(S.scene, window.CIUDAD_OSM, pozos); S.ciudad = C;
     for (const e of C.etiquetas) { S.etiqueta(e.t, e.p, e.cat, e.color); S.etq[S.etq.length - 1].cerca = e.cerca; }
-    S.etiqueta("Nodo VAH · PTAR SIBRA<br><small>posición REFERENCIAL junto al PIL</small>", new THREE.Vector3(0, 60, 0), "ciudad", "#f3d27a");
-    S.capasRed = new Set(Object.keys(REDES));
+    S.etiqueta("Nodo VAH<br><small>" + UBICACION.etiqueta + "<br>Superficie " + UBICACION.area + "</small>", new THREE.Vector3(0, 60, 0), "ciudad", "#f3d27a");
+    S.recargaOn = false;
+    S.capasRed = new Set(Object.keys(REDES).filter((k) => k !== "recarga"));
+    C.capa("recarga", false);
+    if (C.pickables) C.pickables.forEach((m) => S.pick.push(m));
     try { // capas nuevas 2026 (si fallan, el visor anterior sigue igual)
       S.c2 = crearCapas2(S.scene, C, window.CIUDAD_OSM); S.capas2 ||= new Set(["gob"]);
       for (const e of S.c2.etiquetas) { S.etiqueta(e.t, e.p, e.cat, e.color); const t = S.etq[S.etq.length - 1]; t.cerca = e.cerca; t.src = e; }
+      if (S.c2.pickables) S.c2.pickables.forEach((m) => S.pick.push(m));
       for (const [n, x, z, r] of (window.CALLES_OSM || [])) { S.etiqueta(n, new THREE.Vector3(x, 20, z), "calles", "#aeb7bf"); const t = S.etq[S.etq.length - 1]; t.rango = r; t.e.classList.add("e-calle", "r" + r); }
       S.relK ??= 2; S.calles ??= true;
       aplicarCapas2();
@@ -328,21 +357,24 @@ function ponerMes(m, desdePlay) {
   const mm = forzar ?? m;
   let nObra = 0, nList = 0, nInst = 0;
   for (const it of S.items) {
+    const dairy = it.f && (LACTEOS_IDS.has(it.f.id) || it.f.bloque === "BLQ-C" || it.f.id === "BLQ-C");
+    const futuro = it.tipo === "pozo-fut" && !S.recargaOn;
     const p = clamp((mm - it.ini) / (it.fin - it.ini)); const e = ease(p);
-    it.obj.visible = p > 0; if (p > 0) it.obj.scale.set(1, Math.max(.02, e), 1);
-    it.and.visible = p > 0 && p < 1 && it.tipo !== "via";
-    it.fan.visible = S.fantasma && p <= 0 && S.modo === "obra" && (it.fase < 4 || mm > 24);
-    if (p > 0 && p < 1) nObra++; if (p >= 1 && it.tipo === "inst") nList++; if (it.tipo === "inst") nInst++;
+    it.obj.visible = !dairy && !futuro && p > 0; if (p > 0) it.obj.scale.set(1, Math.max(.02, e), 1);
+    it.and.visible = !dairy && !futuro && p > 0 && p < 1 && it.tipo !== "via";
+    it.fan.visible = !dairy && !futuro && S.fantasma && p <= 0 && S.modo === "obra" && (it.fase < 4 || mm > 24);
+    if (!dairy && it.tipo === "inst") { if (p > 0 && p < 1) nObra++; if (p >= 1) nList++; nInst++; }
   }
-  const enc = S.modo === "tuberias" ? null : S.modo === "tratadora" ? ["agua_residual", "agua_proceso", "agua_tratada"] : mm >= 18 ? Object.keys(S.flujos) : [];
-  for (const k in S.flujos) S.flujos[k].grupo.visible = enc ? enc.includes(k) : (S.capasOn?.has(k) ?? true);
+  const enc = S.modo === "tuberias" ? null : S.modo === "tratadora" ? ["agua_residual", "agua_proceso", "agua_tratada"] : mm >= 18 ? Object.keys(S.flujos).filter((k) => k !== "leche") : [];
+  for (const k in S.flujos) S.flujos[k].grupo.visible = k !== "leche" && (enc ? enc.includes(k) : (S.capasOn?.has(k) ?? true));
   const enProc = S.items.filter((it) => it.tipo === "inst" && mm > it.ini && mm < it.fin).map((it) => it.f.id);
   const tit = { obra: "OBRA 4D · NODO VAH", tuberias: "TUBERÍAS DEL NODO (proyecto completo)", tratadora: "MODO TRATADORA · SIBRA", v360: "VISTA 360°", ciudad: "CIUDAD Y REDES DE AGUA" }[S.modo];
   if (S.modo === "recorrido") return;
   $("#hud").innerHTML = S.modo === "ciudad"
-    ? `<b>${tit}</b><br><span class="ok">Ciudad, Río Nazas, canales y PIL: OpenStreetMap (real).</span><br><span class="ob">Trazo de las 6 redes y posición del Nodo: referencial.</span><br>El Plan Integral de Drenaje está pendiente de cargar.`
-    : `<b>${tit}</b> · ${forzar ? "mes 24 (todo construido)" : m > 24 ? "mes 24+" : "mes " + m.toFixed(1)}<br>
+    ? `<b>${tit}</b><br><span class="ok">Ciudad, Río Nazas, canales y PIL: OpenStreetMap (real).</span><br><span class="ob">${UBICACION.etiqueta}. ${NIVEL.ante} — nada está validado como proyecto ejecutivo.</span><br><span class="ob">Superficie ${UBICACION.area}. Pulse un tubo, tramo, planta o el Nodo para ver su ficha.</span>`
+    : `<b>${tit}</b> · ${NIVEL.ante}<br>${forzar ? "mes 24 (todo construido, salvo recarga y lácteo)" : m > 24 ? "mes 24+" : "mes " + m.toFixed(1)}<br>
     <span class="ok">■ Terminadas: ${nList}/${nInst}</span> · <span class="ob">■ En obra: ${nObra}</span><br>
+    <span class="ob">${UBICACION.etiqueta} · superficie ${UBICACION.area}</span><br>
     ${enProc.length && !forzar ? "Trabajando: " + enProc.slice(0, 4).join(", ") + (enProc.length > 4 ? "…" : "") : mm >= 18 && !forzar ? "Redes en prueba (Fase 3)" : ""}`;
 }
 function ponerJornada(j) {
@@ -378,27 +410,45 @@ $("#btn-play").addEventListener("click", () => {
 $("#vel").addEventListener("change", (e) => { if (S) S.vel = +e.target.value; });
 
 function ficha(id) {
+  if (id && typeof id === "object" && id.titulo) { $("#ficha").innerHTML = fichaHTML(id); $("#ficha").hidden = false; return; }
   const f = D.instalaciones.find((x) => x.id === id); if (!f) return;
+  if (LACTEOS_IDS.has(f.id) || f.bloque === "BLQ-C") return;
   const it = S.items.find((x) => x.f === f); const costo = PR.instalaciones[id];
-  $("#ficha").innerHTML = `<button class="x" onclick="this.parentNode.hidden=true">×</button><h3>${f.id} · ${f.nombre}<span class="tag ${f.fuente === "doc" ? "doc" : "sup"}">${f.fuente === "doc" ? "DOCUMENTO" : "SUPUESTO"}</span></h3>
-   <table>${Object.entries(f.datos || {}).map(([k, v]) => `<tr><td>${k}</td><td>${v}</td></tr>`).join("")}
-   <tr><td>Fase</td><td>${FASE[f.fase].nombre} · ${FASE[f.fase].periodo}</td></tr>
-   <tr><td>Programa 4D</td><td>mes ${it.ini.toFixed(1)} → ${it.fin.toFixed(1)} <small class="muted">(secuencia referencial)</small></td></tr>
-   <tr><td>Costo directo</td><td>${costo ? pesos(costo) + " sin IVA" : "Incluido en partidas globales"}</td></tr></table>`;
+  const recarga = POZOS_RECARGA_IDS.has(f.id);
+  const a = attrs(`${f.id} · ${f.nombre}`, {
+    estado: recarga ? "fase futura · no forma parte del piloto" : (f.fuente === "doc" ? "proyectado (anteproyecto referencial)" : "por confirmar"),
+    "cota/profundidad": (f.datos && (f.datos["Profundidad"] || f.datos["Cota"] || f.datos["Nivel"])) || PC,
+    diámetro: (f.datos && (f.datos["Diámetro"] || f.datos["Ø"] || f.datos["Diametro"])) || PC,
+    material: (f.datos && (f.datos["Material"] || f.datos["material"])) || PC,
+    "norma aplicable": recarga ? "NOM-014-CONAGUA-2003 (condicionada a estudio hidrogeológico; riesgo de arsénico)" : (f.datos && f.datos["Norma"]) || PC,
+    "fuente del dato": f.fuente === "doc" ? "Documento / memoria técnica (anteproyecto)" : "Supuesto de diseño (S-01…S-15)",
+  }, f.datos || {});
+  if (f.id === "TK-101") {
+    a["caudal de diseño"] = "22.5 L/s (19–29)";
+    a["DBO₅ / SST"] = "450 / 380 mg/L — " + INF_TEORICO;
+  }
+  if (recarga) a.nota = RECARGA_NOM;
+  const extra = [
+    ["Fase", recarga ? RECARGA_NOM : (FASE[f.fase].nombre + " · " + FASE[f.fase].periodo)],
+    ["Programa 4D", it ? `mes ${it.ini.toFixed(1)} → ${it.fin.toFixed(1)} (secuencia referencial)` : PC],
+    ["Costo directo", costo ? pesos(costo) + " sin IVA" : "Incluido en partidas globales"],
+    ["Origen en expediente", f.fuente === "doc" ? "DOCUMENTO" : "SUPUESTO"],
+  ];
+  $("#ficha").innerHTML = fichaHTML(a, extra);
   $("#ficha").hidden = false;
 }
 
 /* ───────── Modos ───────── */
 const ETAPAS = [
-  { n: "Llegada y bombeo", c: "#a0703a", ids: ["TK-101"], txt: "Cárcamo de 5.0 × 3.0 × 3.5 m (52.5 m³) con 2 bombas trituradoras de 15 HP con VFD (una opera y otra de respaldo). Caudal de diseño 22.5 L/s (19–29). Entrada con DBO₅ de 450 mg/L y SST de 380 mg/L.", src: "doc" },
+  { n: "Llegada y bombeo", c: "#a0703a", ids: ["TK-101"], txt: "Cárcamo de 5.0 × 3.0 × 3.5 m (52.5 m³) con 2 bombas trituradoras de 15 HP con VFD (una opera y otra de respaldo). Caudal de diseño 22.5 L/s (19–29). DBO₅ 450 mg/L y SST 380 mg/L: valores teóricos — pendiente muestreo compuesto y aforo con laboratorio acreditado EMA.", src: "doc" },
   { n: "Pretratamiento", c: "#c08a4a", ids: ["SC-102", "TK-102"], txt: "Separadores coalescentes y trampas de grasa para 35 L/s, con bafles que retienen hidrocarburos libres (doc). Estanque amortiguador de ≈408 m³ para desviar picos tóxicos (supuesto S-07).", src: "mixto" },
-  { n: "Primario anaerobio (RAFA)", c: "#8f9aa5", ids: ["R-201A", "R-201B"], txt: "2 reactores UASB/RAFA de Ø8.0 × 7.0 m (351.8 m³ cada uno) con TRH de 8.6 h. Quitan hasta 65 % de la DBO₅ y producen 115 m³/día de biogás para la caldera de pasteurización.", src: "doc" },
+  { n: "Primario anaerobio (RAFA)", c: "#8f9aa5", ids: ["R-201A", "R-201B"], txt: "2 reactores UASB/RAFA de Ø8.0 × 7.0 m (351.8 m³ cada uno) con TRH de 8.6 h. Quitan hasta 65 % de la DBO₅ y producen 115 m³/día de biogás (dato del expediente del módulo de agua; no se presenta aquí como parte de un negocio lácteo).", src: "doc" },
   { n: "Biológico (lodos activados)", c: "#3f8fd8", ids: ["TK-301", "B-301"], txt: "Tanque de aeración de 620 m³ con difusores de burbuja fina (SOTR de 14.2 kg O₂/h) y 2 sopladores de lóbulos de 25 HP. Las medidas de 20 × 8 × 3.9 m son un supuesto (S-06).", src: "doc" },
   { n: "Clarificación secundaria", c: "#5fb0e0", ids: ["CL-401A", "CL-401B"], txt: "2 clarificadores de Ø11 m con puente giratorio. No vienen en el documento: se agregaron porque un sistema de lodos activados los necesita (S-05).", src: "sup" },
   { n: "Pulimento", c: "#2bb3c0", ids: ["BF-402A", "BF-402B", "HS-601"], txt: "Biofiltros percoladores de lecho fijo (doc; medidas de Ø7 × 4.5 m supuestas) y humedal subsuperficial de 1,500 m² con tezontle y Typha domingensis (doc). La meta es dejar la DBO₅ y los SST por debajo de 20 mg/L.", src: "doc" },
   { n: "Filtración y desinfección UV", c: "#2fd3e6", ids: ["FA-701"], txt: "3 trenes de filtración rápida multimedia con arena sílica y 2 reactores UV de 254 nm a 35 mJ/cm², sin cloro residual.", src: "doc" },
   { n: "Lodos", c: "#7a6a55", ids: ["AL-001"], txt: "El documento no especifica cómo se tratan los lodos. El modelo solo incluye el retorno de lodos RAS (4\"-LR-402) y un almacén de lodos deshidratados (supuesto S-15). Falta definir la purga, el espesado y la deshidratación.", src: "sup" },
-  { n: "Reúso y recarga", c: "#6fbf73", ids: ["ER-801", "EB-802", "PI-803A", "PI-803B", "PI-803C", "PI-803D"], txt: "Estanque de regulación de ≈3,000 m³ y bombeo a riego ejidal (supuestos S-07). 4 pozos de infiltración inducida (doc); su número y ubicación son el supuesto S-14 y requieren estudio geohidrológico y permiso de CONAGUA.", src: "mixto" },
+  { n: "Reúso (sin recarga en el piloto)", c: "#6fbf73", ids: ["ER-801", "EB-802"], txt: "Estanque de regulación de ≈3,000 m³ y bombeo a riego ejidal (supuestos S-07). Los 4 pozos de infiltración no forman parte del piloto: son fase futura, apagada por defecto, condicionada a estudio hidrogeológico y NOM-014-CONAGUA-2003 (riesgo de arsénico).", src: "mixto" },
 ];
 function atenuar(on, resaltar = []) {
   for (const it of S.items) {
@@ -440,10 +490,13 @@ function etapa(i) {
   S.etEtapa.e.style.setProperty("--c", e.c); S.etEtapa.e.innerHTML = `${i + 1}. ${e.n}`; S.etEtapa.p.copy(box.getCenter(new THREE.Vector3())).setY(box.max.y + 4);
 }
 function panelTuberias() {
-  const p = $("#modo-panel"); p.hidden = false; S.capasOn ||= new Set(Object.keys(S.flujos));
-  const tr = D.redes.flatMap((r) => r.tramos.map((t) => `<div><span style="color:${r.color}">■</span> ${t.tag}${t.nota ? " — " + t.nota : ""}</div>`)).join("");
-  p.innerHTML = `<h2>Redes internas del Nodo VAH <small>trazo de los planos PL-03 y PL-04</small></h2>
-   <div class="capas">${D.redes.map((r) => `<label style="--c:${r.color}"><input type="checkbox" data-capa="${r.capa}" ${S.capasOn.has(r.capa) ? "checked" : ""}><i></i>${r.nombre} (${r.tramos.length})</label>`).join("")}</div>
+  const p = $("#modo-panel"); p.hidden = false;
+  const redes = D.redes.filter((r) => r.capa !== "leche");
+  S.capasOn ||= new Set(redes.map((r) => r.capa));
+  S.capasOn.delete("leche");
+  const tr = redes.flatMap((r) => r.tramos.map((t) => `<div><span style="color:${r.color}">■</span> ${t.tag}${t.nota ? " — " + t.nota : ""}</div>`)).join("");
+  p.innerHTML = `<h2>Redes internas del Nodo VAH <small>módulo de agua · anteproyecto referencial</small></h2>
+   <div class="capas">${redes.map((r) => `<label style="--c:${r.color}"><input type="checkbox" data-capa="${r.capa}" ${S.capasOn.has(r.capa) ? "checked" : ""}><i></i>${r.nombre} (${r.tramos.length})</label>`).join("")}</div>
    <div class="tramos">${tr}</div>
    <p class="nota tiny">Es el trazo <b>referencial</b> del anteproyecto. Los diámetros y materiales son supuestos (S-09). Los puntos de entrega del agua residual, la acometida de CFE y la salida al canal ejidal también son supuestos (S-10) mientras no lleguen las factibilidades de SIDEAPA y CFE. La red municipal está en el modo «Ciudad y drenaje».</p>`;
   p.querySelectorAll("[data-capa]").forEach((c) => c.addEventListener("change", () => { c.checked ? S.capasOn.add(c.dataset.capa) : S.capasOn.delete(c.dataset.capa); ponerMes(S.mes); }));
@@ -456,7 +509,8 @@ function panelCiudad() {
    <label><input type="checkbox" id="chk-folleto" ${C.folleto.visible ? "checked" : ""}> 🗺️ Folleto histórico del PIL (pág. 13)</label>
    <button class="btn mini oro" id="btn-tour">🌊 Recorrido del agua</button></div>
    <div class="real-ref"><div><span class="tag doc">REAL · OSM</span> Calles, edificios mapeados, Río Nazas, canales (Sacramento, Tlahualilo), drenes y arroyos, vía férrea, aeropuertos, área industrial del PIL, tanques elevados, obras hidráulicas, bombeo y la PTAR existente de OSM.</div>
-   <div><span class="tag sup">REFERENCIAL</span> Posición del Nodo VAH junto al PIL; trazo y diámetros de las seis redes (van por calles reales); descarga al Nazas; toma al canal; colectores pluviales; ubicación de colonias (aprox.). Manzanas = huecos entre calles OSM con alturas ilustrativas.</div></div>
+   <div><span class="tag ref">Anteproyecto referencial</span> ${UBICACION.etiqueta}. Trazo y diámetros de las redes (van por calles reales); descarga al Nazas; toma al canal; colectores pluviales; ubicación de colonias (aprox.). Manzanas = huecos entre calles OSM con alturas ilustrativas. Superficie ${UBICACION.area}.</div></div>
+   <label class="toggle-fut"><input type="checkbox" id="chk-recarga" ${S.recargaOn ? "checked" : ""}><span><b>${RECARGA_NOM}</b><br>Los 4 pozos de infiltración y la capa «Acuífero (esquemático)» están apagados por defecto y no forman parte del piloto.</span></label>
    ${S.c2 ? `<div class="c2-bloque"><h3>Capas nuevas · Propuesta Integral 2026 <span class="tag sup">REFERENCIAL</span></h3>
    <div class="capas">${C2CAT.map((k) => `<label class="c2-${k}"><input type="checkbox" data-c2="${k}" ${S.capas2.has(k) ? "checked" : ""}> ${C2NOM[k]}</label>`).join("")}
    <button class="btn mini ${S.simOn ? "on" : ""}" id="btn-sim">${S.simOn ? "■ Detener simulación" : "▶ Simulación demostrativa de alerta"}</button></div>
@@ -465,7 +519,7 @@ function panelCiudad() {
    <div class="c2-ley diam"><span style="--c:#f3d27a"><i></i>Emisor Central 72″</span><span style="--c:#2fd3e6"><i></i>San Ignacio 42″</span><span style="--c:#c58bff"><i></i>Rehabilitación 60″</span><span style="--c:#c58bff"><i></i>Agua tratada: 16″ ≈ 100 L/s (referencia: línea existente Lerdo–Jabonoso)</span></div>
    <div class="c2-ley">${Object.values(TEC).map((t) => `<span style="--c:${t.c}" title="${t.d}"><i></i>${t.n}</span>`).join("")}</div>
    <p class="nota tiny">Posiciones de equipos, zonas y conexiones: <b>referenciales</b>, no son levantamiento oficial. Precios de equipos: <b>por cotizar</b>. Las zonas industriales se muestran como beneficiarias y posibles aliadas, nunca como señaladas. Más detalle abajo, en «Propuesta integral 2026».</p></div>` : ""}
-   <p class="nota tiny">Datos © colaboradores de OpenStreetMap (licencia ODbL), extracto Geofabrik México del 12-nov-2026. El PIL no tiene nombre en OSM; se identificó por sus calles (Guanaceví, Topia, Canelas, Tamazula, Piedras Negras, CP 35078). Las coordenadas UTM de la memoria (E 654 200–654 400, N 2 854 600–2 854 800) caen unos 26 km al norte de Gómez Palacio, así que no se usaron para ubicar el Nodo. El folleto es un mapa de época sin escala; su ajuste sobre OSM es aproximado (error de 1–2 km). Ningún documento menciona una descarga al Río Nazas: se dibuja como opción referencial que tendría que cumplir la NOM-001-SEMARNAT-2021.</p>`;
+   <p class="nota tiny">Datos © colaboradores de OpenStreetMap (licencia ODbL), extracto Geofabrik México del 12-nov-2026. El PIL no tiene nombre en OSM; se identificó por sus calles (Guanaceví, Topia, Canelas, Tamazula, Piedras Negras, CP 35078). ${UBICACION.memoria} ${UBICACION.visor} El folleto es un mapa de época sin escala; su ajuste sobre OSM es aproximado (error de 1–2 km). Ningún documento menciona una descarga al Río Nazas: se dibuja como opción referencial que tendría que cumplir la NOM-001-SEMARNAT-2021. Cada tubo, planta, sensor o el Nodo se puede pulsar para ver su ficha técnica (estado, cota, diámetro, material, norma y fuente); lo desconocido se marca «por confirmar». Nada está en «Proyecto ejecutivo validado».</p>`;
   $("#chk-xray").addEventListener("change", (e) => { S.xray = e.target.checked; C.xray(S.xray); });
   $("#chk-folleto").addEventListener("change", (e) => { C.cargarFolleto(); C.folleto.visible = e.target.checked; });
   $("#btn-tour").addEventListener("click", () => modo("recorrido"));
@@ -473,7 +527,20 @@ function panelCiudad() {
   $("#btn-sim")?.addEventListener("click", () => (S.simOn ? pararSim() : iniciarSim()));
   p.querySelectorAll("[data-rel]").forEach((b) => b.addEventListener("click", () => { S.relK = +b.dataset.rel; aplicarCapas2(); p.querySelectorAll("[data-rel]").forEach((x) => x.classList.toggle("on", x === b)); }));
   $("#chk-calles")?.addEventListener("change", (e) => { S.calles = e.target.checked; });
-  p.querySelectorAll("[data-red]").forEach((c) => c.addEventListener("change", () => { c.checked ? S.capasRed.add(c.dataset.red) : S.capasRed.delete(c.dataset.red); C.capa(c.dataset.red, c.checked); }));
+  p.querySelectorAll("[data-red]").forEach((c) => c.addEventListener("change", () => {
+    if (c.dataset.red === "recarga") return aplicarRecarga(c.checked);
+    c.checked ? S.capasRed.add(c.dataset.red) : S.capasRed.delete(c.dataset.red); C.capa(c.dataset.red, c.checked);
+  }));
+  $("#chk-recarga")?.addEventListener("change", (e) => aplicarRecarga(e.target.checked));
+}
+function aplicarRecarga(on) {
+  S.recargaOn = !!on;
+  if (!S.capasRed) S.capasRed = new Set();
+  if (S.recargaOn) S.capasRed.add("recarga"); else S.capasRed.delete("recarga");
+  S.ciudad?.capa("recarga", S.recargaOn);
+  const chk = document.querySelector("[data-red='recarga']"); if (chk) chk.checked = S.recargaOn;
+  const t = document.getElementById("chk-recarga"); if (t) t.checked = S.recargaOn;
+  ponerMes(S.mes);
 }
 /* ───────── Recorrido del agua ───────── */
 function pasosTour() {
@@ -492,19 +559,19 @@ function pasosTour() {
     { t: "Descarga industrial → colector → Nodo", k: "industrial", tag: "REF", pts: v3(r.descarga, P.industrial),
       txt: "Las descargas de las naves van por un colector industrial (trazo referencial) al Nodo. Ahí también llega el emisor municipal con los colectores C-1…C-5. El Plan Integral de Drenaje está pendiente de cargar." },
     { t: "Entrada de agua cruda y cárcamo TK-101", k: "sanitario", tag: "DOC + SUP", pts: [sibra[0], sibra[1]],
-      txt: "El agua cruda entra por el norte del predio (punto de entrega supuesto S-10) al cárcamo TK-101: 52.5 m³, 2 bombas trituradoras de 15 HP, caudal de diseño 22.5 L/s (19–29). El Nodo piloto trata una parte de las descargas del PIL." },
+      txt: "El agua cruda entra por el norte del predio (punto de entrega supuesto S-10) al cárcamo TK-101: 52.5 m³, 2 bombas trituradoras de 15 HP, caudal de diseño 22.5 L/s (19–29). DBO₅ 450 y SST 380 mg/L son teóricos — pendiente muestreo compuesto y aforo con laboratorio acreditado EMA." },
     { t: "Tratamiento SIBRA en el Nodo", k: "tratada", tag: "DOC", pts: sibra.slice(1),
       txt: "Pretratamiento → RAFA anaerobio → lodos activados → clarificación (supuesto S-05) → biofiltros y humedal → filtración y UV sin cloro. El documento plantea cumplir NOM-001-SEMARNAT-2021 y NOM-002-SEMARNAT-1996." },
     { t: "Reúso industrial (agua morada)", k: "tratada", tag: "REF", pts: v3(r.reuso, P.tratada), txt: "Agua tratada de regreso a las naves del PIL. Es una propuesta con trazo referencial: el documento habla de reúso productivo y de riego." },
     { t: "Riego ejidal por el canal", k: "tratada", tag: "OSM + REF", pts: v3(r.riego, P.tratada), txt: "El documento dice que el predio colinda con canales de riego ejidal (bombeo EB-802, supuesto S-07). El Canal de Sacramento es real (OSM); la conexión es referencial." },
     { t: "Río Nazas", k: "tratada", tag: "REF", pts: v3(r.nazas, P.tratada), txt: "Los documentos no mencionan el Nazas. El cauce es real (OSM) y la descarga es solo una opción referencial: tendría que cumplir la NOM-001-SEMARNAT-2021 y tener permiso de CONAGUA." },
-    { t: "Recarga al acuífero", k: "recarga", tag: "DOC + SUP", pts: [new THREE.Vector3(px, 0, pz), new THREE.Vector3(px, A, pz)],
-      txt: "4 pozos de infiltración inducida (documento); su ubicación es el supuesto S-14 y requiere estudio geohidrológico y permiso de CONAGUA. Reúso y recarga del piloto: 0.60–0.90 Mm³/año, con menos extracción de pozos profundos (Documento Maestro)." },
-  ];
+    { t: "Recarga al acuífero (fase futura, no está en el piloto)", k: "recarga", tag: "FASE FUTURA", pts: [new THREE.Vector3(px, 0, pz), new THREE.Vector3(px, A, pz)],
+      txt: RECARGA_NOM + ". El interruptor está apagado por defecto. No se presenta como parte de la etapa piloto ni se inventa un caudal de infiltración.", futuro: true },
+  ].filter((e) => !e.futuro || S.recargaOn);
 }
 function panelTour() {
   const p = $("#modo-panel"); p.hidden = false; S.tour = pasosTour();
-  p.innerHTML = `<h2>Recorrido del agua <small>del pozo a la industria, al Nodo y de vuelta: reúso, riego, Nazas y acuífero</small></h2>
+  p.innerHTML = `<h2>Recorrido del agua <small>del pozo a la industria, al Nodo y de vuelta: reúso y riego. La recarga al acuífero no está en el piloto.</small></h2>
    <div class="etapas">${S.tour.map((e, i) => `<button class="etapa" data-i="${i}" style="--c:${REDES[e.k].c}"><b>${i + 1}. ${e.t}</b> <span class="tag ${/REF|SUP/.test(e.tag) ? "sup" : "doc"}">${e.tag}</span></button>`).join("")}</div>
    <div class="det" id="det-tour"></div>
    <p class="nota tiny"><button class="btn mini oro" id="btn-tour-play">▶ Reproducir</button> <button class="btn mini" id="btn-ciudad">⟵ Volver a Ciudad y redes</button> La gota recorre cada tramo; el color es el de la red.</p>`;
@@ -617,7 +684,50 @@ function iniciarObra() {
 }
 function pararObra(ocultar = true) { S.obraOn = false; if (ocultar) { S.obraVis = false; S.c2?.pararObra(); } aplicarCapas2(); botonesObra(); }
 function botonesObra() { const b = $("#btn-obra"); if (b) { b.textContent = S.obraOn ? "■ Pausar" : "▶ Simular obra por tramos"; b.classList.toggle("on", !!S.obraOn); } }
-function animObra(dt) { S.obraU = Math.min(48.999, (S.obraU || 0) + dt / 1.6); ponerObra(S.obraU); if (S.obraU >= 48.999) pararObra(false); }
+function animObra(dt) { S.obraU = Math.min(48.999, (S.obraU || 0) + dt / 1.6); ponerObra(S.obraU); if (S.obraU >= 48.999) { pararObra(false); conectarNodo(); } }
+/* Paso final: el Nodo se conecta y el agua tratada sale a parques y ejidos (propuesta) */
+function conectarNodo() {
+  if (!S?.c2) return; S.capas2.add("agua"); S.capas2.add("lluvias"); aplicarCapas2(); document.querySelectorAll("[data-c2='agua'],[data-c2='lluvias']").forEach((c) => (c.checked = true));
+  const [x, z] = S.c2.foco.agua; S.enfoque = { tgt: new THREE.Vector3(x, 0, z), pos: new THREE.Vector3(x - 1800, 3000, z + 3600) };
+  $("#hud").innerHTML = `<b>✔ OBRA TERMINADA · EL NODO SE CONECTA</b><br>El agua tratada sale a <span style="color:#3fd46b">parques y camellones</span> (NOM-003) y luego a <span style="color:#a35bff">ejidos</span> por la línea morada (NOM-001).<br><span class="ob">Propuesta · trazos referenciales</span>`;
+}
+/* ───── Modo presentación (?modo=presentacion): recorrido guiado en lenguaje sencillo ───── */
+const PRES = [
+  { t: "Gómez Palacio, en 3D", d: "Este visor muestra la ciudad real (OpenStreetMap) y, encima, lo que proponemos sumar al Plan Fluye. Lo verde es lo que el gobierno ya está construyendo.", capas: ["gob"], cam: [-3500, 1500, 9000] },
+  { t: "El problema", d: "El Emisor Central y el colector San Ignacio llevan cerca del 80 % del agua residual de la ciudad. Los tubos viejos se corroyeron y ya hubo colapsos. Por eso el gobierno ya los está cambiando.", capas: ["gob", "zanja"], ver: "zanja" },
+  { t: "Cavar una sola vez", d: "Si la calle ya está abierta para el tubo nuevo, en la misma zanja se pueden dejar ductos para fibra y sensores. Así no se vuelve a romper la calle después.", capas: ["zanja"], ver: "zanja" },
+  { t: "Obra por tramos, con cuidado de los vecinos", d: "La obra avanza de 100 en 100 metros, de la planta hacia las colonias. En cada tramo: desvío vial señalizado, bombeo provisional para que nadie se quede sin drenaje y acceso para emergencias.", capas: ["zanja"], obra: true },
+  { t: "Colonias que se benefician", d: "Cuando el sistema completo esté terminado, unas 262 mil personas tendrán un drenaje más seguro. Atención primero donde ya hubo fallas, como Las Luisas, Leticia Herrera y Centenario.", capas: ["zanja", "gob"], ver: "zanja" },
+  { t: "Lluvia y campo", d: "La lluvia fuerte puede guardarse en vasos de retención que en secas sirven como parques. El campo de Gómez Palacio sembró 21 % menos en 2025: el agua tratada puede ayudar.", capas: ["lluvias"], ver: "lluvias" },
+  { t: "Agua tratada para parques y ejidos", d: "El Nodo limpia el agua hasta cumplir la norma: apta para riego e industria, no para beber. Primero va a parques y árboles; después, a los ejidos por la línea morada.", capas: ["agua", "lluvias"], ver: "agua", conectar: true },
+  { t: "Nos sumamos a las obras del gobierno", d: "En verde, lo que ya está en marcha: el emisor de la CAED, Agua Saludable y las plantas Norte y Oriente. Esta propuesta suma a esas obras; no las sustituye.", capas: ["gob"], cam: [-3000, 0, 10500] },
+  { t: "Transparencia", d: "Sensores en la red y un tablero público con el avance, el gasto y la calidad del agua. Una herramienta que el Municipio puede tener como propia para informar a todos.", capas: ["tec"], sim: true },
+];
+let presI = 0;
+function presPaso(i) {
+  if (!S?.c2) return; presI = Math.max(0, Math.min(PRES.length - 1, i)); const p = PRES[presI];
+  if (S.simOn) pararSim(); if (S.obraOn || S.obraVis) pararObra(true);
+  if (S.modo !== "ciudad") modo("ciudad");
+  S.capas2 = new Set(p.capas); aplicarCapas2(); document.querySelectorAll("[data-c2]").forEach((c) => (c.checked = S.capas2.has(c.dataset.c2)));
+  if (p.ver) verEnMapa(p.ver);
+  if (p.cam) { const [x, y, z] = p.cam; S.enfoque = { tgt: new THREE.Vector3(x, 0, y), pos: new THREE.Vector3(x + 1500, z * .7, y + z) }; }
+  if (p.obra) { S.obraU = 0; iniciarObra(); }
+  if (p.sim) iniciarSim();
+  if (p.conectar) setTimeout(() => { if (presI === PRES.indexOf(p)) conectarNodo(); }, 600);
+  const o = $("#pres"); o.querySelector(".pres-n").textContent = `${presI + 1} de ${PRES.length}`; o.querySelector("h2").textContent = p.t; o.querySelector("p").textContent = p.d;
+  o.querySelector("[data-pres=ant]").disabled = presI === 0; o.querySelector("[data-pres=sig]").textContent = presI === PRES.length - 1 ? "Terminar ✓" : "Siguiente ▶";
+  document.querySelector(".visor").scrollIntoView({ behavior: "smooth", block: "start" });
+}
+function presentacion() {
+  if ($("#pres")) return; const o = document.createElement("div"); o.id = "pres";
+  o.innerHTML = `<div class="pres-card"><div class="pres-top"><span class="pres-n"></span><span class="pres-tag">Propuesta de aporte · Nodo VAH</span><button class="btn mini" data-pres="salir">Salir ✕</button></div><h2></h2><p></p><div class="pres-btns"><button class="btn" data-pres="ant">◀ Anterior</button><button class="btn oro" data-pres="sig">Siguiente ▶</button></div></div>`;
+  document.body.appendChild(o);
+  o.querySelector("[data-pres=ant]").addEventListener("click", () => presPaso(presI - 1));
+  o.querySelector("[data-pres=sig]").addEventListener("click", () => (presI === PRES.length - 1 ? salirPres() : presPaso(presI + 1)));
+  o.querySelector("[data-pres=salir]").addEventListener("click", salirPres);
+  const esperar = () => (S?.c2 ? presPaso(0) : setTimeout(esperar, 500)); esperar();
+}
+function salirPres() { $("#pres")?.remove(); if (S?.simOn) pararSim(); const u = new URL(location.href); u.searchParams.delete("modo"); history.replaceState(null, "", u); }
 function ponerObra(u) {
   S.obraU = u; const i = Math.floor(u); const r = S.c2.obraEstado(i, u - i); if (!r) return; const t = r.t;
   const rg = $("#obra-rango"); if (rg && document.activeElement !== rg) rg.value = u;
@@ -626,7 +736,7 @@ function ponerObra(u) {
   for (const x of S.etq) if (x.src && x.src.cat === "obra") { if (x.e.innerHTML !== x.src.t) x.e.innerHTML = x.src.t; x.e.style.setProperty("--c", x.src.color); }
   if (S.obraI !== i) { S.obraI = i; salvaTramo(i); const p = r.foco; S.enfoque = { tgt: new THREE.Vector3(p[0], 0, p[1]), pos: new THREE.Vector3(p[0] - 750, 1350, p[1] + 1500) }; }
   const sec = t[1] === "72" ? "Emisor Central 72″ · junto a la obra: col. Miguel de la Madrid" : t[1] === "42" ? "Colector San Ignacio 42″ · sector referencial" : "Rehabilitación 60″ · sector referencial";
-  if (S.modo === "ciudad") $("#hud").innerHTML = `<b>SIMULACIÓN DE OBRA · ${id} de 49</b><br>${sec}<br>${t[4]} → ${t[5]} (estimado) · ~${t[6].toFixed(2)} MDP con IVA (~${(t[6] / 1.16).toFixed(2)} sin IVA), estimado a ritmo parejo<br>Fase: <b>${r.nombre}</b><br><span class="ob">Propuesta / estimado · orden aguas abajo → aguas arriba · desvíos sujetos a Tránsito y Vialidad · bombeo de desvío provisional</span>`;
+  if (S.modo === "ciudad") $("#hud").innerHTML = `<b>SIMULACIÓN DE OBRA · ${id} de 49</b><br>${sec}<br>${t[4]} → ${t[5]} (estimado) · ~3.9 MDP con IVA (~3.4 sin IVA) por cada 100 m, estimado a ritmo parejo<br>Fase: <b>${r.nombre}</b><br><span class="ob">Propuesta / estimado · orden aguas abajo → aguas arriba · desvíos sujetos a Tránsito y Vialidad · bombeo de desvío provisional</span>`;
 }
 function iniciarSim() {
   if (!S?.c2) return; if (S.modo !== "ciudad") modo("ciudad");
@@ -679,6 +789,9 @@ function tramos100() {
   bar.innerHTML = T.map((t, i) => `<button data-t100="${i}" title="T-${t[0]} · ${t[1]}″ · ${f(t[4])} → ${f(t[5])}" style="--c:${C[t[1]]};flex:${t[3] - t[2]}"></button>`).join("");
   document.querySelectorAll("[data-t100]").forEach((el) => el.addEventListener("click", () => elegirTramo(+el.dataset.t100)));
 }
+function bindTramos() {
+  document.querySelectorAll("[data-t100]").forEach((el) => { el.onclick = () => elegirTramo(+el.dataset.t100); });
+}
 function salvaTramo(i) {
   const W = window.SALVA_TRAMOS, T = window.TRAMOS_100M, el = $("#salva-tramo"); if (!el || !W || !T?.[i]) return; const r = W.t.find((x) => x[0] === T[i][0]); if (!r) return;
   el.innerHTML = `<b>Medidas para T-${String(T[i][0]).padStart(2, "0")} · ${T[i][1]}″ <small class="muted">propuesta</small></b><span><b>Horario:</b> ${W.ventana[r[1]]}</span><span><b>Vialidad:</b> ${W.vial[r[2]]}</span><span><b>Seguridad:</b> ${W.seguridad[r[3]]}</span>`;
@@ -688,13 +801,23 @@ function elegirTramo(i) { salvaTramo(i);
   if (!S?.c2) return; if (!S.capas2.has("zanja") || S.modo !== "ciudad") verEnMapa("zanja");
   const p = S.c2.verTramo(i); if (!p) return; const T = window.TRAMOS_100M[i];
   S.enfoque = { tgt: new THREE.Vector3(p[0], 0, p[1]), pos: new THREE.Vector3(p[0] - 750, 1350, p[1] + 1500) };
-  setTimeout(() => { if (S.modo === "ciudad") $("#hud").innerHTML = `<b>TRAMO T-${String(T[0]).padStart(2, "0")} · ${T[1]}″</b><br>${T[2]}–${T[3]} m · ${T[4]} → ${T[5]}<br>~${T[6].toFixed(2)} MDP con IVA (~${(T[6] / 1.16).toFixed(2)} sin IVA), estimado a ritmo parejo<br><span class="ob">Estimación uniforme, no calendario oficial de la CAED · posición proporcional sobre trazo referencial</span>`; }, 900);
+  const diam = T[1] + "″";
+  ficha(attrs(`Tramo T-${String(T[0]).padStart(2, "0")} · CAED-IPE-082-26`, {
+    estado: "por confirmar (contrato en marcha a nivel de obra; avance de este tramo: sin dato oficial)",
+    "cota/profundidad": PC,
+    diámetro: diam,
+    material: "PRFV en el tubo nuevo (expediente de la 1.ª etapa); pozos y conexiones por confirmar",
+    "norma aplicable": PC,
+    "fuente del dato": "Trazo referencial sobre el contrato CAED-IPE-082-26; calendario de la tabla = estimación uniforme, no oficial",
+  }, { avance: "sin dato oficial", "cierres viales": PC, "rutas alternas": PC, "registros / ductos de reserva": PC, interferencias: "vía férrea, gasoductos, fibra — " + PC, "tramo (m)": `${T[2]}–${T[3]}` }));
+  setTimeout(() => { if (S.modo === "ciudad") $("#hud").innerHTML = `<b>TRAMO T-${String(T[0]).padStart(2, "0")} · ${T[1]}″</b><br>${T[2]}–${T[3]} m<br>Avance: <b>sin dato oficial</b><br><span class="ob">${NIVEL.ante} · trazo referencial · no se inventa un porcentaje de avance</span>`; }, 900);
   document.querySelector(".visor").scrollIntoView({ behavior: "smooth", block: "start" });
 }
 sellos(); pestanas(); tramos100();
+if (new URLSearchParams(location.search).get("modo") === "presentacion") { const ir = () => (abierto ? presentacion() : setTimeout(ir, 400)); ir(); }
 $("#btn-obra")?.addEventListener("click", () => (S?.obraOn ? pararObra(false) : iniciarObra()));
 $("#btn-fase")?.addEventListener("click", () => { if (!S?.c2?.obraEstado) return; if (!S.obraVis) { iniciarObra(); } pararObra(false);
   const u = S.obraU || 0, i = Math.floor(u), f = u - i; const B = [.3, .55, .65, .85, 1]; const b = B.find((x) => x > f + 1e-4) ?? 1; ponerObra(Math.min(48.999, i + (b >= 1 ? 1 : b) + .001)); });
 $("#obra-rango")?.addEventListener("input", (e) => { if (!S?.c2?.obraEstado) return; if (!S.obraVis) { iniciarObra(); pararObra(false); } S.obraOn = false; botonesObra(); ponerObra(+e.target.value); });
-window.NodoVAH4D = { ponerMes, ponerJornada, modo, vista, verEnMapa, iniciarSim, pararSim, elegirTramo, iniciarObra, pararObra, ponerObra, get S() { return S; } };
+window.NodoVAH4D = { ponerMes, ponerJornada, modo, vista, verEnMapa, iniciarSim, pararSim, elegirTramo, iniciarObra, pararObra, ponerObra, presentacion, presPaso, get S() { return S; } };
 candado();
