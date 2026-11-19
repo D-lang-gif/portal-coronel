@@ -66,8 +66,8 @@ export function crearCapas2(scene, Cd, osm) {
     poste(g, h, m); halo(g, TEC[k].c, k === "scada" ? 90 : 55); tec.add(g);
     g.scale.setScalar(2.2);
     const norma = k === "calidad" ? "Calidad de proceso; contrastar con laboratorio EMA (NOM-001 / NOM-003 según el uso)" : k === "h2s" ? "Monitoreo de H₂S (corrosión); umbrales por confirmar" : PC;
-    reg(g, attrs(TEC[k].n, { Identificador: "TEC-" + k, estado: "proyectado (por cotizar)", "cota/profundidad": PC, diámetro: "no aplica", material: PC, "norma aplicable": norma, "fuente del dato": "Propuesta del visor · posición referencial · " + NIVEL.ante }));
-    if (etq) ET(`${etq}<br><small>posición referencial · precio por cotizar · ${NIVEL.ante}</small>`, new THREE.Vector3(x, (h + 30) * 2.2, z), "tec", TEC[k].c, cerca);
+    reg(g, attrs(TEC[k].n, { Identificador: "TEC-" + k, estado: "proyectado (por cotizar)", "cota/profundidad": PC, diámetro: "no aplica", material: PC, "norma aplicable": norma, "fuente del dato": "Propuesta del visor · diseño preliminar · " + NIVEL.ante }));
+    if (etq) ET(`${etq}<br><small>diseño preliminar · precio por cotizar · ${NIVEL.ante}</small>`, new THREE.Vector3(x, (h + 30) * 2.2, z), "tec", TEC[k].c, cerca);
     return g;
   }
   const colect = Object.entries(R.colectores).map(([id, c]) => ({ id, nombre: c.nombre, pts: dec(c.p) }));
@@ -121,7 +121,7 @@ export function crearCapas2(scene, Cd, osm) {
   ET("🔗 Planta propia: necesaria, no suficiente<br><small>se conecta a la red de nodos</small>", new THREE.Vector3(PIL[0] + 150, 140, PIL[1] + 150), "colectivo", "#ffb547");
   ET("💧 Agua tratada compartida con ejidos<br><small>conexión referencial · cumplir NOM-001 y permiso de Conagua</small>", new THREE.Vector3(EJ[0], 330, EJ[1]), "colectivo", "#a35bff");
   ET("📡 Monitoreo compartido<br><small>datos de calidad al tablero común</small>", new THREE.Vector3((SCADA[0] + PIL[0]) / 2, 470, (SCADA[1] + PIL[1]) / 2), "colectivo", "#2fd3e6");
-  ET("🏦 Fondo de saneamiento<br><small>propuesta por verificar con Cabildo</small>", new THREE.Vector3(NODO[0] + 700, 200, NODO[1] - 700), "colectivo", "#f3d27a");
+  ET("🏦 Fondo de saneamiento<br><small>propuesta, pendiente de revisión con Cabildo</small>", new THREE.Vector3(NODO[0] + 700, 200, NODO[1] - 700), "colectivo", "#f3d27a");
 
   // Aliado potencial: CFE (agua tratada para enfriamiento). Centrales según OpenStreetMap
   for (const [n, x, z] of (window.AGUA_TRATADA?.cfe || [])) { const gC = new THREE.Group(); gC.position.set(x, 0, z);
@@ -130,7 +130,7 @@ export function crearCapas2(scene, Cd, osm) {
     ET(`⚡ Aliado potencial: CFE (agua tratada)<br><small>${n} (OSM)${/Laguna II/.test(n) ? " · zona de la col. Miguel de la Madrid" : " · junto al bulevar Jabonoso"}</small>`, new THREE.Vector3(x, 330, z), "aliados", "#ffe14a"); }
 
   /* ───── Hacerlo de una vez (zanja abierta del Emisor Central / colector San Ignacio) ─────
-     Trazo REFERENCIAL: colector C-5 (Miguel de la Madrid) + emisor del visor. No es el proyecto ejecutivo de CAED/SIDEAPA. */
+     Diseño preliminar: colector C-5 (Miguel de la Madrid) + emisor del visor. No es el proyecto ejecutivo de CAED/SIDEAPA. */
   const c5 = colect.find((c) => c.id === "C-5") || colect[0];
   const zt = [...c5.pts, ...emisor.slice(1)]; const LZ = largo(zt);
   { const pos = [], idx = []; let n = 0; const A = 70;
@@ -158,13 +158,13 @@ export function crearCapas2(scene, Cd, osm) {
     if (dmin > 250 && dmin < 1400 && grasas.every((q) => Math.hypot(q[0] - p0[0], q[1] - p0[1]) > 600)) grasas.push(p0); if (grasas.length >= 6) break; }
   for (const [x, z] of grasas) { const g = new THREE.Group(); g.position.set(x, 0, z); pon(g, new THREE.Mesh(new THREE.BoxGeometry(30, 22, 30), zMat.grasa), 0, 11); pon(g, new THREE.Mesh(new THREE.ConeGeometry(12, 20, 4), zMat.grasa), 0, 34); g.scale.setScalar(1.8); zanja.add(g); }
   const zEt = (t, f, y, c) => { const [x, z] = enLinea(zt, LZ * f).p; ET(t, new THREE.Vector3(x, y, z), "zanja", c); };
-  zEt("🚧 Zanja abierta · Emisor Central y colector San Ignacio<br><small>trazo REFERENCIAL del visor, no es el proyecto de CAED/SIDEAPA</small>", .5, 230, "#ffb547");
+  zEt("🚧 Zanja abierta · Emisor Central y colector San Ignacio<br><small>diseño preliminar del visor, no es el proyecto de CAED/SIDEAPA</small>", .5, 230, "#ffb547");
   zEt("🔌 Ducto para fibra óptica y cables de sensores<br><small>por cotizar</small>", .3, 150, "#2fd3e6");
   zEt("🕳️ Pozos de visita amplios para robot CCTV<br><small>con sensores de H₂S y de nivel · por cotizar</small>", .72, 190, "#d9dde0");
   zEt("🌀 Medidor de caudal<br><small>entrada y salida del tramo · por cotizar</small>", .97, 170, TEC.caudal.c);
   if (grasas.length) ET("🧴 Control de grasas y sólidos aguas arriba<br><small>trampas y cribado en origen · por cotizar</small>", new THREE.Vector3(grasas[0][0], 120, grasas[0][1]), "zanja", "#ff8a3d");
 
-  // Tramos de 100 m (tabla compartida): divisiones PROPORCIONALES sobre el trazo referencial de la zanja
+  // Tramos de 100 m (tabla compartida): divisiones PROPORCIONALES sobre el diseño preliminar de la zanja
   const T100 = window.TRAMOS_100M || null; const COLT = { "72": 0xf3d27a, "42": 0x2fd3e6, "60": 0xc58bff };
   let tramoSel = null, tramoFoco = null;
   // Orden de obra aguas abajo → aguas arriba: T-01 en el extremo del trazo que llega a la Planta Norte (fin de zt)
@@ -179,7 +179,7 @@ export function crearCapas2(scene, Cd, osm) {
         Identificador: "T-" + String(t[0]).padStart(2, "0"),
         estado: "por confirmar (contrato en marcha a nivel de obra; avance de este tramo: sin dato oficial)",
         "cota/profundidad": PC, diámetro: t[1] + "″", material: t[1] === "72" ? "PRFV en el tubo nuevo (expediente); pozos y conexiones por confirmar" : PC,
-        "norma aplicable": PC, "fuente del dato": "Trazo referencial proporcional sobre CAED-IPE-082-26 · " + NIVEL.ante,
+        "norma aplicable": PC, "fuente del dato": "Diseño preliminar proporcional sobre CAED-IPE-082-26 · " + NIVEL.ante,
       }, { avance: "sin dato oficial", "cierres viales": PC, "rutas alternas": PC, "registros / ductos de reserva": PC, interferencias: "vía férrea, gasoductos, fibra — " + PC, "tramo (m)": `${t[2]}–${t[3]}` });
       reg(m, aT); reg(sem, aT);
     }
@@ -215,7 +215,7 @@ export function crearCapas2(scene, Cd, osm) {
   const maq = new THREE.Group(); pon(maq, new THREE.Mesh(new THREE.BoxGeometry(40, 22, 26), new THREE.MeshStandardMaterial({ color: 0xffc21a, emissive: 0x553f00 })), 0, 16);
   pon(maq, new THREE.Mesh(new THREE.BoxGeometry(46, 6, 6), new THREE.MeshStandardMaterial({ color: 0xffc21a, emissive: 0x553f00 })), 30, 34); obra.add(maq);
   const bomba = new THREE.Mesh(new THREE.BoxGeometry(34, 26, 34), new THREE.MeshStandardMaterial({ color: 0xff4fd8, emissive: 0x551040 })); obra.add(bomba);
-  const etO = { t: "", p: new THREE.Vector3(), cat: "obra", color: "#ff3b30" }, etD = { t: "↪ Desvío vial sugerido<br><small>propuesta referencial, sujeta a Tránsito y Vialidad</small>", p: new THREE.Vector3(), cat: "obra", color: "#ff9f1c" },
+  const etO = { t: "", p: new THREE.Vector3(), cat: "obra", color: "#ff3b30" }, etD = { t: "↪ Desvío vial sugerido<br><small>diseño preliminar, sujeta a Tránsito y Vialidad</small>", p: new THREE.Vector3(), cat: "obra", color: "#ff9f1c" },
     etB = { t: "⛽ Bombeo de desvío provisional<br><small>operación paralela del sistema existente</small>", p: new THREE.Vector3(), cat: "obra", color: "#ff4fd8" };
   etiquetas.push(etO, etD, etB);
   let oI = -1, oQ = -1;
@@ -281,14 +281,14 @@ export function crearCapas2(scene, Cd, osm) {
   const gob = new THREE.Group(); gob.visible = false; raiz.add(gob);
   const mG = new THREE.MeshBasicMaterial({ color: 0x22c55e, transparent: true, opacity: .8, depthWrite: false });
   const tuboG = (pts, y, r, mat) => { const c = new THREE.CurvePath(); for (let k = 0; k < pts.length - 1; k++) { const a = new THREE.Vector3(pts[k][0], y, pts[k][1]), b = new THREE.Vector3(pts[k + 1][0], y, pts[k + 1][1]); if (a.distanceToSquared(b) > .01) c.add(new THREE.LineCurve3(a, b)); } if (!c.curves.length) return null; const m = new THREE.Mesh(new THREE.TubeGeometry(c, Math.min(800, pts.length * 4 + 16), r, 8, false), mat); m.renderOrder = 8; return m; };
-  { const m = tuboG(zt, 18, 20, mG); if (m) { gob.add(reg(m, attrs("Obra de gobierno en marcha · CAED-IPE-082-26", { estado: "en obra (contrato oficial; avance por tramo: sin dato oficial)", "cota/profundidad": PC, diámetro: "72″ / 42″ / 60″ según tramo de la 1.ª etapa", material: "PRFV en el tubo nuevo (expediente); pozos y conexiones por confirmar", "norma aplicable": PC, "fuente del dato": "Contrato CAED-IPE-082-26 · trazo referencial · " + NIVEL.ante }))); }
+  { const m = tuboG(zt, 18, 20, mG); if (m) { gob.add(reg(m, attrs("Obra de gobierno en marcha · CAED-IPE-082-26", { estado: "en obra (contrato oficial; avance por tramo: sin dato oficial)", "cota/profundidad": PC, diámetro: "72″ / 42″ / 60″ según tramo de la 1.ª etapa", material: "PRFV en el tubo nuevo (expediente); pozos y conexiones por confirmar", "norma aplicable": PC, "fuente del dato": "Contrato CAED-IPE-082-26 · diseño preliminar · " + NIVEL.ante }))); }
     const q = enLinea(zt, LZ * .3).p;
-    ET("🟢 Obra de gobierno en marcha · CAED-IPE-082-26<br><small>Emisor Central y colector San Ignacio, 1.ª etapa · trazo referencial · avance por tramo: sin dato oficial</small>", new THREE.Vector3(q[0], 140, q[1]), "gob", "#22c55e"); }
+    ET("🟢 Obra de gobierno en marcha · CAED-IPE-082-26<br><small>Emisor Central y colector San Ignacio, 1.ª etapa · diseño preliminar · avance por tramo: sin dato oficial</small>", new THREE.Vector3(q[0], 140, q[1]), "gob", "#22c55e"); }
   const ASL = [[-9700, 7700], [-4170, 6960], [-5454, 5205], [-5553, 4164], [-5654, 3780]];
   { const m = tuboG(ASL, 14, 16, mG); m && gob.add(m);
-    ET("🟢 Agua Saludable para La Laguna · línea a Gómez Palacio<br><small>baja del cerro El Huarache por el bulevar Villa de las Flores (El Siglo, 2024) · trazo referencial</small>", new THREE.Vector3(-4900, 140, 6100), "gob", "#22c55e");
+    ET("🟢 Agua Saludable para La Laguna · línea a Gómez Palacio<br><small>baja del cerro El Huarache por el bulevar Villa de las Flores (El Siglo, 2024) · diseño preliminar</small>", new THREE.Vector3(-4900, 140, 6100), "gob", "#22c55e");
     const fl = new THREE.Mesh(new THREE.ConeGeometry(70, 180, 16), mG); fl.rotation.z = Math.PI / 2; fl.rotation.y = Math.atan2(-(7700 - 6960), -9700 + 4170) + Math.PI; fl.position.set(-9500, 60, 7680); gob.add(fl);
-    ET("⬅ Potabilizadora Agua Saludable · fuera del mapa<br><small>ejido San Jacinto, Lerdo (~32 km) · capacidad 7,200 L/s, opera a ~30 % (Milenio) · ubicación referencial</small>", new THREE.Vector3(-9300, 200, 7500), "gob", "#22c55e"); }
+    ET("⬅ Potabilizadora Agua Saludable · fuera del mapa<br><small>ejido San Jacinto, Lerdo (~32 km) · capacidad 7,200 L/s, opera a ~30 % (Milenio) · ubicación de referencia</small>", new THREE.Vector3(-9300, 200, 7500), "gob", "#22c55e"); }
   // plantas de tratamiento: coordenadas oficiales del Decreto 422 (Congreso de Durango)
   const mPT = new THREE.MeshStandardMaterial({ color: 0x8fd3ff, emissive: 0x0b3350 });
   const plantas = [
@@ -306,5 +306,5 @@ export function crearCapas2(scene, Cd, osm) {
   let AT = null; try { AT = crearAguaTratada(raiz, uT, LL?.morada); etiquetas.push(...AT.etiquetas); } catch (e) { console.error("agua", e); }
   const agua = AT ? AT.g : new THREE.Group();
   let REL = null; try { REL = crearRelieve(raiz); } catch (e) { console.error("relieve", e); }
-  return { raiz, tec, aliados, colectivo, zanja, sim, lluvias, agua, gob, relieve: REL, pasosAereos: AT?.pasos || 0, tickLluvias: (dt) => LL?.tick(dt), verTramo, T100, obra, obraEstado, iniciarObra, pararObra, FASES, etiquetas, paso, iniciarSim, pararSim, tick, pickables, foco: { agua: AT ? AT.foco : [0, 0], lluvias: LL ? LL.foco : [0, 0], zanja: enLinea(zt, LZ * .5).p, sim: pS, pil: PIL, herrera: HERRERA, scada: SCADA } };
+  return { raiz, tec, aliados, colectivo, zanja, sim, lluvias, agua, gob, relieve: REL, pasosAereos: AT?.pasos || 0, tickLluvias: (dt) => LL?.tick(dt), verTramo, T100, obra, obraEstado, iniciarObra, pararObra, FASES, etiquetas, paso, iniciarSim, pararSim, tick, pickables, foco: { agua: AT ? AT.foco : [0, 0], lluvias: LL ? LL.foco : [0, 0], zanja: enLinea(zt, LZ * .5).p, sim: pS, pil: PIL, herrera: HERRERA, scada: SCADA }, zanjaPts: zt };
 }

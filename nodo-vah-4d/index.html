@@ -21,6 +21,7 @@
   <script src="data/relieve.js"></script>
   <script src="data/calles.js"></script>
   <script src="data/agua_tratada.js"></script>
+  <script src="data/plan_fluye.js"></script>
   <script type="module" src="js/app.js"></script>
 </head>
 <body>
@@ -47,7 +48,7 @@
       </a>
       <div class="leds">
         <div class="nivel-proy" role="group" aria-label="Nivel de validación del proyecto">
-          <button type="button" class="on" id="btn-anteproyecto" aria-pressed="true">Anteproyecto referencial</button>
+          <button type="button" class="on" id="btn-anteproyecto" aria-pressed="true">Anteproyecto preventivo</button>
           <button type="button" id="btn-ejecutivo" disabled title="Aún no hay elementos con validación de proyecto ejecutivo">Proyecto ejecutivo validado</button>
         </div>
         <span class="led" id="led-fase">FASE —</span>
@@ -80,13 +81,19 @@
     <div class="grid">
       <section class="panel visor">
         <div class="visor-cab">
-          <h2>Modelo 3D + tiempo <small id="sub-visor">Anteproyecto referencial · Ubicación referencial, terreno real por definir</small></h2>
-          <p class="aviso-ubi" id="aviso-ubicacion"><b>Ubicación referencial, terreno real por definir.</b> El polígono georreferenciado y la acreditación de propiedad están pendientes. Superficie <b>por confirmar (20,000 / 40,000 m²)</b>: el polígono de la memoria es 200 × 200 m = 40,000 m²; otra versión indica 20,000 m². Las coordenadas UTM 13R de la memoria (654,200–654,400 E / 2,854,600–2,854,800 N, ≈ 25.80° N, 103.46° W) caen unos 26 km al norte de la mancha urbana; el marcador del Nodo en este visor es genérico y no se mueve a un predio inventado.</p>
+          <h2>Modelo 3D + tiempo <small id="sub-visor">Anteproyecto preventivo · Ubicación de referencia</small></h2>
+          <p class="aviso-ubi" id="aviso-ubicacion"><b>Ubicación de referencia.</b> El polígono georreferenciado y la acreditación de propiedad están pendientes. Superficie <b>por confirmar (20,000 / 40,000 m²)</b>: el polígono de la memoria es 200 × 200 m = 40,000 m²; otra versión indica 20,000 m². Las coordenadas UTM 13R de la memoria (654,200–654,400 E / 2,854,600–2,854,800 N, ≈ 25.80° N, 103.46° W) caen unos 26 km al norte de la mancha urbana; el marcador del Nodo en este visor es genérico y no se mueve a un predio inventado.</p>
           <div class="vistas">
             <button class="btn mini" data-vista="aerea">Aérea</button>
             <button class="btn mini" data-vista="iso">Isométrica</button>
             <button class="btn mini" data-vista="planta">Planta</button>
             <button class="btn mini on" id="btn-fantasma" type="button">Fantasma</button>
+          </div>
+          <div class="vistas-rapidas">
+            <button class="btn mini" data-rapida="arriba" type="button">Arriba</button>
+            <button class="btn mini" data-rapida="3d" type="button">3D</button>
+            <button class="btn mini" data-rapida="subsuelo" type="button">Subsuelo</button>
+            <label class="chk"><input type="checkbox" id="chk-subte"> Vista subterránea</label>
           </div>
         </div>
         <div class="modos" id="modos">
@@ -98,7 +105,7 @@
           <button class="modo" data-modo="recorrido">🌊 Recorrido del agua</button>
           <button class="modo" data-modo="forma">🚧 Forma de trabajo</button>
         </div>
-        <div id="lienzo"><div id="hud"></div><div id="ficha" hidden></div><div id="etq"></div><div id="cargando">Cargando modelo…</div></div>
+        <div id="lienzo"><div id="hud"></div><div id="ficha" hidden></div><div id="etq"></div><div id="tip-mapa" hidden></div><div id="cargando">Cargando modelo…</div></div>
         <div id="modo-panel" hidden></div>
         <div class="linea">
           <div class="ctrl">
@@ -142,9 +149,10 @@
         <button class="pest" data-pest="zanja" role="tab">🚧 Hacerlo de una vez</button>
         <button class="pest" data-pest="lluvias" role="tab">🌧️ Lluvias y campo</button>
         <button class="pest" data-pest="agua" role="tab">💧 Agua tratada</button>
+        <button class="pest" data-pest="sat" role="tab">🛰️ Vigilancia satelital</button>
         <button class="pest" data-pest="creditos" role="tab">🎖️ Créditos</button>
       </div>
-      <p class="aviso-ref">⚠️ Las rutas de la red, los colectores y la posición de cada equipo en el mapa son <b>referenciales</b>; no son un levantamiento oficial. Los precios de los equipos están <b>por cotizar</b>.</p>
+      <p class="aviso-ref">⚠️ Las rutas de la red, los colectores y la posición de cada equipo en el mapa son de <b>diseño preliminar</b>; no son un levantamiento oficial. Los precios de los equipos están <b>por cotizar</b>.</p>
 
       <div class="pp" data-pp="tec">
         <div class="pp-cab"><p>La red tiene que <b>ver, avisar, limpiar y tratar</b>. Estos son los equipos propuestos y dónde irían.</p>
@@ -193,7 +201,7 @@
         <div class="pp-cab"><p>Las zonas industriales aparecen como <b>beneficiarias y posibles aliadas</b> del proyecto. A ninguna empresa se le señala de nada.</p>
           <div class="pp-btns"><button class="btn mini oro" data-mapa="aliados">🗺️ Ver en el mapa 3D</button></div></div>
         <div class="cards">
-          <div class="card verde"><h3>Parque Industrial Lagunero</h3><ul><li>Agua tratada de regreso para enfriamiento, lavado de patios y equipos no alimentarios, construcción y áreas verdes.</li><li>Pretratamiento en origen y un nodo que reciba sus descargas: menos riesgo de multa o clausura.</li><li>Menos agua de pozo en un acuífero sin disponibilidad para nuevas concesiones.</li></ul><p class="nota tiny">Descargas estimadas de 40–80 L/s según el expediente del Nodo VAH (<b>por verificar</b> con aforo de SIDEAPA).</p></div>
+          <div class="card verde"><h3>Parque Industrial Lagunero</h3><ul><li>Agua tratada de regreso para enfriamiento, lavado de patios y equipos no alimentarios, construcción y áreas verdes.</li><li>Pretratamiento en origen y un nodo que reciba sus descargas: menos riesgo de multa o clausura.</li><li>Menos agua de pozo en un acuífero sin disponibilidad para nuevas concesiones.</li></ul><p class="nota tiny">Descargas estimadas de 40–80 L/s según el expediente del Nodo VAH (aforo de SIDEAPA pendiente).</p></div>
           <div class="card verde"><h3>Parque Industrial Carlos A. Herrera Araluce</h3><ul><li>Puede sumarse al mismo esquema: pretratamiento, nodo zonal y reúso.</li><li>Una red menos propensa a taparse por grasas y sólidos.</li></ul><p class="nota tiny">En el mapa su ubicación es aproximada.</p></div>
           <div class="card cian"><h3>Industria alimentaria, láctea y avícola</h3><ul><li>Pretratamiento de grasas, proteínas y suero en origen, y un nodo que reciba efluentes ya pretratados.</li><li>Agua pulida para usos no alimentarios.</li><li>Menos carga para la PTAR Oriente que el Municipio va a modernizar.</li></ul><p class="nota tiny">En el mapa se marca como grupo, sin ubicar ninguna planta en particular.</p></div>
         </div>
@@ -208,7 +216,7 @@
             <p>Que una empresa construya su propia tratadora está bien y cumple con la ley. Pero arregla su descarga y sus olores, no los colectores saturados, las colonias sin drenaje, los ejidos con fosas sépticas ni el agua que se pierde.</p>
             <p class="dato">Un caso publicado: según SIDEAPA, Pilgrim's pagó una multa de <b>400 mil pesos</b> por una descarga irregular (<a href="https://www.meganoticias.mx/laguna/noticia/multan-con-400-mil-pesos-a-pilgrims-por-descarga-irregular/773886" target="_blank" rel="noopener">Meganoticias, 28 sep 2026</a>) y prepara su propia planta tratadora: una inversión de unos <b>50 millones de pesos</b>, más de 40 de ellos para la planta nueva (<a href="https://www.elsiglodetorreon.com.mx/noticia/2026/va-pilgrims-por-nueva-planta-tratadora-para-terminar-con-malos-olores-en-gomez-palacio-alcaldesa.html" target="_blank" rel="noopener">El Siglo de Torreón</a>). Es un buen paso, y por eso sería un aliado natural del esquema colectivo.</p></div>
           <div><h3>La invitación a la gran industria</h3>
-            <ol class="pasos"><li><b>Conectar</b> su planta a la red de nodos: recibir o entregar agua ya tratada.</li><li><b>Compartir el monitoreo</b>: datos de calidad en el tablero común.</li><li><b>Compartir el agua tratada</b> con los ejidos y las áreas verdes, si cumple la NOM-001 y tiene permiso de Conagua.</li><li><b>Fondo de saneamiento</b>: aportar, junto con una parte de multas y derechos de descarga, a obras en las colonias afectadas, con reglas aprobadas por el Cabildo (<b>por verificar</b> con la ley de ingresos y el reglamento de SIDEAPA).</li></ol>
+            <ol class="pasos"><li><b>Conectar</b> su planta a la red de nodos: recibir o entregar agua ya tratada.</li><li><b>Compartir el monitoreo</b>: datos de calidad en el tablero común.</li><li><b>Compartir el agua tratada</b> con los ejidos y las áreas verdes, si cumple la NOM-001 y tiene permiso de Conagua.</li><li><b>Fondo de saneamiento</b>: aportar, junto con una parte de multas y derechos de descarga, a obras en las colonias afectadas, con reglas aprobadas por el Cabildo (pendiente de revisión con la ley de ingresos y el reglamento de SIDEAPA).</li></ol>
             <p>A cambio, las empresas ganan prestigio, mejor relación con sus vecinos, menos riesgo de sanciones y agua más barata que la del pozo. Las que se sumen aparecen como aliadas del proyecto.</p></div>
         </div>
         <p class="nota tiny">Fuente: partes 02 (Foster), 03 (Nano Bot), 04 (Nova/003) y 05 (Pulso) de la Propuesta Integral. No se atribuye ninguna otra multa sin fuente oficial.</p>
@@ -242,7 +250,7 @@
           <div class="t100-ley"><span style="--c:#f3d27a"><i></i>Emisor Central 72″</span><span style="--c:#2fd3e6"><i></i>Colector San Ignacio 42″</span><span style="--c:#c58bff"><i></i>Rehabilitación 60″</span></div>
           <div class="t100-barra" id="t100-barra"></div>
           <div class="tabla-wrap t100-tabla"><table class="tz2"><thead><tr><th>Tramo</th><th>Sección</th><th>Metros</th><th>Inicio estimado</th><th>Fin estimado</th><th>Costo estimado a ritmo parejo (MDP con IVA)</th></tr></thead><tbody id="t100-filas"></tbody></table></div>
-          <p class="nota tiny"><b>Estimación, no calendario oficial:</b> 49 tramos con un calendario uniforme de un solo frente, de unos 3.7 días por tramo, y ~3.9 MDP con IVA (~3.4 sin IVA) por cada 100 m, estimado a ritmo parejo (188.27 MDP con IVA y 162.31 MDP sin IVA ÷ 4.81 km). El último tramo mide 60 m. El calendario y el orden reales los define la CAED con la contratista. Tabla compartida con el documento (Crownteer). En el mapa los tramos se reparten en proporción sobre el trazo referencial de la zanja, empezando por el extremo aguas abajo.</p>
+          <p class="nota tiny"><b>Estimación, no calendario oficial:</b> 49 tramos con un calendario uniforme de un solo frente, de unos 3.7 días por tramo, y ~3.9 MDP con IVA (~3.4 sin IVA) por cada 100 m, estimado a ritmo parejo (188.27 MDP con IVA y 162.31 MDP sin IVA ÷ 4.81 km). El último tramo mide 60 m. El calendario y el orden reales los define la CAED con la contratista. Tabla compartida con el documento (Crownteer). En el mapa los tramos se reparten en proporción sobre el diseño preliminar de la zanja, empezando por el extremo aguas abajo.</p>
         </div>
         <div id="semaforo-tramos"></div>
         <div class="obra-sim" id="obra-sim">
@@ -250,9 +258,9 @@
           <div class="obra-ctl"><button class="btn mini" id="btn-obra">▶ Simular obra por tramos</button><button class="btn mini" id="btn-fase" title="Avanza una fase: excavar → ademe y bombeo de desvío → tubo → ductos → relleno → repavimentar">⏭ Siguiente fase</button><input type="range" id="obra-rango" min="0" max="48.999" step="0.01" value="0" aria-label="Avance de la obra por tramos" /><span id="obra-txt">T-01 · Excavar</span></div>
           <div class="obra-fases"><span style="--c:#8a5a2b">1 · Excavar</span><span style="--c:#e8e2cf">2 · Instalar tubo PRFV</span><span style="--c:#2fd3e6">3 · Meter ductos de una vez</span><span style="--c:#c9a36a">4 · Relleno y compactación</span><span style="--c:#6c7380">5 · Repavimentar</span></div>
           <div class="obra-ley"><span style="--c:#3fd46b">Tramo terminado</span><span style="--c:#ff3b30">Tramo cerrado</span><span style="--c:#ff9f1c">Desvío vial sugerido</span><span style="--c:#ff4fd8">Bombeo de desvío provisional</span></div>
-          <p class="nota tiny"><b>Orden aguas abajo → aguas arriba:</b> se empieza junto a la Planta Norte y se avanza hacia las colonias, para que cada tramo nuevo tenga a dónde descargar. CAED informó que la obra arranca aguas abajo, donde se interconectan el colector San Ignacio y el emisor rumbo a la Planta Norte (<a href="https://www.noticierosgrem.com.mx/en-noviembre-arrancaran-obras-del-emisor-central-y-colector-san-ignacio-de-gomez-palacio/" target="_blank" rel="noopener">Noticieros GREM, 21 oct 2026</a>). En el visor, T-01 se coloca en el extremo aguas abajo del trazo referencial; el sentido exacto del cadenamiento está por confirmar con CAED.<br>
+          <p class="nota tiny"><b>Orden aguas abajo → aguas arriba:</b> se empieza junto a la Planta Norte y se avanza hacia las colonias, para que cada tramo nuevo tenga a dónde descargar. CAED informó que la obra arranca aguas abajo, donde se interconectan el colector San Ignacio y el emisor rumbo a la Planta Norte (<a href="https://www.noticierosgrem.com.mx/en-noviembre-arrancaran-obras-del-emisor-central-y-colector-san-ignacio-de-gomez-palacio/" target="_blank" rel="noopener">Noticieros GREM, 21 oct 2026</a>). En el visor, T-01 se coloca en el extremo aguas abajo del diseño preliminar; el sentido exacto del cadenamiento está por confirmar con CAED.<br>
           <b>Bombeo de desvío provisional:</b> mientras un tramo está abierto, el agua residual se bombea por fuera de la zanja para que ninguna casa se quede sin descarga. El Plan Fluye pide una «planeación por etapas con operación paralela del sistema existente» (<a href="https://www.gomezpalacio.gob.mx/wp-content/uploads/2026/04/plan-fluye.pdf" target="_blank" rel="noopener">Plan Fluye</a>). Capacidad y equipo: por confirmar con CAED.<br>
-          <b>Desvíos viales:</b> propuesta referencial, sujeta a Tránsito y Vialidad; no son las rutas oficiales. El reparto de las cinco fases dentro de cada tramo es un estimado para la animación, no el programa de la contratista.</p>
+          <b>Desvíos viales:</b> diseño preliminar, sujeta a Tránsito y Vialidad; no son las rutas oficiales. El reparto de las cinco fases dentro de cada tramo es un estimado para la animación, no el programa de la contratista.</p>
         </div>
 
         <div class="benef" id="benef">
@@ -260,7 +268,7 @@
           <div class="cards">
             <div class="hecho"><b>≈262 mil habitantes</b><span>reciben drenaje del Emisor Central y el colector San Ignacio completos (13.27 km), que llevan ≈80 % del agua residual de la ciudad a la Planta Norte (SIDEAPA, en <a href="https://www.milenio.com/estados/presentan-avances-plan-fluye-gomez-palacio" target="_blank" rel="noopener">Milenio, 26 oct 2026</a>). La población servida <b>solo</b> por esta primera etapa no está publicada: por confirmar con CAED.</span></div>
             <div class="hecho"><b>Emisor Central 72″ · T-01 a T-24</b><span>Entre la colonia <b>Miguel de la Madrid</b> y el segundo Libramiento Periférico / Libramiento Norte de La Laguna (<a href="https://www.elsiglodetorreon.com.mx/noticia/2026/anuncian-empresa-que-iniciara-obra-de-emisor-sanitario-en-gomez-palacio-van-mas-de-188mdp.html" target="_blank" rel="noopener">El Siglo, 2 nov 2026</a>). Arranca en la interconexión San Ignacio–emisor rumbo a la Planta Norte (CAED). Gana: menos riesgo de colapso en la columna del sistema.</span></div>
-            <div class="hecho"><b>Colector San Ignacio 42″ y 60″ · T-25 a T-49</b><span>Sector referencial. SIDEAPA reportó caídos del colector San Ignacio en Las Luisas, Leticia Herrera y Centenario (<a href="https://www.elsiglodetorreon.com.mx/noticia/2026/asegura-betzabe-que-no-metera-parches-a-sistema-de-drenaje-de-y-va-por-solucion-integral.html" target="_blank" rel="noopener">El Siglo, 17 mar 2026</a>); si caen en estos kilómetros: por confirmar con los planos de la licitación.</span></div>
+            <div class="hecho"><b>Colector San Ignacio 42″ y 60″ · T-25 a T-49</b><span>Diseño preliminar. SIDEAPA reportó caídos del colector San Ignacio en Las Luisas, Leticia Herrera y Centenario (<a href="https://www.elsiglodetorreon.com.mx/noticia/2026/asegura-betzabe-que-no-metera-parches-a-sistema-de-drenaje-de-y-va-por-solucion-integral.html" target="_blank" rel="noopener">El Siglo, 17 mar 2026</a>); si caen en estos kilómetros: por confirmar con los planos de la licitación.</span></div>
           </div>
           <h4>Prioridad sugerida de atención por colonia</h4>
           <ol class="prio">
@@ -287,7 +295,7 @@
           <div class="salva-tramo" id="salva-tramo"><b>Medidas para el tramo seleccionado</b><span class="muted">Toque un tramo en la tabla o use la simulación de obra.</span></div>
           <p class="nota tiny">Medidas por tramo: tabla compartida del documento (parte 12, Nova), todas como propuesta. Programa de obra, plan de tránsito, calles exactas y jurisdicción de cada vía: por confirmar con CAED.
         </div>
-        <p class="nota tiny">Fuentes: <a href="https://www.milenio.com/estados/presentan-avances-plan-fluye-gomez-palacio" target="_blank" rel="noopener">Milenio, 26 oct 2026</a> (13.27 km en total, ≈80 % del agua residual, material PRFV; la corrosión por suelo y gases dañó los tubos actuales), <a href="https://comprasestatal.durango.gob.mx/consulta/ProcedimientosDeContratacion/10416" target="_blank" rel="noopener">CompraNet Durango, licitación LP/E/CAED/008/2026</a> (tramos y diámetros de la 1.ª etapa) y <a href="https://www.elsiglodetorreon.com.mx/noticia/2026/anuncian-empresa-que-iniciara-obra-de-emisor-sanitario-en-gomez-palacio-van-mas-de-188mdp.html" target="_blank" rel="noopener">El Siglo de Torreón, 2 nov 2026</a> (contrato de la 1.ª etapa, empresa, inicio el 9 de noviembre y 180 días naturales). La fecha de término es un cálculo propio a partir de esos 180 días. En el mapa, la zanja va sobre un <b>trazo referencial</b> del visor, no sobre el proyecto ejecutivo de CAED y SIDEAPA.</p>
+        <p class="nota tiny">Fuentes: <a href="https://www.milenio.com/estados/presentan-avances-plan-fluye-gomez-palacio" target="_blank" rel="noopener">Milenio, 26 oct 2026</a> (13.27 km en total, ≈80 % del agua residual, material PRFV; la corrosión por suelo y gases dañó los tubos actuales), <a href="https://comprasestatal.durango.gob.mx/consulta/ProcedimientosDeContratacion/10416" target="_blank" rel="noopener">CompraNet Durango, licitación LP/E/CAED/008/2026</a> (tramos y diámetros de la 1.ª etapa) y <a href="https://www.elsiglodetorreon.com.mx/noticia/2026/anuncian-empresa-que-iniciara-obra-de-emisor-sanitario-en-gomez-palacio-van-mas-de-188mdp.html" target="_blank" rel="noopener">El Siglo de Torreón, 2 nov 2026</a> (contrato de la 1.ª etapa, empresa, inicio el 9 de noviembre y 180 días naturales). La fecha de término es un cálculo propio a partir de esos 180 días. En el mapa, la zanja va sobre un <b>diseño preliminar</b> del visor, no sobre el proyecto ejecutivo de CAED y SIDEAPA.</p>
       </div>
 
       <div class="pp" data-pp="lluvias" hidden>
@@ -317,11 +325,11 @@
         </tbody></table></div>
         <p class="nota tiny"><b>Supuestos:</b> lluvia de diseño de 40 mm/h (supuesto; la lluvia de diseño oficial la da Conagua), coeficiente de escurrimiento C = 0.8 (zona urbana), pendiente S = 0.2 %, rugosidad n = 0.013 (concreto); con PRFV (n ≈ 0.010) salen unas 3–8″ menos. Se elige el diámetro comercial hacia arriba. El pluvial va <b>enterrado y por gravedad</b>; solo el agua ya bombeada desde un vaso podría cruzar por un puente. Cálculo de la tabla compartida del documento (Pulso), revisado.</p>
         <h3>Agua tratada del Nodo para las parcelas <small class="muted">propuesta</small></h3>
-        <p>Una <b>línea morada</b> llevaría el agua tratada del Nodo por el <b>bordo o derecho de vía</b> del Canal de Sacramento, <b>no dentro del canal</b>, hasta las parcelas. En el mapa, el canal es el trazo de OpenStreetMap; la línea morada, las parcelas y los vasos son <b>trazo referencial</b>.</p>
+        <p>Una <b>línea morada</b> llevaría el agua tratada del Nodo por el <b>bordo o derecho de vía</b> del Canal de Sacramento, <b>no dentro del canal</b>, hasta las parcelas. En el mapa, el canal es el trazo de OpenStreetMap; la línea morada, las parcelas y los vasos son <b>diseño preliminar</b>.</p>
         <div class="cards hechos">
           <div class="hecho"><b>Canal de Sacramento: 270 MDP</b><span>Rehabilitación de Conagua del km 0+000 al 13+440 en Lerdo y Gómez Palacio; conclusión estimada en 2029 (<a href="https://www.milenio.com/estados/presidenta-claudia-sheinbaum-supervisa-obra-canal-sacramento" target="_blank" rel="noopener">Milenio, 22 feb 2026</a>).</span></div>
           <div class="hecho"><b>15 de más de 50 km · 24,883 usuarios</b><span>Avance de la rehabilitación y usuarios beneficiados (<a href="https://www.elsiglodetorreon.com.mx/noticia/2026/avanza-rehabilitacion-del-canal-sacramento.html" target="_blank" rel="noopener">El Siglo, 25 feb 2026</a>).</span></div>
-          <div class="hecho"><b>Ya hay venta de agua tratada</b><span>Decretos 470 y 471 del Congreso de Durango (2018): 100 L/s de la PTAR Oriente y 100 L/s de la PTAR Norte para uso agrícola. Vigencia y volumen libre: por verificar con SIDEAPA. Calidad: NOM-001-SEMARNAT-2021.</span></div>
+          <div class="hecho"><b>Ya hay venta de agua tratada</b><span>Decretos 470 y 471 del Congreso de Durango (2018): 100 L/s de la PTAR Oriente y 100 L/s de la PTAR Norte para uso agrícola. Vigencia y volumen libre: pendiente de confirmación con SIDEAPA. Calidad: NOM-001-SEMARNAT-2021.</span></div>
         </div>
         <p class="nota"><b>El tendido por el bordo del Canal de Sacramento requiere autorización CONAGUA y DR 017.</b> Permisos por gestionar: CNA-01-006 (concesión para ocupar terrenos federales a cargo de Conagua), CNA-02-002, autorización ambiental de SEMARNAT y convenio con el Distrito de Riego 017.</p>
         <h3>El campo de Gómez Palacio</h3>
@@ -345,8 +353,8 @@
       <div class="pp" data-pp="agua" hidden>
         <div class="pp-cab"><p class="lema">Agua tratada que cumple la norma: apta para riego e industria, no para beber.</p>
           <div class="pp-btns"><button class="btn mini oro" data-mapa="agua">🗺️ Ver en el mapa 3D</button></div></div>
-        <p>Propuesta para platicarla con SIDEAPA, SAPAL, CFE y Conagua. Orden de reúso: <b>primero parques, camellones y árboles</b> (NOM-003-SEMARNAT-1997, reúso con contacto público), <b>después ejidos</b> (NOM-001-SEMARNAT-2021). En el mapa, las derivaciones y los pasos aéreos son <b>propuesta</b> con trazo referencial; los parques y puentes son de OpenStreetMap.</p>
-        <div class="gao" style="border-left-color:#22c55e"><b style="color:#22c55e">🟢 Obras de gobierno en marcha</b> En el mapa, en verde: el contrato de la CAED para el Emisor Central y el colector San Ignacio (CAED-IPE-082-26), la línea de Agua Saludable para La Laguna hacia Gómez Palacio y las plantas de tratamiento Norte y Oriente (coordenadas del Decreto 422 del Congreso de Durango). Las obras del Plan Agua Fluye en colonias se listan en el Plan Fluye. Trazos referenciales salvo las coordenadas de las plantas. Lo nuestro va en otros colores: es lo que <b>sumamos</b>.</div>
+        <p>Propuesta para platicarla con SIDEAPA, SAPAL, CFE y Conagua. Orden de reúso: <b>primero parques, camellones y árboles</b> (NOM-003-SEMARNAT-1997, reúso con contacto público), <b>después ejidos</b> (NOM-001-SEMARNAT-2021). En el mapa, las derivaciones y los pasos aéreos son <b>propuesta</b> con diseño preliminar; los parques y puentes son de OpenStreetMap.</p>
+        <div class="gao" style="border-left-color:#22c55e"><b style="color:#22c55e">🟢 Obras de gobierno en marcha</b> En el mapa, en verde: el contrato de la CAED para el Emisor Central y el colector San Ignacio (CAED-IPE-082-26), la línea de Agua Saludable para La Laguna hacia Gómez Palacio y las plantas de tratamiento Norte y Oriente (coordenadas del Decreto 422 del Congreso de Durango). Las obras del Plan Agua Fluye en colonias se listan en el Plan Fluye. Trazos de diseño preliminar salvo las coordenadas de las plantas. Lo nuestro va en otros colores: es lo que <b>sumamos</b>.</div>
         <h3>Agua potable: Agua Saludable para La Laguna</h3>
         <div class="cards hechos">
           <div class="hecho"><b>Potabilizadora a ~30 %</b><span>Ejido San Jacinto, Lerdo, junto al cerro San Jacinto (~32 km de la cabecera; fuera del mapa). Capacidad de 7,200 L/s; trabaja a ~30 % de su capacidad (<a href="https://www.milenio.com/estados/agua-saludable-laguna-opera-30-ciento" target="_blank" rel="noopener">Milenio</a>).</span></div>
@@ -377,6 +385,11 @@
         <p class="nota">🌳 Arbolado con especies nativas (mezquite, huizache, palo verde), que piden poca agua. Escuelas y camellones por identificar con el Municipio.</p>
       </div>
 
+      
+      <div class="pp" data-pp="sat" hidden>
+        <div class="pp-cab"><p><b>Zonas para revisar primero (satelital).</b> Las manchas de humedad son candidatas a inspección con cámara; no confirman una fuga. Las fuentes van en Fichas técnicas.</p></div>
+        <div id="sat-panel"></div>
+      </div>
       <div class="pp" data-pp="creditos" hidden>
         <div class="creditos">
           <div class="cred-titular"><small>Idea y dirección</small><b>Raúl Muñoz Villa</b><span>titular del proyecto</span></div>
@@ -397,7 +410,7 @@
 
     <div class="grid3">
       <section class="panel">
-        <h2>Presupuesto por partida <small>MDP sin IVA · Anteproyecto referencial</small></h2>
+        <h2>Presupuesto por partida <small>MDP sin IVA · Anteproyecto preventivo</small></h2>
         <div id="nota-fin"></div>
         <div id="partidas"></div>
         <p class="ley tiny"><i class="l1"></i>Plan maestro completo <i class="l2"></i>Solo alcance del documento <i class="l3"></i>Rango del documento</p>
@@ -416,7 +429,7 @@
     </div>
 
     <section class="panel" id="ruta-institucional">
-      <h2>Ruta de validación institucional <small>Anteproyecto referencial · todos los pasos pendientes</small></h2>
+      <h2>Ruta de validación institucional <small>Anteproyecto preventivo · todos los pasos pendientes</small></h2>
       <div id="ruta-val"></div>
     </section>
 
@@ -433,7 +446,7 @@
         <div>
           <h3>Lo que dice el proyecto Nodo VAH</h3>
           <ul>
-            <li>El predio se muestra como <b>ubicación referencial, terreno real por definir</b> (polígono georreferenciado y acreditación de propiedad pendientes). El documento lo sitúa en la franja periurbana colindante con el PIL y los canales de riego ejidal (Especificaciones, §1); las coordenadas UTM de la memoria no caen en la mancha urbana. Superficie <b>por confirmar (20,000 / 40,000 m²)</b>.</li>
+            <li>El predio se muestra como <b>ubicación de referencia</b> (polígono georreferenciado y acreditación de propiedad pendientes). El documento lo sitúa en la franja periurbana colindante con el PIL y los canales de riego ejidal (Especificaciones, §1); las coordenadas UTM de la memoria no caen en la mancha urbana. Superficie <b>por confirmar (20,000 / 40,000 m²)</b>.</li>
             <li>Las <b>descargas del PIL</b> se estiman en <b>40–80 L/s</b> (1.25–2.50 Mm³/año) y requieren la Fase 1 SIBRA: trampas de grasa y separadores coalescentes para grasas e hidrocarburos (Documento Maestro, §5).</li>
             <li>La entrada de diseño SIBRA es 22.5 L/s con DBO₅ 450 mg/L y SST 380 mg/L: valores <b>teóricos — pendiente muestreo compuesto y aforo con laboratorio acreditado EMA</b>.</li>
             <li>Recomendación del documento: firmar convenios marco entre SIDEAPA, el PIL y la A.C. promotora (§14).</li>
@@ -452,7 +465,7 @@
       <p class="nota tiny">Fuente histórica: <a href="https://www.torreon.gob.mx/archivo/pdf/libros/Parque%20Industrial%20Lagunero%20de%20G%C3%B3mez%20Palacio.pdf" target="_blank" rel="noopener">«Parque Industrial Lagunero de Gómez Palacio», Archivo Municipal de Torreón Eduardo Guerra · Biblioteca Digital</a>. Es un folleto de época: sus datos describen el parque como era entonces y no son cifras actuales. En el modo «Ciudad y redes de agua» la página 13 del folleto se puede encender como capa, con un ajuste aproximado sobre el mapa real de OpenStreetMap.</p>
     </section>
 
-    <footer class="pie tiny muted">Fuente: Documento Ejecutivo Maestro Integral (§6, §11), planos PL-01…PL-06 Rev. 0 y presupuesto del 25-oct-2026. Mapa de la ciudad: © colaboradores de <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> (ODbL). ANTEPROYECTO REFERENCIAL — ningún elemento está en «Proyecto ejecutivo validado». NO VÁLIDO PARA CONSTRUCCIÓN; requiere validación y firma de perito/DRO.</footer>
+    <footer class="pie tiny muted">Fuente: Documento Ejecutivo Maestro Integral (§6, §11), planos PL-01…PL-06 Rev. 0 y presupuesto del 25-oct-2026. Mapa de la ciudad: © colaboradores de <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> (ODbL). ANTEPROYECTO PREVENTIVO — ningún elemento está en «Proyecto ejecutivo validado». NO VÁLIDO PARA CONSTRUCCIÓN; requiere validación y firma de perito/DRO.</footer>
   </main>
 </body>
 </html>

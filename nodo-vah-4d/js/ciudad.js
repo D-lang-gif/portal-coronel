@@ -69,7 +69,7 @@ export function crearCiudad(scene, C, sitio) {
   const pickables = [];
   const esq = "por confirmar (la geometría del visor es esquemática, no es cota ni diámetro de proyecto)";
   const reg = (m, a) => { if (m && a) { m.userData.attr = a; if (m.isMesh || m.isInstancedMesh) pickables.push(m); else m.traverse((o) => { if (o.isMesh) { o.userData.attr = a; pickables.push(o); } }); } return m; };
-  const Ared = (titulo, extra = {}) => attrs(titulo, { estado: "proyectado (anteproyecto referencial)", "cota/profundidad": esq, diámetro: esq, material: PC, "norma aplicable": PC, "fuente del dato": "Trazo referencial sobre calles OSM; " + NIVEL.ante }, extra);
+  const Ared = (titulo, extra = {}) => attrs(titulo, { estado: "proyectado (anteproyecto preventivo)", "cota/profundidad": esq, diámetro: esq, material: PC, "norma aplicable": PC, "fuente del dato": "Trazo referencial sobre calles OSM; " + NIVEL.ante }, extra);
 
   // Suelo
   const sueloMat = new THREE.MeshStandardMaterial({ color: 0x141a22, roughness: 1, transparent: true, opacity: 1 });
@@ -160,7 +160,7 @@ export function crearCiudad(scene, C, sitio) {
   for (const p of R.potable) capas.potable.add(tubo(dec(p.p), prof.potable, p.nivel === "conduccion" ? 7 : 4, 0x3c8cff, 1, p.nivel === "conduccion" ? 45 : 30));
   for (const f of fuentes) { capas.potable.add(marca("potable", f.x, f.z, 0, 5, "pozo")); capas.potable.add(vtubo(f.x, f.z, ACU, 0, 4, 0x3c8cff, 12));
   }
-  ET("Obra hidráulica / pozo<br><small>punto OSM (real) · función de fuente: referencial</small>", R.tour.pozo[0], R.tour.pozo[1], 45, "potable", REDES.potable.c);
+  ET("Obra hidráulica / pozo<br><small>punto OSM (real) · función de fuente: diseño preliminar</small>", R.tour.pozo[0], R.tour.pozo[1], 45, "potable", REDES.potable.c);
   for (const t of tanques) { capas.potable.add(marca("potable", t.x, t.z, 22, 6, "tanque")); }
   ET("Tanque elevado<br><small>OSM (real)</small>", R.tanquePIL[0], R.tanquePIL[1], 50, "potable", REDES.potable.c);
   // 2) drenaje sanitario
@@ -187,13 +187,13 @@ export function crearCiudad(scene, C, sitio) {
   // 4) pluvial: drenes/arroyos OSM + colectores pluviales referenciales al Nazas
   for (const c of canales) if (c.t !== "canal") capas.pluvial.add(tubo(c.pts, .4, 4, 0x7fe0c8, .9, 20));
   for (const p of R.pluvial) capas.pluvial.add(tubo(dec(p), prof.pluvial, 7, 0x7fe0c8, 1, 30));
-  { const p = dec(R.pluvial[0]); const m = p[p.length - 1]; ET("Desfogue pluvial al Nazas<br><small>referencial</small>", m[0], m[1], 35, "pluvial", REDES.pluvial.c); }
+  { const p = dec(R.pluvial[0]); const m = p[p.length - 1]; ET("Desfogue pluvial al Nazas<br><small>diseño preliminar</small>", m[0], m[1], 35, "pluvial", REDES.pluvial.c); }
   // 5) agua tratada / reúso (morado)
   for (const s of R.reuso_ind) capas.tratada.add(tubo(dec(s), prof.tratada, 5, 0xa35bff, 1, 35));
   const riego = dec(R.riego); capas.tratada.add(tubo(riego, prof.tratada, 6, 0xa35bff, 1, 35));
   const nzD = dec(R.nazas_desc); capas.tratada.add(tubo(nzD, prof.tratada, 6, 0xc58bff, 1, 35));
-  { const m = riego[riego.length - 1]; ET("Toma a riego ejidal · " + R.riego_canal + "<br><small>conexión referencial</small>", m[0], m[1], 45, "tratada", REDES.tratada.c);
-    const q = nzD[nzD.length - 1]; ET("Descarga al Nazas<br><small>REFERENCIAL · cumplir NOM-001-SEMARNAT-2021</small>", q[0], q[1], 45, "tratada", "#c58bff", true);
+  { const m = riego[riego.length - 1]; ET("Toma a riego ejidal · " + R.riego_canal + "<br><small>conexión de diseño preliminar</small>", m[0], m[1], 45, "tratada", REDES.tratada.c);
+    const q = nzD[nzD.length - 1]; ET("Descarga al Nazas<br><small>diseño preliminar · cumplir NOM-001-SEMARNAT-2021</small>", q[0], q[1], 45, "tratada", "#c58bff", true);
     const s = dec(R.reuso_ind[0]); const r = s[Math.floor(s.length * .7)]; ET("Reúso industrial (agua tratada)", r[0], r[1], 45, "tratada", REDES.tratada.c); }
   // 6) recarga al acuífero: FASE FUTURA (apagada por defecto; no forma parte del piloto)
   const pozosI = (sitio || []).map(([x, z]) => [x, z]);
@@ -215,15 +215,21 @@ export function crearCiudad(scene, C, sitio) {
   // Marcador genérico del Nodo (no se inventa un predio ni se usan las UTM de la memoria)
   const nod = new THREE.Mesh(new THREE.BoxGeometry(80, 8, 80), new THREE.MeshStandardMaterial({ color: 0xf3d27a, transparent: true, opacity: .35, emissive: 0x5a4a10 }));
   nod.position.set(0, 4, 0);
-  nod.userData.attr = attrs("Nodo VAH · marcador genérico", { Identificador: "NODO-VAH-REF", estado: "por confirmar", "cota/profundidad": PC, diámetro: "no aplica", material: "no aplica", "norma aplicable": PC, "fuente del dato": "Posición referencial junto al PIL; las UTM de la memoria no se usaron" }, { "ubicación": UBICACION.aviso, "superficie": UBICACION.areaLarga, "coordenadas memoria": UBICACION.memoria, "aviso": "Terreno real por definir. No se desplaza el marcador a un predio inventado." });
+  nod.userData.attr = attrs("Nodo VAH · marcador genérico", { Identificador: "NODO-VAH-REF", estado: "por confirmar", "cota/profundidad": PC, diámetro: "no aplica", material: "no aplica", "norma aplicable": PC, "fuente del dato": "Ubicación de referencia junto al PIL; las UTM de la memoria no se usaron" }, { "ubicación": UBICACION.aviso, "superficie": UBICACION.areaLarga, "coordenadas memoria": UBICACION.memoria, "aviso": "Terreno real por definir. No se desplaza el marcador a un predio inventado." });
   pickables.push(nod); g.add(nod);
   ET("⚠ " + UBICACION.etiqueta + "<br><small>Las UTM de la memoria caen ~26 km al norte de la mancha urbana</small>", 0, 0, 90, "ciudad", "#ffb547", true);
 
+  sueloMat.side = THREE.DoubleSide;
   function xray(on, nivel) {
     sueloMat.opacity = nivel ?? (on ? .35 : 1); sueloMat.depthWrite = !on && nivel == null;
     for (const m of [mB, mE]) { m.opacity = on ? .16 : 1; m.depthWrite = !on; }
     matsV.forEach((m, i) => (m.opacity = on ? .45 : i < 2 ? .95 : .85)); mCauce.opacity = on ? .5 : .95;
     red.traverse((m) => { if (m.material?.uniforms) m.material.uniforms.uOp.value = on ? 1 : .4; });
+  }
+  function subsuelo(on) {
+    xray(on, on ? .18 : undefined);
+    sueloMat.opacity = on ? .18 : (sueloMat.opacity || 1);
+    sueloMat.depthWrite = !on;
   }
   xray(false);
   function capa(k, on) { capas[k].visible = on; }
@@ -320,10 +326,10 @@ export function crearCiudad(scene, C, sitio) {
   };
   // Fichas genéricas de redes (geometría esquemática: no se inventan diámetros ni cotas)
   const fichaRed = (k, titulo) => Ared(titulo);
-  capas.potable.traverse((m) => { if (m.isMesh && !m.userData.attr) reg(m, Ared("Red de agua potable (trazo referencial)", { estado: "por confirmar (tramo existente o proyectado no desglosado aquí)" })); });
-  capas.sanitario.traverse((m) => { if (m.isMesh && !m.userData.attr) reg(m, Ared("Drenaje sanitario (trazo referencial)", { "norma aplicable": "por confirmar (NOM-002-SEMARNAT-1996 en descargas a red, cuando aplique)" })); });
-  capas.industrial.traverse((m) => { if (m.isMesh && !m.userData.attr) reg(m, Ared("Drenaje industrial PIL (trazo referencial)")); });
-  capas.pluvial.traverse((m) => { if (m.isMesh && !m.userData.attr) reg(m, Ared("Drenaje pluvial (trazo referencial)")); });
-  capas.tratada.traverse((m) => { if (m.isMesh && !m.userData.attr) reg(m, Ared("Agua tratada / reúso (trazo referencial)", { "norma aplicable": "NOM-001-SEMARNAT-2021 (riego) / NOM-003-SEMARNAT-1997 (áreas verdes), según el uso" })); });
-  return { grupo: g, red, capas, capa, resaltar, xray, forma, enForma, tramos, N, etiquetas, uT, folleto, cargarFolleto, rutas, prof, ACU, pozosI, emisor, pickables };
+  capas.potable.traverse((m) => { if (m.isMesh && !m.userData.attr) reg(m, Ared("Red de agua potable (diseño preliminar)", { estado: "por confirmar (tramo existente o proyectado no desglosado aquí)" })); });
+  capas.sanitario.traverse((m) => { if (m.isMesh && !m.userData.attr) reg(m, Ared("Drenaje sanitario (diseño preliminar)", { "norma aplicable": "por confirmar (NOM-002-SEMARNAT-1996 en descargas a red, cuando aplique)" })); });
+  capas.industrial.traverse((m) => { if (m.isMesh && !m.userData.attr) reg(m, Ared("Drenaje industrial PIL (diseño preliminar)")); });
+  capas.pluvial.traverse((m) => { if (m.isMesh && !m.userData.attr) reg(m, Ared("Drenaje pluvial (diseño preliminar)")); });
+  capas.tratada.traverse((m) => { if (m.isMesh && !m.userData.attr) reg(m, Ared("Agua tratada / reúso (diseño preliminar)", { "norma aplicable": "NOM-001-SEMARNAT-2021 (riego) / NOM-003-SEMARNAT-1997 (áreas verdes), según el uso" })); });
+  return { grupo: g, red, capas, capa, resaltar, xray, subsuelo, forma, enForma, tramos, N, etiquetas, uT, folleto, cargarFolleto, rutas, prof, ACU, pozosI, emisor, pickables };
 }
