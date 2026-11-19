@@ -272,3 +272,15 @@ table.tz2 td{border-top:1px solid var(--borde);padding:6px 8px;vertical-align:to
 .sat-escena span{display:block;color:var(--muted);font-size:12px}
 .sat-acciones{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
 .sat-foto img{width:100%;max-width:660px;border-radius:8px;border:1px solid var(--borde)}
+
+.enc-bloque{margin-top:14px;padding:12px 14px;border:1px solid var(--borde);border-radius:10px;background:rgba(12,16,22,.55)}
+.enc-bloque h3{margin:0 0 6px;font-size:15px}
+.enc-ley{display:inline-block;padding:0 6px;border-radius:999px;margin-right:4px}
+.enc-ley.ofi{background:rgba(79,70,229,.25);color:#c7d2fe}
+.enc-ley.pre{background:rgba(13,148,136,.25);color:#99f6e4}
+.enc-ley.amb{background:rgba(244,185,66,.25);color:#fde68a}
+.enc-sin{list-style:none;padding:0;margin:8px 0 0;max-height:280px;overflow:auto}
+.enc-sin li{padding:8px 0;border-top:1px solid var(--borde);font-size:12px;line-height:1.4}
+.enc-sin li.enc-fuerte{background:rgba(244,185,66,.08);padding-left:8px;border-left:3px solid #f4b942}
+.enc-eventos{margin:4px 0 0;padding-left:18px}
+.enc-eventos li{margin:0 0 6px}

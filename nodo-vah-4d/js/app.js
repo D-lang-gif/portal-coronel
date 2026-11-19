@@ -13,6 +13,7 @@ import { crearCapas2, TEC } from "./capas2.js";
 import { LACTEOS_IDS, POZOS_RECARGA_IDS, NIVEL, UBICACION, attrs, fichaHTML, fichaFinancieraHTML, notaFinancieraHTML, rutaValidacionHTML, semaforoHTML, INF_TEORICO, TARIFA_NOTA, PRELIM_FOSTER, RECARGA_NOM, PC } from "./pliego.js";
 import { crearGestion } from "./gestion.js";
 import { initSatelite } from "./satelite.js";
+import { crearEncharcamientos } from "./encharcamientos.js";
 
 const $ = (s, r = document) => r.querySelector(s);
 const D = window.NODO_DATA, PR = window.NODO_PRES;
@@ -278,19 +279,27 @@ function escena() {
     ray.setFromCamera(ptr, camera); const hit = ray.intersectObjects(pick.filter((m) => { let o = m; while (o) { if (!o.visible) return false; o = o.parent; } return true; }), false)[0];
     const obj = hit?.object;
     if (obj?.userData?.zi != null && S.sat) S.sat.abrirZona(obj.userData.zi);
+    else if (obj?.userData?.lugar && S.encharca) S.encharca.abrir(obj.userData.lugar);
     else if (obj?.userData?.obra && S.gestion) { const el=$("#ficha"); el.innerHTML=S.gestion.fichaObra(obj.userData.obra); el.hidden=false; }
     else if (hit) ficha(obj.userData.fid || obj.userData.attr); else $("#ficha").hidden = true;
   });
   renderer.domElement.addEventListener("pointermove", (e) => {
     const tip = document.getElementById("tip-mapa");
-    if (!tip || !S?.gestion || S.modo !== "ciudad") { if (tip) tip.style.display = "none"; return; }
+    if (!tip || S.modo !== "ciudad") { if (tip) tip.style.display = "none"; return; }
     const r = renderer.domElement.getBoundingClientRect();
     const ndc = new THREE.Vector2((e.clientX - r.left) / r.width * 2 - 1, -(e.clientY - r.top) / r.height * 2 + 1);
     const rayc = new THREE.Raycaster(); rayc.setFromCamera(ndc, camera);
     const plano = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
     const pt = new THREE.Vector3();
     if (!rayc.ray.intersectPlane(plano, pt)) { tip.style.display = "none"; return; }
-    const n = S.gestion.nearestFluye(pt.x, pt.z, 1000);
+    const enc = (S.capas2?.has("encharca") && S.encharca?.group?.visible) ? S.encharca.nearest(pt.x, pt.z, 280) : null;
+    const n = S.gestion?.nearestFluye(pt.x, pt.z, 1000);
+    if (enc) {
+      tip.hidden = false; tip.style.display = "block";
+      tip.style.left = (e.clientX - r.left + 12) + "px"; tip.style.top = (e.clientY - r.top + 12) + "px";
+      tip.innerHTML = `<b>${enc.L.etiqueta}</b><br>${enc.L.nombre}`;
+      return;
+    }
     if (!n) { tip.style.display = "none"; return; }
     tip.hidden = false; tip.style.display = "block";
     tip.style.left = (e.clientX - r.left + 12) + "px"; tip.style.top = (e.clientY - r.top + 12) + "px";
@@ -360,6 +369,16 @@ async function cargarCiudad() {
         });
         S.sat.pickables.forEach((m) => S.pick.push(m));
       } catch (e) { console.error("satelite", e); }
+      try {
+        S.encharca = await crearEncharcamientos({
+          scene: S.scene,
+          flyTo,
+          onFicha: (html) => { const el = $("#ficha"); el.innerHTML = html; el.hidden = false; },
+          etiqueta: (txt, p, modo, color) => { S.etiqueta(txt, p, modo, color); return S.etq[S.etq.length - 1]; },
+        });
+        S.encharca.pickables.forEach((m) => S.pick.push(m));
+        S.capas2.add("encharca");
+      } catch (e) { console.error("encharca", e); }
     } catch (e) { console.error("capas2", e); }
     ponerMes(S.mes);
   } catch (e) { console.error("ciudad", e); }
@@ -633,7 +652,13 @@ function panelCiudad() {
     c.checked ? S.capasRed.add(c.dataset.red) : S.capasRed.delete(c.dataset.red); C.capa(c.dataset.red, c.checked);
   }));
   $("#chk-recarga")?.addEventListener("change", (e) => aplicarRecarga(e.target.checked));
+  if (S.encharca) {
+    const box = document.createElement("div");
+    box.innerHTML = S.encharca.listaHTML();
+    p.appendChild(box);
+  }
 }
+
 function aplicarRecarga(on) {
   S.recargaOn = !!on;
   if (!S.capasRed) S.capasRed = new Set();
@@ -767,8 +792,8 @@ function modo(n) {
 }
 document.querySelectorAll(".modo").forEach((b) => b.addEventListener("click", () => modo(b.dataset.modo)));
 /* ───────── Capas nuevas · Propuesta Integral 2026 ───────── */
-const C2CAT = ["gob", "tec", "aliados", "colectivo", "zanja", "lluvias", "agua", "fluye", "noperforar"];
-const C2NOM = { gob: "🟢 Obras de gobierno en marcha y plantas", tec: "📡 Tecnología de la red", aliados: "🤝 Aliados que ganan", colectivo: "🔗 De lo aislado a lo colectivo", zanja: "🚧 Hacerlo de una vez (zanja abierta)", lluvias: "🌧️ Lluvias y campo", agua: "💧 Agua tratada y áreas verdes", fluye: "🟢 Obras del Plan Fluye (con fuente)", noperforar: "⛔ Dónde no perforar" };
+const C2CAT = ["gob", "tec", "aliados", "colectivo", "zanja", "lluvias", "agua", "fluye", "encharca", "noperforar"];
+const C2NOM = { gob: "🟢 Obras de gobierno en marcha y plantas", tec: "📡 Tecnología de la red", aliados: "🤝 Aliados que ganan", colectivo: "🔗 De lo aislado a lo colectivo", zanja: "🚧 Hacerlo de una vez (zanja abierta)", lluvias: "🌧️ Lluvias y campo", agua: "💧 Agua tratada y áreas verdes", fluye: "🟢 Obras del Plan Fluye (con fuente)", encharca: "💧 Encharcamientos (oficial y prensa)", noperforar: "⛔ Dónde no perforar" };
 function aplicarCapas2() {
   if (!S?.c2) return; const en = S.modo === "ciudad" || S.modo === "recorrido";
   for (const k of C2CAT) if (S.c2[k]) S.c2[k].visible = en && S.capas2.has(k);
@@ -776,6 +801,7 @@ function aplicarCapas2() {
     S.gestion.fluye.visible = en && S.capas2.has("fluye");
     S.gestion.noperforar.visible = en && S.capas2.has("noperforar");
   }
+  if (S.encharca) S.encharca.group.visible = en && S.capas2.has("encharca");
   S.c2.sim.visible = en && !!S.simOn;
   if (S.c2.obra) S.c2.obra.visible = en && !!S.obraVis && S.capas2.has("zanja");
   if (S.c2.relieve) { const k = en ? (S.relK ?? 2) : 0; if (S.c2._relK !== k) { S.c2.relieve.escala(k); S.c2._relK = k; } }
