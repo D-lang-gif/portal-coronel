@@ -100,6 +100,16 @@ def escribir(path, obj, **kw):
     return True
 
 
+def geo(g, nd=6):
+    """GeoJSON con coordenadas redondeadas (~10 cm): evita diferencias de último decimal entre máquinas."""
+    def r(o):
+        if isinstance(o, float): return round(o, nd)
+        if isinstance(o, (list, tuple)): return [r(x) for x in o]
+        return o
+    m = mapping(g)
+    return {"type": m["type"], "coordinates": r(m["coordinates"])}
+
+
 def log(*a):
     print(time.strftime("%H:%M:%S"), *a, flush=True)
 
@@ -440,7 +450,7 @@ def main():
         a_wgs = Transformer.from_crs(crs, "EPSG:4326", always_xy=True).transform
         for g, v in shapes(lab.astype("int32"), mask=np.isin(lab, keep), transform=tr):
             gg = shape(g)
-            enchar.append({"type": "Feature", "geometry": mapping(shp_tr(a_wgs, gg.simplify(10))), "properties": {
+            enchar.append({"type": "Feature", "geometry": geo(shp_tr(a_wgs, gg.simplify(10))), "properties": {
                 "tipo": "encharcamiento", "fecha": rec["fecha"], "lluvia_mm_3d": rec["lluvia_mm_3d"],
                 "lluvia_mm_7d": rec["lluvia_mm_7d"], "area_m2": round(gg.area),
                 "fuente": f"{FUENTE_S2}, escena {rec['fecha']}; lluvia Open-Meteo (ERA5)",
@@ -468,7 +478,7 @@ def main():
         z["primera_deteccion"] = min(z["primera_deteccion"], f["desde"])
         if nueva_pasada:
             z["corridas"] = z.get("corridas", 0) + 1; z["sin_detectar"] = 0
-        z.update(geom=mapping(f["geom"]), cen=[round(f["cen"].x, 6), round(f["cen"].y, 6)], ultima=f["hasta"])
+        z.update(geom=geo(f["geom"]), cen=[round(f["cen"].x, 6), round(f["cen"].y, 6)], ultima=f["hasta"])
         f["id"] = best; f["primera"] = z["primera_deteccion"]; f["corridas"] = z["corridas"]
     if nueva_pasada:
         for zid in [k for k in est["zonas"] if k not in usados]:
@@ -519,7 +529,7 @@ def main():
         nota = (f"{ETIQUETA}: {pas}; húmeda desde {f['desde']} ({f['dias']} días en imágenes; son los días que el satélite la ha "
                 "visto, no la antigüedad de una posible fuga). Indicador satelital, no confirma fuga; también puede ser lavadero, "
                 "autolavado o una llave que chorrea. Escenas tras lluvia excluidas. Confirmar con inspección de SIDEAPA.")
-        out.append({"type": "Feature", "geometry": mapping(f["geom"]), "properties": {
+        out.append({"type": "Feature", "geometry": geo(f["geom"]), "properties": {
             "id": f["id"], "tipo": "humedad", "categoria": cat_txt, "clase": f["clase"],
             "intensidad": round(f["score"]), "escala_intensidad": "0-100",
             "fecha": f"{f['desde']}/{f['hasta']}" if f["desde"] != f["hasta"] else f["hasta"],
