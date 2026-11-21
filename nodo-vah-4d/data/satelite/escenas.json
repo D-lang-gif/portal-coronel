@@ -1,5 +1,5 @@
 {
-"generado": "2026-11-19T09:26:37+00:00",
+"generado": "2026-11-21T20:11:25+00:00",
 "tile": "MGRS-13RFJ",
 "criterios": {
 "nubes_tile_max": 40,
@@ -17,22 +17,6 @@
 },
 "lluvia_fuente": "Open-Meteo (ERA5/ERA5-Land reanálisis; días recientes con modelo), punto 25.56,-103.50",
 "escenas": [
-{
-"id": "S2A_13RFJ_20251119_1_L2A",
-"fecha": "2025-11-19",
-"tile": "MGRS-13RFJ",
-"nubes_tile_pct": 31.1,
-"miniatura": "https://sentinel-cogs.s3.us-west-2.amazonaws.com/sentinel-s2-l2a-cogs/13/R/FJ/2025/11/S2A_13RFJ_20251119_1_L2A/preview.jpg",
-"color_real_cog": "https://sentinel-cogs.s3.us-west-2.amazonaws.com/sentinel-s2-l2a-cogs/13/R/FJ/2025/11/S2A_13RFJ_20251119_1_L2A/TCI.tif",
-"stac": "https://earth-search.aws.element84.com/v1/collections/sentinel-2-l2a/items/S2A_13RFJ_20251119_1_L2A",
-"lluvia_mm_3d": 0.0,
-"lluvia_mm_7d": 0.0,
-"lluvia_mm_dia": 0.0,
-"claro_aoi_pct": 97.0,
-"uso": "seca",
-"ndmi_mediana_ciudad": -0.0246,
-"rol": "historia"
-},
 {
 "id": "S2B_13RFJ_20251122_0_L2A",
 "fecha": "2025-11-22",
