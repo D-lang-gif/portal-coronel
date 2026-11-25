@@ -66,6 +66,18 @@
         <button type="button" id="vm-e" class="e" aria-label="Este">▶</button>
       </div>
     </div>
+    <button type="button" id="vm-fantasma" class="vm-glass" aria-pressed="false">
+      <span class="vm-fan-ico" aria-hidden="true"></span>
+      <span class="vm-fan-txt">Vista subterránea</span>
+    </button>
+    <div id="vm-fan-leyenda" class="vm-glass" hidden>
+      <b>Vista subterránea</b>
+      <div><i class="sw" style="background:#67e8f9;color:#67e8f9"></i>Emisor 1.83 m (destino: PTAR Norte)</div>
+      <div><i class="sw" style="background:#22d3a8;color:#22d3a8"></i>Colector (≥ 60 cm)</div>
+      <div><i class="sw" style="background:#2dd4bf;color:#2dd4bf"></i>Subcolector (25–45 cm)</div>
+      <div><i class="sw" style="background:#5eead4;color:#5eead4"></i>Atarjea (20 cm)</div>
+      <div><i class="sw" style="background:#7c3aed;width:9px;height:9px;color:#c4b5fd"></i>Hundimiento (brillo por cm/año)</div>
+    </div>
     <button type="button" id="vm-yo" aria-label="Mi ubicación">◎</button>
     <aside id="vm-menu" class="vm-glass">
       <h3>Capas</h3>
@@ -75,12 +87,21 @@
       <label><input type="checkbox" id="cE" checked> <i class="sw" style="background:#2563eb"></i> Encharcamientos</label>
       <label><input type="checkbox" id="cN" checked> <i class="sw" style="background:#d4a63a"></i> Nodo VAH (ubicación de referencia)</label>
       <label><input type="checkbox" id="cH"> <i class="sw" style="background:#7c3aed"></i> Hundimientos (radar Sentinel-1, 2022-2026)</label>
+      <label><input type="checkbox" id="cP"> <i class="sw" style="background:#22d3a8"></i> Obras del Plan Fluye</label>
       <h3 style="margin-top:16px">Ir a coordenada</h3>
       <input id="busca" placeholder="lat, lon  ·  p. ej. 25.5889, -103.5129" autocomplete="off" />
       <h3>Zonas a revisar</h3>
       <ul class="vm-lista" id="vm-zonas"></ul>
       <h3 style="margin-top:14px">Encharcamientos sin coordenada</h3>
       <ul class="vm-sin" id="vm-enc-sin"></ul>
+      <h3 class="ficha-kicker" style="margin-top:16px">Fichas técnicas · Plan Fluye</h3>
+      <p class="vm-frase">El Plan Fluye pone la base y el Nodo la protege a futuro.</p>
+      <ul class="vm-cifras" id="vm-fluye-cifras"></ul>
+      <h3>Obras en el mapa</h3>
+      <ul class="vm-lista" id="vm-fluye-lista"></ul>
+      <h3 style="margin-top:14px">Sin trazo publicado</h3>
+      <ul class="vm-sin" id="vm-fluye-sin"></ul>
+      <div id="vm-fluye-fuentes" class="vm-nota"></div>
       <p class="vm-nota">Ninguna mancha es una fuga confirmada. Hay que revisarla con cámara. El Nodo VAH se mantiene: el botón superior abre el modelo 3D/4D, el cronograma de obra y el recorrido guiado. El cárcamo del Paso 11-40 no se marca: no hay un punto unívoco en el mapa de calles.</p>
       <p class="vm-nota"><button type="button" id="vm-salir">Salir</button></p>
     </aside>

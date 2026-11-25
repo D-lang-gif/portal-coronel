@@ -85,7 +85,8 @@ function construir(root) {
   const E = L.layerGroup().addTo(map);
   const H = L.layerGroup(); // off by default
   const N = L.layerGroup().addTo(map);
-  capas = { F, C, E, H, N, sat, lab, lab2, osm };
+  const P = L.layerGroup(); // Plan Fluye, apagada hasta la vista subterránea
+  capas = { F, C, E, H, N, P, sat, lab, lab2, osm };
 
   document.getElementById("vm-menu-btn")?.addEventListener("click", () => {
     document.getElementById("vm-menu")?.classList.toggle("open");
@@ -102,7 +103,8 @@ function construir(root) {
     if (add) el.checked = true;
     el.addEventListener("change", (e) => { e.target.checked ? layer.addTo(map) : map.removeLayer(layer); });
   };
-  sw("cF", F, true); sw("cC", C, true); sw("cE", E, true); sw("cH", H, false); sw("cN", N, true);
+  sw("cF", F, true); sw("cC", C, true); sw("cE", E, true); sw("cH", H, false); sw("cN", N, true); sw("cP", P, false);
+  prepararFantasma({ H, P });
   document.getElementById("cS")?.addEventListener("change", (e) => {
     if (e.target.checked) { map.removeLayer(osm); sat.addTo(map); lab.addTo(map); lab2.addTo(map); }
     else { [sat, lab, lab2].forEach((x) => map.removeLayer(x)); osm.addTo(map); }
@@ -145,6 +147,8 @@ function construir(root) {
     pintarZonas(zonas, F, C);
     pintarEncharca(ofi.features || [], pre.features || [], amigo, E);
     pintarHundimientos(hn.features || [], H);
+    pintarFluye(P);
+    listaFluye();
     ajustarVista(zonas);
     listaZonas(zonas);
     listaEncharcaSin(pre.features || [], ofi.features || []);
@@ -259,20 +263,23 @@ function pintarEncharca(ofi, pre, amigo, E) {
 
   if (amigo && amigo.features) {
     for (const f of amigo.features) {
-      const line = L.geoJSON(f, { style: { color: "#3b82f6", weight: 5, opacity: 0.9 } });
       const p = f.properties || {};
       const Lx = mapL.get("enc:ENC-01") || { prensa: [], nombre: p.nombre, enc: "ENC-01" };
       const n = fechasUnicas((Lx.prensa || []).map((x) => x.fecha_evento)).length || p.n_tormentas || 6;
       const ev = (Lx.prensa || []).map((ev) => `<li>${esc(fmtFecha(ev.fecha_evento))}${ev.url ? ` · <a target="_blank" rel="noopener" href="${esc(ev.url)}">${esc(ev.fuente || "nota")}</a>` : ""}</li>`).join("");
+      const lineL = L.geoJSON(f, { style: estiloAmigo(false, "line"), className: "amigo-line" });
+      const b = lineL.getBounds().getCenter();
       const html = `<b>${esc(p.nombre || "El Amigo")} · Encharcamiento recurrente – ${n} tormentas</b>
         <p>${esc(p.tramo)}. Geometría: tramo de Boulevard Jabonoso en OpenStreetMap, de Av. Nacional al Periférico / Puente Jabonoso (El Siglo, 2 oct 2026). No es un levantamiento del vaso.</p>
         ${ev ? `<ul>${ev}</ul>` : ""}
-        <p>No se inventó un punto de colonia: se dibuja el tramo que nombra la prensa.</p>`;
-      line.bindPopup(html, { maxWidth: 340 }).addTo(E);
-      // mid point for deep link
-      const b = line.getBounds().getCenter();
-      const mk = L.circleMarker(b, { radius: 9, color: "#fff", weight: 1.5, fillColor: "#2563eb", fillOpacity: 1 }).bindPopup(html, { maxWidth: 340 });
+        <p>No se inventó un punto de colonia: se dibuja el tramo que nombra la prensa.</p>
+        <div class="vm-coords">${b.lat.toFixed(6)}, ${b.lng.toFixed(6)}</div>
+        ${gm(b.lat, b.lng)}`;
+      lineL.bindPopup(html, { maxWidth: 340 }).addTo(E);
+      amigoRecs.push({ layer: lineL, kind: "line" });
+      const mk = L.circleMarker(b, estiloAmigo(false, "mk")).bindPopup(html, { maxWidth: 340 });
       E.addLayer(mk);
+      amigoRecs.push({ layer: mk, kind: "mk" });
       markers["ENC-01"] = mk;
       markers["El-Amigo"] = mk;
     }
@@ -322,8 +329,9 @@ function pintarHundimientos(feats, H) {
       <p>La mediana urbana en el periodo es de unos ${(urb / 10).toFixed(1)} cm/año. 86 pasadas, abril 2022 a abril 2026. Fuente: COMET LiCSAR (Universidad de Leeds), Sentinel-1 / ESA Copernicus. El satélite mide el terreno, no ve el interior de los tubos.</p>
       <div class="vm-coords">${(+la).toFixed(6)}, ${(+lo).toFixed(6)}</div>
       ${gm(la, lo)}`;
-    const mk = L.circleMarker([la, lo], { radius: 9, color: "#fff", weight: 2, fillColor: "#7c3aed", fillOpacity: 0.95 }).bindPopup(html, { maxWidth: 340 });
+    const mk = L.circleMarker([la, lo], { ...estiloHN(p, false), className: "hn-mk" }).bindPopup(html, { maxWidth: 340 });
     H.addLayer(mk);
+    hnRecs.push({ layer: mk, p });
     markers[p.id] = mk;
   }
 }
@@ -392,4 +400,227 @@ function abrirHash() {
   const h = (location.hash || "").replace(/^#/, "");
   if (!h) return;
   if (markers[h] || markers[decodeURIComponent(h)]) volar(markers[h] ? h : decodeURIComponent(h));
+}
+
+
+const JERARQUIA = {
+  atarjea: { color: "#5eead4", weight: 2, nombre: "Atarjea (20 cm)" },
+  subcolector: { color: "#2dd4bf", weight: 3.5, nombre: "Subcolector (25–45 cm)" },
+  colector: { color: "#22d3a8", weight: 5, nombre: "Colector (≥ 60 cm)" },
+  emisor: { color: "#67e8f9", weight: 7, nombre: "Emisor (1.83 m)" },
+};
+
+let fantasmaOn = false, prevH = false, prevP = false;
+const hnRecs = [], amigoRecs = [], pfRecs = [];
+
+function estiloHN(p, ghost) {
+  const vz = p.velocidad_media_zona_mm_anio != null ? Math.abs(p.velocidad_media_zona_mm_anio) : 26;
+  const vmax = p.velocidad_mm_anio != null ? Math.abs(p.velocidad_mm_anio) : vz;
+  const cm = (vmax || vz) / 10;
+  const t = Math.max(0, Math.min(1, (cm - 2.5) / 3.2));
+  if (!ghost) return { radius: 9, color: "#fff", weight: 2, fillColor: "#7c3aed", fillOpacity: 0.95, className: "hn-mk" };
+  const fill = t > 0.6 ? "#f0abfc" : (t > 0.3 ? "#c4b5fd" : "#8b5cf6");
+  return { radius: 8 + t * 8, color: "#f5f3ff", weight: 2, fillColor: fill, fillOpacity: 0.95, className: "hn-mk" };
+}
+function estiloAmigo(ghost, kind) {
+  if (kind === "line") return { color: ghost ? "#38bdf8" : "#3b82f6", weight: ghost ? 6 : 5, opacity: ghost ? 0.95 : 0.9, className: "amigo-line" };
+  return { radius: 9, color: "#fff", weight: 1.5, fillColor: ghost ? "#38bdf8" : "#2563eb", fillOpacity: 1 };
+}
+function estiloFluye(jer, ghost) {
+  const J = JERARQUIA[jer] || JERARQUIA.colector;
+  return { color: J.color, weight: ghost ? J.weight + 0.8 : J.weight, opacity: ghost ? 0.96 : 0.85, className: "pf-line" };
+}
+
+function prepararFantasma({ H, P }) {
+  const btn = document.getElementById("vm-fantasma");
+  const ley = document.getElementById("vm-fan-leyenda");
+  const root = document.getElementById("vista-mapa");
+  const txt = btn?.querySelector(".vm-fan-txt");
+  const aplicar = (on) => {
+    fantasmaOn = on;
+    root?.classList.toggle("fantasma", on);
+    if (btn) btn.setAttribute("aria-pressed", on ? "true" : "false");
+    if (txt) txt.textContent = on ? "Vista en superficie" : "Vista subterránea";
+    if (ley) ley.hidden = !on;
+    const cH = document.getElementById("cH");
+    const cP = document.getElementById("cP");
+    if (on) {
+      prevH = !!(cH && cH.checked);
+      prevP = !!(cP && cP.checked);
+      if (cH) cH.checked = true;
+      if (cP) cP.checked = true;
+      if (H && !map.hasLayer(H)) H.addTo(map);
+      if (P && !map.hasLayer(P)) P.addTo(map);
+    } else {
+      if (cH) {
+        cH.checked = prevH;
+        if (prevH) { if (H && !map.hasLayer(H)) H.addTo(map); }
+        else if (H) map.removeLayer(H);
+      }
+      if (cP) {
+        cP.checked = prevP;
+        if (prevP) { if (P && !map.hasLayer(P)) P.addTo(map); }
+        else if (P) map.removeLayer(P);
+      }
+    }
+    for (const rec of hnRecs) rec.layer.setStyle(estiloHN(rec.p, on));
+    for (const rec of amigoRecs) rec.layer.setStyle(estiloAmigo(on, rec.kind));
+    for (const rec of pfRecs) {
+      const st = estiloFluye(rec.jer, on);
+      if (rec.kind === "poly") rec.layer.setStyle({ ...st, fillColor: rec.fill || "#14b8a6", fillOpacity: 0.18 });
+      else rec.layer.setStyle(st);
+    }
+  };
+  btn?.addEventListener("click", () => aplicar(!fantasmaOn));
+  const labs = () => document.getElementById("vista-mapa")?.classList.toggle("vm-labs", map.getZoom() >= 14);
+  map.on("zoomend", labs);
+  labs();
+}
+
+function midLL(line) {
+  if (!line || !line.length) return null;
+  const mid = line[Math.floor(line.length / 2)];
+  return { lat: mid[0], lon: mid[1] };
+}
+
+function fuentesHTML(lista) {
+  if (!lista || !lista.length) return "";
+  return "<ul>" + lista.map((f) => {
+    const tit = esc(f.titulo || "Fuente");
+    const dato = f.dato ? ` — ${esc(f.dato)}` : "";
+    const a = f.url ? `<a target="_blank" rel="noopener" href="${esc(f.url)}">${tit}</a>` : tit;
+    return `<li>${a}${dato}</li>`;
+  }).join("") + "</ul>";
+}
+
+
+const ETIQUETAS_FLUYE = {
+  "pf-vergel": "Vergel",
+  "pf-san-alberto": "San Alberto",
+  "pf-jaramillo": "Jaramillo",
+  "pf-arista": "Mariano Arista",
+  "pf-herradura": "La Herradura",
+  "pf-la-feria-ruleta": "La Feria",
+  "pf-santa-rosa": "Brasil y Colombia",
+  "pf-ptar-norte": "PTAR Norte",
+  "pf-ptar-oriente": "PTAR Oriente",
+  "pf-mercado-abastos": "Mercado de Abastos",
+  "pf-casa-blanca": "Casa Blanca",
+  "pf-hamburgo": "Hamburgo",
+};
+function etiquetaFluye(w) {
+  return ETIQUETAS_FLUYE[w.id] || w.nombre;
+}
+
+function pintarFluye(P) {
+  const data = (typeof window !== "undefined" && window.PLAN_FLUYE) || { obras: [], puntos: [] };
+  pfRecs.length = 0;
+  for (const w of data.obras || []) {
+    const lines = (w.ll || []).filter((g) => g && g.length >= 2);
+    if (!lines.length) continue;
+    const jer = w.jerarquia || "colector";
+    const estilo = estiloFluye(jer, false);
+    const mid = midLL(lines[0]);
+    const htmlDe = (la, lo) => `<b>${esc(w.nombre)}</b>
+      <p>${esc(w.calle || "")}${w.calle ? ". " : ""}${esc(w.estado || "")}.</p>
+      <p>${esc(JERARQUIA[jer]?.nombre || jer)}. ${esc(w.nota || w.geometria || "")}</p>
+      ${fuentesHTML(w.fuente)}
+      <div class="vm-coords">${(+la).toFixed(6)}, ${(+lo).toFixed(6)}</div>
+      ${gm(la, lo)}`;
+    for (const g of lines) {
+      const latlngs = g.map(([la, lo]) => [la, lo]);
+      const pl = L.polyline(latlngs, estilo);
+      const c0 = pl.getBounds().getCenter();
+      pl.bindPopup(htmlDe(c0.lat, c0.lng), { maxWidth: 360 });
+      pl.on("click", (e) => { pl.setPopupContent(htmlDe(e.latlng.lat, e.latlng.lng)); });
+      P.addLayer(pl);
+      pfRecs.push({ layer: pl, jer, id: w.id, kind: "line" });
+    }
+    if (mid) {
+      const mk = L.marker([mid.lat, mid.lon], {
+        icon: L.divIcon({
+          className: "mk-pf",
+          html: `<span class="mk-core"></span><span class="mk-lab">${esc(etiquetaFluye(w))}</span>`,
+          iconSize: [18, 18], iconAnchor: [9, 12],
+        }),
+        zIndexOffset: 500, title: w.nombre,
+      }).bindPopup(htmlDe(mid.lat, mid.lon), { maxWidth: 360 });
+      P.addLayer(mk);
+      markers[w.id] = mk;
+    }
+  }
+  for (const p of data.puntos || []) {
+    if (p.lat == null || p.lon == null) continue;
+    const html = `<b>${esc(p.nombre)}</b>
+      ${p.sitio ? `<p>${esc(p.sitio)}.</p>` : ""}
+      <p>${esc(p.estado || "")}</p>
+      <p>${esc(p.detalle || "")}</p>
+      ${fuentesHTML(p.fuente)}
+      <div class="vm-coords">${(+p.lat).toFixed(6)}, ${(+p.lon).toFixed(6)}</div>
+      ${gm(p.lat, p.lon)}`;
+    if (p.poly && p.poly.length >= 3) {
+      const ring = p.poly.map(([la, lo]) => [la, lo]);
+      const pg = L.polygon(ring, {
+        color: p.tipo === "ptar" ? "#67e8f9" : "#22d3a8",
+        weight: 1.5, fillColor: p.tipo === "ptar" ? "#0891b2" : "#14b8a6",
+        fillOpacity: 0.18, className: "pf-line",
+      }).bindPopup(html, { maxWidth: 360 });
+      P.addLayer(pg);
+      pfRecs.push({ layer: pg, jer: "colector", id: p.id, kind: "poly", fill: p.tipo === "ptar" ? "#0891b2" : "#14b8a6" });
+    }
+    const cls = p.tipo === "ptar" ? "mk-ptar" : "mk-pf";
+    const mk = L.marker([p.lat, p.lon], {
+      icon: L.divIcon({
+        className: cls,
+        html: `<span class="mk-core"></span><span class="mk-lab">${esc(etiquetaFluye(p))}</span>`,
+        iconSize: [20, 20], iconAnchor: [10, 14],
+      }),
+      zIndexOffset: p.tipo === "ptar" ? 900 : 600, title: p.nombre,
+    }).bindPopup(html, { maxWidth: 360 });
+    P.addLayer(mk);
+    markers[p.id] = mk;
+  }
+}
+
+function listaFluye() {
+  const data = (typeof window !== "undefined" && window.PLAN_FLUYE) || {};
+  const meta = data.meta || {};
+  const cifras = meta.cifras || {};
+  const box = document.getElementById("vm-fluye-cifras");
+  if (box) {
+    const hab = cifras.habitantes ? Number(cifras.habitantes).toLocaleString("es-MX") : "262 mil";
+    box.innerHTML = [
+      [`Emisor Central + San Ignacio`, `${cifras.emisor_km || 13.27} km · ${cifras.emisor_pulgadas || 72}″ y ${cifras.san_ignacio_pulgadas || 60}″ en ${cifras.material || "PRFV"} · ${cifras.emisor_diametro_m || 1.83} m de diámetro proyectado del emisor`],
+      [`Inversión del emisor`, `${cifras.emisor_inversion_mdp || 570} MDP (cifra del plan firmado). ${cifras.emisor_inversion_nota || ""}`],
+      [`Servicio`, `≈ ${cifras.residuales_pct || 80} % de las aguas residuales · ≈ ${hab} habitantes`],
+      [`PTAR Norte`, `ampliación +${cifras.ptar_norte_modulo_lps || 250} L/s, ${cifras.ptar_norte_proyectada_lps || 750} L/s proyectados · ${cifras.ptar_norte_inversion_mdp || 500} MDP`],
+      [`PTAR Oriente`, `modernización, ${cifras.ptar_oriente_proyectada_lps || 250} L/s proyectados`],
+      [`Otras inversiones`, `Ramo 33 ${cifras.ramo33_mdp || 84.5} MDP · colector del Mercado de Abastos ${cifras.mercado_abastos_mdp || 11} MDP · obras complementarias ${cifras.obras_complementarias_mdp || 188} MDP (boletín 27 oct 2026)`],
+      [`Jerarquía de la red`, cifras.jerarquia || "atarjea 20 cm → subcolector 25–45 cm → colector ≥ 60 cm → emisor 1.83 m"],
+    ].map(([k, v]) => `<li><b>${esc(k)}.</b> ${esc(v)}</li>`).join("");
+  }
+  const ul = document.getElementById("vm-fluye-lista");
+  if (ul) {
+    const items = [];
+    for (const w of data.obras || []) {
+      if (!(w.ll && w.ll.length)) continue;
+      items.push({ id: w.id, nombre: w.nombre, det: [w.calle, w.estado, JERARQUIA[w.jerarquia]?.nombre].filter(Boolean).join(" · ") });
+    }
+    for (const p of data.puntos || []) {
+      items.push({ id: p.id, nombre: p.nombre, det: [p.sitio || p.tipo, p.estado].filter(Boolean).join(" · ") });
+    }
+    ul.innerHTML = items.map((it) => `<li><button type="button" data-z="${esc(it.id)}"><b>${esc(it.nombre)}</b><small>${esc(it.det)}</small></button></li>`).join("");
+    ul.querySelectorAll("[data-z]").forEach((b) => b.addEventListener("click", () => volar(b.dataset.z)));
+  }
+  const sin = document.getElementById("vm-fluye-sin");
+  if (sin) {
+    sin.innerHTML = (data.solo_listado || []).map((x) => `<li><b>${esc(x.nombre)}</b> · ${esc(x.detalle || x.estado || "")}</li>`).join("");
+  }
+  const fu = document.getElementById("vm-fluye-fuentes");
+  if (fu) {
+    const links = (meta.fuentes || []).map((f) => f.url
+      ? `<a target="_blank" rel="noopener" href="${esc(f.url)}">${esc(f.titulo)}</a>`
+      : esc(f.titulo)).join(" · ");
+    fu.innerHTML = `<b>Fuentes.</b> ${links || "Plan Fluye, abril 2026; boletín del Ayuntamiento, 27 oct 2026; Decreto 422; OpenStreetMap."} Geometrías de calle: © OpenStreetMap contributors (ODbL).`;
+  }
 }
