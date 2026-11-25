@@ -5,7 +5,7 @@
 import { fusionarZonas, centroideLL, esNueva } from "./zonas.js";
 
 const DATA = "data/satelite/";
-const NODO = { lat: 25.583829, lon: -103.446190, label: "Nodo VAH – Ubicación de referencia" };
+const NODO = { lat: 25.583829, lon: -103.446190, label: "Nodo VAH – Punto referencial de anteproyecto" };
 
 function esc(s) {
   return String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
@@ -28,13 +28,97 @@ function fmtFecha(iso) {
   if (!y || !m) return iso;
   return `${d || ""} ${meses[m - 1]} ${y}`.trim();
 }
+
+function ll2utm(lat, lon, zone) {
+  zone = zone || 13;
+  const a = 6378137.0, f = 1 / 298.257223563, e2 = f * (2 - f), k0 = 0.9996;
+  const lon0 = (zone * 6 - 183) * Math.PI / 180, φ = lat * Math.PI / 180, λ = lon * Math.PI / 180;
+  const ep2 = e2 / (1 - e2), N = a / Math.sqrt(1 - e2 * Math.sin(φ) ** 2), T = Math.tan(φ) ** 2, C = ep2 * Math.cos(φ) ** 2, A = Math.cos(φ) * (λ - lon0);
+  const M = a * ((1 - e2 / 4 - 3 * e2 ** 2 / 64 - 5 * e2 ** 3 / 256) * φ
+    - (3 * e2 / 8 + 3 * e2 ** 2 / 32 + 45 * e2 ** 3 / 1024) * Math.sin(2 * φ)
+    + (15 * e2 ** 2 / 256 + 45 * e2 ** 3 / 1024) * Math.sin(4 * φ)
+    - (35 * e2 ** 3 / 3072) * Math.sin(6 * φ));
+  const E = k0 * N * (A + (1 - T + C) * A ** 3 / 6 + (5 - 18 * T + T * T + 72 * C - 58 * ep2) * A ** 5 / 120) + 500000;
+  const Nn = k0 * (M + N * Math.tan(φ) * (A * A / 2 + (5 - T + 9 * C + 4 * C * C) * A ** 4 / 24 + (61 - 58 * T + T * T + 600 * C - 330 * ep2) * A ** 6 / 720));
+  return { e: E, n: Nn, zone, hemis: "N" };
+}
+function textoDecimal(la, lo) {
+  return `${(+la).toFixed(6)}, ${(+lo).toFixed(6)}`;
+}
+function textoUTM(la, lo) {
+  const u = ll2utm(+la, +lo, 13);
+  return `UTM 13N ${Math.round(u.e)} E / ${Math.round(u.n)} N (WGS84)`;
+}
+function coordBlock(la, lo) {
+  const dec = textoDecimal(la, lo);
+  const utm = textoUTM(la, lo);
+  return `<div class="vm-coords">
+      <div class="vm-coord-row"><span>Geográficas (WGS84)</span><code>${esc(dec)}</code><button type="button" class="vm-copy" data-copy="${esc(dec)}">Copiar</button></div>
+      <div class="vm-coord-row"><span>UTM zona 13N (WGS84)</span><code>${esc(utm)}</code><button type="button" class="vm-copy" data-copy="${esc(utm)}">Copiar</button></div>
+    </div>${gm(la, lo)}`;
+}
+function fmtCorrida(iso) {
+  if (!iso) return "no publicada en estado_motor.json";
+  const d = new Date(iso);
+  if (isNaN(d.getTime())) return String(iso);
+  const txt = new Intl.DateTimeFormat("es-MX", {
+    timeZone: "America/Mexico_City", day: "numeric", month: "short", year: "numeric",
+    hour: "numeric", minute: "2-digit", hour12: true,
+  }).format(d);
+  return `${txt} (hora de la Ciudad de México)`;
+}
+function esAltaConstante(p) {
+  return !esNueva(p) && (p.prioridad === "alta" || p.confianza === "alta");
+}
+function esGP001(p) {
+  return p.id === "GP-001" || p.id === "GP-H006" || p.id_motor === "GP-H006" || p.id_pulso === "GP-001";
+}
+function avisoGP001(p) {
+  if (!esGP001(p)) return "";
+  const parque = p.dist_riego_osm_m != null ? Math.round(p.dist_riego_osm_m) : 17;
+  const canal = p.dist_canal_osm_m != null ? Math.round(p.dist_canal_osm_m) : 45;
+  return `<p class="vm-aviso"><b>Advertencia de baja confianza.</b> El punto está a ${parque} m de un parque, cancha o parcela (OSM) y a ${canal} m de un canal, dren o río (OSM). Puede ser riego o escurrimiento; no se afirma que sea una fuga.</p>`;
+}
+function pieSatelital(p, la, lo, opts) {
+  opts = opts || {};
+  const conf = opts.confianza != null ? opts.confianza : (p.confianza ? String(p.confianza) : "—");
+  const corrida = fmtCorrida(motorEstado && motorEstado.ultima_corrida);
+  const fecha = opts.fechaHtml || `<b>Última corrida del motor:</b> ${esc(corrida)}.`;
+  return `${avisoGP001(p)}
+    <p class="vm-sat-meta"><b>Nivel de confianza:</b> ${esc(conf)}. ${fecha}</p>
+    <p class="vm-insp">Punto sugerido para inspección con cámara; no confirma fuga.</p>
+    ${coordBlock(la, lo)}`;
+}
+function copiarTexto(btn, text) {
+  const done = () => {
+    const prev = btn.textContent;
+    btn.textContent = "Copiado";
+    btn.classList.add("ok");
+    setTimeout(() => { btn.textContent = prev || "Copiar"; btn.classList.remove("ok"); }, 1400);
+  };
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(text).then(done).catch(() => copiarFallback(text, done));
+  } else copiarFallback(text, done);
+}
+function copiarFallback(text, done) {
+  const ta = document.createElement("textarea");
+  ta.value = text;
+  ta.setAttribute("readonly", "");
+  ta.style.position = "fixed";
+  ta.style.left = "-9999px";
+  document.body.appendChild(ta);
+  ta.select();
+  try { document.execCommand("copy"); done(); } catch (err) { /* sin portapapeles */ }
+  ta.remove();
+}
+
 async function cargar(url) {
   const r = await fetch(url, { cache: "no-store" });
   if (!r.ok) throw new Error(url + " " + r.status);
   return r.json();
 }
 
-let map, capas, markers = {}, iniciado = false, onVisor4D = null;
+let map, capas, markers = {}, iniciado = false, onVisor4D = null, motorEstado = {};
 
 export function initMapa(opts = {}) {
   if (typeof L === "undefined") { setTimeout(() => initMapa(opts), 40); return; }
@@ -105,6 +189,20 @@ function construir(root) {
   };
   sw("cF", F, true); sw("cC", C, true); sw("cE", E, true); sw("cH", H, false); sw("cN", N, true); sw("cP", P, false);
   prepararFantasma({ H, P });
+  prepararFiltros({ F, C, E, H, N, P });
+  root.addEventListener("click", (e) => {
+    const btn = e.target.closest("[data-copy]");
+    if (!btn || !root.contains(btn)) return;
+    e.preventDefault();
+    copiarTexto(btn, btn.getAttribute("data-copy") || "");
+  });
+  document.getElementById("vm-leyenda-btn")?.addEventListener("click", () => {
+    const box = document.getElementById("vm-leyenda");
+    const btn = document.getElementById("vm-leyenda-btn");
+    if (!box) return;
+    const open = box.classList.toggle("open");
+    if (btn) btn.setAttribute("aria-expanded", open ? "true" : "false");
+  });
   document.getElementById("cS")?.addEventListener("change", (e) => {
     if (e.target.checked) { map.removeLayer(osm); sat.addTo(map); lab.addTo(map); lab2.addTo(map); }
     else { [sat, lab, lab2].forEach((x) => map.removeLayer(x)); osm.addTo(map); }
@@ -123,7 +221,7 @@ function construir(root) {
     if (v.length >= 2 && !isNaN(v[0]) && !isNaN(v[1])) {
       const la = v[0], lo = v[1];
       map.flyTo([la, lo], 18, { duration: 1.05 });
-      L.popup().setLatLng([la, lo]).setContent(`<b>${la}, ${lo}</b><div class="vm-coords"></div>${gm(la, lo)}`).openOn(map);
+      L.popup().setLatLng([la, lo]).setContent(`<b>Punto buscado</b>${coordBlock(la, lo)}`).openOn(map);
     }
   });
   let yo;
@@ -142,7 +240,11 @@ function construir(root) {
     cargar(DATA + "encharcamientos_prensa_gp.geojson").catch(() => ({ features: [] })),
     cargar(DATA + "el_amigo_jabonoso.geojson").catch(() => ({ features: [] })),
     cargar(DATA + "hundimientos_hn_sentinel1_2022_2026.geojson").catch(() => ({ features: [] })),
-  ]).then(([zh, gp001, ofi, pre, amigo, hn]) => {
+    cargar(DATA + "estado_motor.json").catch(() => ({})),
+    cargar(DATA + "index.json").catch(() => ({})),
+  ]).then(([zh, gp001, ofi, pre, amigo, hn, estado, indice]) => {
+    motorEstado = estado || {};
+    if (!motorEstado.ultima_corrida && indice && indice.ultima_corrida) motorEstado.ultima_corrida = indice.ultima_corrida;
     const zonas = fusionarZonas(zh.features || [], gp001.features || []);
     pintarZonas(zonas, F, C);
     pintarEncharca(ofi.features || [], pre.features || [], amigo, E);
@@ -161,12 +263,12 @@ function construir(root) {
 function ponerNodo(N) {
   const { lat, lon, label } = NODO;
   const html = `<b>${esc(label)}</b>
+    <p class="vm-cat cat-c">Referencia pendiente de plano oficial</p>
     <p>Marcador de referencia junto al Parque Industrial Lagunero, el mismo del visor 3D. El predio real está por definir; no se inventa un terreno. Las coordenadas UTM de la memoria (unos 26 km al norte de la mancha urbana) no se usaron para colocar este punto.</p>
-    <div class="vm-coords">${lat.toFixed(6)}, ${lon.toFixed(6)}</div>
-    ${gm(lat, lon)}
+    ${coordBlock(lat, lon)}
     <button type="button" class="gbtn nodo" id="pop-nodo4d">Ver Nodo VAH 3D/4D</button>`;
   const icon = L.divIcon({
-    className: "mk-nodo",
+    className: "mk-nodo cat-c",
     html: `<span class="mk-diamond"></span><span class="mk-lab">Nodo VAH</span>`,
     iconSize: [22, 22], iconAnchor: [11, 19],
   });
@@ -182,18 +284,23 @@ function estiloZona(nueva) {
   const cerca = z >= 16;
   const muyCerca = z >= 17;
   return {
-    color: nueva ? "#e11d2e" : "#f59e0b",
-    weight: muyCerca ? 0 : (cerca ? 1.25 : 1.75),
-    opacity: muyCerca ? 0 : 0.85,
+    color: nueva ? "#e11d2e" : "#d97706",
+    weight: muyCerca ? 1.5 : (cerca ? 2.25 : 2.5),
+    opacity: muyCerca ? 0.55 : 0.95,
     fillColor: nueva ? "#e11d2e" : "#f59e0b",
-    fillOpacity: cerca ? 0 : 0.22,
+    fillOpacity: muyCerca ? 0 : (cerca ? 0.05 : 0.12),
+    dashArray: "4 3",
+    className: "cat-b sat-zona",
     interactive: !muyCerca,
   };
 }
 
 const poligonos = [];
+const zonaRecs = [];
+const encRecs = [];
 function pintarZonas(zonas, F, C) {
   poligonos.length = 0;
+  zonaRecs.length = 0;
   for (const f of zonas) {
     const p = f.properties || {};
     const [la, lo] = f._ll || centroide(f);
@@ -205,29 +312,33 @@ function pintarZonas(zonas, F, C) {
       : `<p>Fuente: motor satelital automático.</p>`;
     const img = p.img ? `<img src="${p.img}" alt="Par satelital de ${esc(p.id)}">` : "";
     const html = `<b>${esc(titulo)}</b>
+      <p class="vm-cat cat-b">Alerta de monitoreo satelital (Sentinel-2)</p>
       <p>${esc(p.explicacion || p.nota || "Zona a revisar con cámara.")}</p>
       ${p.calle_cercana ? `<p>Calle cercana: ${esc(p.calle_cercana)}${p.dist_calle_m != null ? ` (${Math.round(p.dist_calle_m)} m)` : ""}.</p>` : ""}
-      <p>Confianza ${esc(p.confianza || "—")} · intensidad ${esc(p.intensidad ?? "—")}${p.area_m2 ? ` · ≈ ${Number(p.area_m2).toLocaleString("es-MX")} m²` : ""}</p>
+      <p>Intensidad ${esc(p.intensidad ?? "—")}${p.area_m2 ? ` · ≈ ${Number(p.area_m2).toLocaleString("es-MX")} m²` : ""}</p>
       ${fuentes}
-      <div class="vm-coords">${(+la).toFixed(6)}, ${(+lo).toFixed(6)}</div>
-      ${img}${gm(la, lo)}`;
+      ${img}
+      ${pieSatelital(p, la, lo)}`;
     const icon = L.divIcon({
-      className: "mk " + (nueva ? "mk-nueva" : "mk-const"),
+      className: "mk cat-b " + (nueva ? "mk-nueva" : "mk-const") + (esAltaConstante(p) ? " mk-alta" : ""),
       html: (nueva ? `<span class="mk-pulse"></span>` : "") + `<span class="mk-core"></span><span class="mk-lab">${esc(p.id)}</span>`,
       iconSize: [22, 22], iconAnchor: [11, 14],
     });
+    let gj = null;
     if (f.geometry && f.geometry.type && f.geometry.type !== "Point") {
-      const gj = L.geoJSON(f, { style: estiloZona(nueva), interactive: true }).bindPopup(html, { maxWidth: 340 }).addTo(nueva ? F : C);
-      poligonos.push({ layer: gj, nueva });
+      gj = L.geoJSON(f, { style: estiloZona(nueva), interactive: true }).bindPopup(html, { maxWidth: 360 }).addTo(nueva ? F : C);
+      poligonos.push({ layer: gj, nueva, id: p.id, alta: esAltaConstante(p) });
     }
-    const mk = L.marker([la, lo], { icon, zIndexOffset: nueva ? 800 : 400, title: p.id }).bindPopup(html, { maxWidth: 340 });
+    const mk = L.marker([la, lo], { icon, zIndexOffset: nueva ? 800 : 400, title: p.id }).bindPopup(html, { maxWidth: 360 });
     (nueva ? F : C).addLayer(mk);
     markers[p.id] = mk;
     if (p.id_motor) markers[p.id_motor] = mk;
+    zonaRecs.push({ id: p.id, mk, poly: gj, nueva, alta: esAltaConstante(p), group: nueva ? "F" : "C", p, ll: [la, lo] });
   }
 }
 
 function pintarEncharca(ofi, pre, amigo, E) {
+  encRecs.length = 0;
   const mapL = new Map();
   const add = (key, patch) => {
     let Lx = mapL.get(key);
@@ -267,19 +378,22 @@ function pintarEncharca(ofi, pre, amigo, E) {
       const Lx = mapL.get("enc:ENC-01") || { prensa: [], nombre: p.nombre, enc: "ENC-01" };
       const n = fechasUnicas((Lx.prensa || []).map((x) => x.fecha_evento)).length || p.n_tormentas || 6;
       const ev = (Lx.prensa || []).map((ev) => `<li>${esc(fmtFecha(ev.fecha_evento))}${ev.url ? ` · <a target="_blank" rel="noopener" href="${esc(ev.url)}">${esc(ev.fuente || "nota")}</a>` : ""}</li>`).join("");
-      const lineL = L.geoJSON(f, { style: estiloAmigo(false, "line"), className: "amigo-line" });
+      const lineL = L.geoJSON(f, { style: estiloAmigo(false, "line") });
       const b = lineL.getBounds().getCenter();
       const html = `<b>${esc(p.nombre || "El Amigo")} · Encharcamiento recurrente – ${n} tormentas</b>
+        <p class="vm-cat cat-a">Dato oficial publicado (Atlas de Riesgos 2014 y Protección Civil)</p>
         <p>${esc(p.tramo)}. Geometría: tramo de Boulevard Jabonoso en OpenStreetMap, de Av. Nacional al Periférico / Puente Jabonoso (El Siglo, 2 oct 2026). No es un levantamiento del vaso.</p>
         ${ev ? `<ul>${ev}</ul>` : ""}
         <p>No se inventó un punto de colonia: se dibuja el tramo que nombra la prensa.</p>
-        <div class="vm-coords">${b.lat.toFixed(6)}, ${b.lng.toFixed(6)}</div>
-        ${gm(b.lat, b.lng)}`;
-      lineL.bindPopup(html, { maxWidth: 340 }).addTo(E);
+        ${coordBlock(b.lat, b.lng)}`;
+      lineL.bindPopup(html, { maxWidth: 360 }).addTo(E);
       amigoRecs.push({ layer: lineL, kind: "line" });
-      const mk = L.circleMarker(b, estiloAmigo(false, "mk")).bindPopup(html, { maxWidth: 340 });
+      const mk = L.marker([b.lat, b.lng], {
+        icon: iconoOficial("ENC-01"), zIndexOffset: 500, title: p.nombre || "El Amigo",
+      }).bindPopup(html, { maxWidth: 360 });
       E.addLayer(mk);
       amigoRecs.push({ layer: mk, kind: "mk" });
+      encRecs.push({ id: "ENC-01", mk, layer: lineL, oficial: true });
       markers["ENC-01"] = mk;
       markers["El-Amigo"] = mk;
     }
@@ -293,24 +407,32 @@ function pintarEncharca(ofi, pre, amigo, E) {
     const et = n >= 2 ? `Encharcamiento recurrente – ${n} tormentas` : (n === 1 ? "Encharcamiento – 1 tormenta" : "Registro oficial de encharcamiento");
     const ev = Lx.prensa.slice().sort((a, b) => String(a.fecha_evento).localeCompare(String(b.fecha_evento)))
       .map((e) => `<li>${esc(fmtFecha(e.fecha_evento))}${e.url ? ` · <a target="_blank" rel="noopener" href="${esc(e.url)}">${esc(e.fuente || "nota")}</a>` : ""}${e.descripcion_textual ? `<br><i>${esc(e.descripcion_textual)}</i>` : ""}</li>`).join("");
+    const fuenteTxt = `${(Lx.oficial && (Lx.oficial.fuente_oficial || "")) || ""} ${Lx.oficial && Lx.oficial.nota || ""}`;
+    const oficial = !!Lx.oficial;
+    const cat = oficial ? "a" : "c";
+    const catTxt = oficial
+      ? "Dato oficial publicado" + (/atlas de riesgos 2014/i.test(fuenteTxt) ? " (Atlas de Riesgos 2014)" : "")
+      : "Referencia pendiente de plano oficial (prensa o trazo aproximado)";
     const html = `<b>${esc(Lx.nombre)} · ${esc(et)}</b>
+      <p class="vm-cat cat-${cat}">${esc(catTxt)}</p>
       ${Lx.oficial ? `<p>${esc(Lx.oficial.fuente_oficial || "")}${Lx.oficial.nota ? `<br>${esc(Lx.oficial.nota)}` : ""}</p>` : ""}
       ${coincide ? "<p>Coinciden el registro oficial (Nova) y la hemeroteca de prensa (Crownteer).</p>" : ""}
       ${ev ? `<ul>${ev}</ul>` : ""}
       ${Lx.precision ? `<p>Precisión: ${esc(Lx.precision)}</p>` : ""}
-      <div class="vm-coords">${(+Lx.lat).toFixed(6)}, ${(+Lx.lon).toFixed(6)}</div>
-      ${gm(Lx.lat, Lx.lon)}`;
-    const r = 5 + Math.min(7, n) * 1.3 + (coincide ? 2 : 0);
-    const mk = L.circleMarker([Lx.lat, Lx.lon], {
-      radius: r, color: "#fff", weight: coincide || n >= 5 ? 2 : 1,
-      fillColor: coincide ? "#60a5fa" : "#2563eb", fillOpacity: 0.92,
-    }).bindPopup(html, { maxWidth: 340 });
+      ${coordBlock(Lx.lat, Lx.lon)}`;
+    const mk = L.marker([Lx.lat, Lx.lon], {
+      icon: oficial ? iconoOficial(Lx.enc || Lx.nombre) : iconoReferencia(Lx.enc || Lx.nombre),
+      zIndexOffset: oficial ? 450 : 300,
+      title: Lx.nombre,
+    }).bindPopup(html, { maxWidth: 360 });
     E.addLayer(mk);
+    encRecs.push({ id: Lx.enc, mk, oficial });
     if (Lx.enc) markers[Lx.enc] = mk;
   }
 }
 
 function pintarHundimientos(feats, H) {
+  hnRecs.length = 0;
   for (const f of feats) {
     if ((f.geometry || {}).type !== "Point") continue;
     const p = f.properties || {};
@@ -325,13 +447,18 @@ function pintarHundimientos(feats, H) {
       extra = `<p>Borde hacia Lerdo / La Unión: hasta ${(vmax / 10).toFixed(1)} cm/año en el píxel más rápido.</p>`;
     }
     const html = `<b>${esc(p.id)} · Hundimiento (radar Sentinel-1)</b>
+      <p class="vm-cat cat-b">Alerta de monitoreo satelital (Sentinel-1 InSAR)</p>
       ${extra || `<p>Velocidad de la zona ≈ ${vz != null ? (vz / 10).toFixed(1) : "—"} cm/año; píxel más rápido ${(vmax / 10).toFixed(1)} cm/año.</p>`}
       <p>La mediana urbana en el periodo es de unos ${(urb / 10).toFixed(1)} cm/año. 86 pasadas, abril 2022 a abril 2026. Fuente: COMET LiCSAR (Universidad de Leeds), Sentinel-1 / ESA Copernicus. El satélite mide el terreno, no ve el interior de los tubos.</p>
-      <div class="vm-coords">${(+la).toFixed(6)}, ${(+lo).toFixed(6)}</div>
-      ${gm(la, lo)}`;
-    const mk = L.circleMarker([la, lo], { ...estiloHN(p, false), className: "hn-mk" }).bindPopup(html, { maxWidth: 340 });
+      ${pieSatelital(p, la, lo, {
+        confianza: "no calificado por el motor de humedad (indicador de deformación del terreno, InSAR)",
+        fechaHtml: "<b>Periodo de las pasadas:</b> abril 2022 a abril 2026 (COMET LiCSAR). No se usa la fecha del motor Sentinel-2.",
+      })}`;
+    const mk = L.marker([la, lo], {
+      icon: iconoHN(p), zIndexOffset: (p.id === "HN01" || p.id === "HN04") ? 850 : 700, title: p.id,
+    }).bindPopup(html, { maxWidth: 360 });
     H.addLayer(mk);
-    hnRecs.push({ layer: mk, p });
+    hnRecs.push({ layer: mk, p, id: p.id, ll: [la, lo] });
     markers[p.id] = mk;
   }
 }
@@ -391,6 +518,8 @@ function listaEncharcaSin(pre, ofi) {
 function volar(id) {
   const mk = markers[id];
   if (!mk) return;
+  showMarker(mk, true);
+  if (mk._map == null && map) mk.addTo(map);
   const ll = mk.getLatLng();
   map.flyTo(ll, 17, { duration: 1.1, easeLinearity: 0.22 });
   setTimeout(() => mk.openPopup(), 700);
@@ -413,22 +542,52 @@ const JERARQUIA = {
 let fantasmaOn = false, prevH = false, prevP = false;
 const hnRecs = [], amigoRecs = [], pfRecs = [];
 
-function estiloHN(p, ghost) {
+function glowHN(p) {
   const vz = p.velocidad_media_zona_mm_anio != null ? Math.abs(p.velocidad_media_zona_mm_anio) : 26;
   const vmax = p.velocidad_mm_anio != null ? Math.abs(p.velocidad_mm_anio) : vz;
   const cm = (vmax || vz) / 10;
-  const t = Math.max(0, Math.min(1, (cm - 2.5) / 3.2));
-  if (!ghost) return { radius: 9, color: "#fff", weight: 2, fillColor: "#7c3aed", fillOpacity: 0.95, className: "hn-mk" };
-  const fill = t > 0.6 ? "#f0abfc" : (t > 0.3 ? "#c4b5fd" : "#8b5cf6");
-  return { radius: 8 + t * 8, color: "#f5f3ff", weight: 2, fillColor: fill, fillOpacity: 0.95, className: "hn-mk" };
+  return Math.max(0, Math.min(1, (cm - 2.5) / 3.2));
+}
+function iconoHN(p) {
+  const t = glowHN(p);
+  const prior = (p.id === "HN01" || p.id === "HN04") ? " mk-hn-prior" : "";
+  return L.divIcon({
+    className: "mk-hn cat-b" + prior,
+    html: `<span class="mk-diamond" style="--hn:${t}"></span><span class="mk-lab">${esc(p.id)}</span>`,
+    iconSize: [20, 20], iconAnchor: [10, 14],
+  });
+}
+function iconoOficial(titulo) {
+  return L.divIcon({
+    className: "mk-sq cat-a",
+    html: `<span class="mk-core"></span><span class="mk-lab">${esc(titulo || "")}</span>`,
+    iconSize: [16, 16], iconAnchor: [8, 10],
+  });
+}
+function iconoReferencia(titulo) {
+  return L.divIcon({
+    className: "mk-sq cat-c",
+    html: `<span class="mk-core"></span><span class="mk-lab">${esc(titulo || "")}</span>`,
+    iconSize: [16, 16], iconAnchor: [8, 10],
+  });
 }
 function estiloAmigo(ghost, kind) {
-  if (kind === "line") return { color: ghost ? "#38bdf8" : "#3b82f6", weight: ghost ? 6 : 5, opacity: ghost ? 0.95 : 0.9, className: "amigo-line" };
-  return { radius: 9, color: "#fff", weight: 1.5, fillColor: ghost ? "#38bdf8" : "#2563eb", fillOpacity: 1 };
+  if (kind === "line") return { color: "#1d4ed8", weight: ghost ? 6 : 5, opacity: 0.95, className: "cat-a amigo-line", dashArray: null };
+  return { radius: 9, color: "#fff", weight: 1.5, fillColor: "#1d4ed8", fillOpacity: 1 };
 }
 function estiloFluye(jer, ghost) {
   const J = JERARQUIA[jer] || JERARQUIA.colector;
-  return { color: J.color, weight: ghost ? J.weight + 0.8 : J.weight, opacity: ghost ? 0.96 : 0.85, className: "pf-line" };
+  return { color: J.color, weight: ghost ? J.weight + 0.8 : J.weight, opacity: ghost ? 0.96 : 0.9, className: "pf-line cat-a", dashArray: null };
+}
+function estiloRefPoly(ghost, ptar) {
+  return {
+    color: ptar ? "#0e7490" : "#a8a29e",
+    weight: 2,
+    fillColor: ptar ? "#0891b2" : "transparent",
+    fillOpacity: ptar ? 0.2 : 0,
+    dashArray: ptar ? null : "6 4",
+    className: ptar ? "cat-a" : "cat-c",
+  };
 }
 
 function prepararFantasma({ H, P }) {
@@ -441,7 +600,7 @@ function prepararFantasma({ H, P }) {
     root?.classList.toggle("fantasma", on);
     if (btn) btn.setAttribute("aria-pressed", on ? "true" : "false");
     if (txt) txt.textContent = on ? "Vista en superficie" : "Vista subterránea";
-    if (ley) ley.hidden = !on;
+    if (ley) ley.hidden = true;
     const cH = document.getElementById("cH");
     const cP = document.getElementById("cP");
     if (on) {
@@ -463,18 +622,131 @@ function prepararFantasma({ H, P }) {
         else if (P) map.removeLayer(P);
       }
     }
-    for (const rec of hnRecs) rec.layer.setStyle(estiloHN(rec.p, on));
-    for (const rec of amigoRecs) rec.layer.setStyle(estiloAmigo(on, rec.kind));
+    for (const rec of hnRecs) rec.layer.getElement()?.classList.toggle("hn-glow", on);
+    for (const rec of amigoRecs) {
+      if (rec.kind === "line" && rec.layer.setStyle) rec.layer.setStyle(estiloAmigo(on, "line"));
+    }
     for (const rec of pfRecs) {
-      const st = estiloFluye(rec.jer, on);
-      if (rec.kind === "poly") rec.layer.setStyle({ ...st, fillColor: rec.fill || "#14b8a6", fillOpacity: 0.18 });
-      else rec.layer.setStyle(st);
+      if (!rec.layer || !rec.layer.setStyle) continue;
+      if (rec.kind === "poly") rec.layer.setStyle(estiloRefPoly(on, rec.ptar));
+      else rec.layer.setStyle(estiloFluye(rec.jer, on));
     }
   };
   btn?.addEventListener("click", () => aplicar(!fantasmaOn));
   const labs = () => document.getElementById("vista-mapa")?.classList.toggle("vm-labs", map.getZoom() >= 14);
   map.on("zoomend", labs);
   labs();
+}
+
+
+function setLayerOn(id, layer, on) {
+  const el = document.getElementById(id);
+  if (el) el.checked = !!on;
+  if (!layer) return;
+  if (on) { if (!map.hasLayer(layer)) layer.addTo(map); }
+  else if (map.hasLayer(layer)) map.removeLayer(layer);
+}
+function showMarker(mk, on) {
+  if (!mk) return;
+  const el = mk.getElement && mk.getElement();
+  if (el) el.style.display = on ? "" : "none";
+  if (mk.setOpacity) mk.setOpacity(on ? 1 : 0);
+  if (!on && mk.closePopup) mk.closePopup();
+}
+function showPath(layer, on) {
+  if (!layer) return;
+  if (layer.setStyle) layer.setStyle({ opacity: on ? 0.95 : 0, fillOpacity: on ? (layer.options.fillOpacity || 0.12) : 0, interactive: on });
+  const el = layer.getElement && layer.getElement();
+  if (el) el.style.display = on ? "" : "none";
+}
+
+let filtroActivo = "todo";
+let snapFiltro = null;
+function prepararFiltros({ F, C, E, H, N, P }) {
+  const bar = document.getElementById("vm-filtros");
+  if (!bar) return;
+  bar.addEventListener("click", (e) => {
+    const btn = e.target.closest("[data-filtro]");
+    if (!btn) return;
+    aplicarFiltro(btn.dataset.filtro, { F, C, E, H, N, P });
+  });
+}
+function aplicarFiltro(name, Lyr) {
+  const { F, C, E, H, N, P } = Lyr || capas || {};
+  if (filtroActivo === "todo" && name !== "todo") {
+    snapFiltro = {
+      F: !!(document.getElementById("cF") && document.getElementById("cF").checked),
+      C: !!(document.getElementById("cC") && document.getElementById("cC").checked),
+      E: !!(document.getElementById("cE") && document.getElementById("cE").checked),
+      H: !!(document.getElementById("cH") && document.getElementById("cH").checked),
+      P: !!(document.getElementById("cP") && document.getElementById("cP").checked),
+    };
+  }
+  filtroActivo = name;
+  document.querySelectorAll("#vm-filtros [data-filtro]").forEach((b) => {
+    const on = b.dataset.filtro === name;
+    b.classList.toggle("on", on);
+    b.setAttribute("aria-pressed", on ? "true" : "false");
+  });
+  const resetZonas = (pred) => {
+    for (const rec of zonaRecs) {
+      const on = pred(rec);
+      showMarker(rec.mk, on);
+      if (rec.poly) showPath(rec.poly, on);
+    }
+  };
+  const resetHN = (pred) => {
+    for (const rec of hnRecs) showMarker(rec.layer, pred(rec));
+  };
+  if (name === "todo") {
+    if (snapFiltro) {
+      setLayerOn("cF", F, snapFiltro.F);
+      setLayerOn("cC", C, snapFiltro.C);
+      setLayerOn("cE", E, snapFiltro.E);
+      setLayerOn("cH", H, snapFiltro.H);
+      setLayerOn("cP", P, snapFiltro.P);
+      snapFiltro = null;
+    }
+    resetZonas(() => true);
+    resetHN(() => true);
+    for (const rec of encRecs) showMarker(rec.mk, true);
+    return;
+  }
+  if (name === "humedad-alta") {
+    setLayerOn("cF", F, false);
+    setLayerOn("cC", C, true);
+    setLayerOn("cE", E, false);
+    setLayerOn("cH", H, false);
+    setLayerOn("cP", P, false);
+    resetZonas((r) => r.alta);
+    resetHN(() => false);
+    const pts = zonaRecs.filter((r) => r.alta && r.ll).map((r) => r.ll);
+    if (pts.length) map.fitBounds(L.latLngBounds(pts), { padding: [48, 48], maxZoom: 15 });
+    return;
+  }
+  if (name === "humedad-nueva") {
+    setLayerOn("cF", F, true);
+    setLayerOn("cC", C, false);
+    setLayerOn("cE", E, false);
+    setLayerOn("cH", H, false);
+    setLayerOn("cP", P, false);
+    resetZonas((r) => r.nueva);
+    resetHN(() => false);
+    const pts = zonaRecs.filter((r) => r.nueva && r.ll).map((r) => r.ll);
+    if (pts.length) map.fitBounds(L.latLngBounds(pts), { padding: [48, 48], maxZoom: 15 });
+    return;
+  }
+  if (name === "hn") {
+    setLayerOn("cF", F, false);
+    setLayerOn("cC", C, false);
+    setLayerOn("cE", E, false);
+    setLayerOn("cH", H, true);
+    setLayerOn("cP", P, false);
+    resetZonas(() => false);
+    resetHN((r) => r.id === "HN01" || r.id === "HN04");
+    const pts = hnRecs.filter((r) => r.id === "HN01" || r.id === "HN04").map((r) => r.ll).filter(Boolean);
+    if (pts.length) map.fitBounds(L.latLngBounds(pts), { padding: [60, 60], maxZoom: 13.5 });
+  }
 }
 
 function midLL(line) {
@@ -522,11 +794,11 @@ function pintarFluye(P) {
     const estilo = estiloFluye(jer, false);
     const mid = midLL(lines[0]);
     const htmlDe = (la, lo) => `<b>${esc(w.nombre)}</b>
+      <p class="vm-cat cat-a">Dato oficial publicado (Plan Fluye, calle en OSM)</p>
       <p>${esc(w.calle || "")}${w.calle ? ". " : ""}${esc(w.estado || "")}.</p>
       <p>${esc(JERARQUIA[jer]?.nombre || jer)}. ${esc(w.nota || w.geometria || "")}</p>
       ${fuentesHTML(w.fuente)}
-      <div class="vm-coords">${(+la).toFixed(6)}, ${(+lo).toFixed(6)}</div>
-      ${gm(la, lo)}`;
+      ${coordBlock(la, lo)}`;
     for (const g of lines) {
       const latlngs = g.map(([la, lo]) => [la, lo]);
       const pl = L.polyline(latlngs, estilo);
@@ -539,7 +811,7 @@ function pintarFluye(P) {
     if (mid) {
       const mk = L.marker([mid.lat, mid.lon], {
         icon: L.divIcon({
-          className: "mk-pf",
+          className: "mk-pf cat-a",
           html: `<span class="mk-core"></span><span class="mk-lab">${esc(etiquetaFluye(w))}</span>`,
           iconSize: [18, 18], iconAnchor: [9, 12],
         }),
@@ -551,24 +823,25 @@ function pintarFluye(P) {
   }
   for (const p of data.puntos || []) {
     if (p.lat == null || p.lon == null) continue;
+    const oficial = p.tipo === "ptar";
+    const cat = oficial ? "a" : "c";
+    const catTxt = oficial
+      ? "Dato oficial publicado (coordenadas del Decreto 422)"
+      : "Referencia pendiente de plano oficial (ubicación de colonia o predio; el trazo del tubo no está publicado)";
     const html = `<b>${esc(p.nombre)}</b>
+      <p class="vm-cat cat-${cat}">${esc(catTxt)}</p>
       ${p.sitio ? `<p>${esc(p.sitio)}.</p>` : ""}
       <p>${esc(p.estado || "")}</p>
       <p>${esc(p.detalle || "")}</p>
       ${fuentesHTML(p.fuente)}
-      <div class="vm-coords">${(+p.lat).toFixed(6)}, ${(+p.lon).toFixed(6)}</div>
-      ${gm(p.lat, p.lon)}`;
+      ${coordBlock(p.lat, p.lon)}`;
     if (p.poly && p.poly.length >= 3) {
       const ring = p.poly.map(([la, lo]) => [la, lo]);
-      const pg = L.polygon(ring, {
-        color: p.tipo === "ptar" ? "#67e8f9" : "#22d3a8",
-        weight: 1.5, fillColor: p.tipo === "ptar" ? "#0891b2" : "#14b8a6",
-        fillOpacity: 0.18, className: "pf-line",
-      }).bindPopup(html, { maxWidth: 360 });
+      const pg = L.polygon(ring, estiloRefPoly(false, oficial)).bindPopup(html, { maxWidth: 360 });
       P.addLayer(pg);
-      pfRecs.push({ layer: pg, jer: "colector", id: p.id, kind: "poly", fill: p.tipo === "ptar" ? "#0891b2" : "#14b8a6" });
+      pfRecs.push({ layer: pg, jer: "colector", id: p.id, kind: "poly", ptar: oficial });
     }
-    const cls = p.tipo === "ptar" ? "mk-ptar" : "mk-pf";
+    const cls = oficial ? "mk-ptar cat-a" : "mk-pf cat-c";
     const mk = L.marker([p.lat, p.lon], {
       icon: L.divIcon({
         className: cls,

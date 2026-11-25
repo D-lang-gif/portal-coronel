@@ -70,13 +70,31 @@
       <span class="vm-fan-ico" aria-hidden="true"></span>
       <span class="vm-fan-txt">Vista subterránea</span>
     </button>
-    <div id="vm-fan-leyenda" class="vm-glass" hidden>
-      <b>Vista subterránea</b>
-      <div><i class="sw" style="background:#67e8f9;color:#67e8f9"></i>Emisor 1.83 m (destino: PTAR Norte)</div>
-      <div><i class="sw" style="background:#22d3a8;color:#22d3a8"></i>Colector (≥ 60 cm)</div>
-      <div><i class="sw" style="background:#2dd4bf;color:#2dd4bf"></i>Subcolector (25–45 cm)</div>
-      <div><i class="sw" style="background:#5eead4;color:#5eead4"></i>Atarjea (20 cm)</div>
-      <div><i class="sw" style="background:#7c3aed;width:9px;height:9px;color:#c4b5fd"></i>Hundimiento (brillo por cm/año)</div>
+    <button type="button" id="vm-leyenda-btn" class="vm-glass" aria-expanded="false" aria-controls="vm-leyenda">Leyenda</button>
+    <div id="vm-leyenda" class="vm-glass">
+      <section>
+        <b class="cat-a">Datos oficiales publicados</b>
+        <div><i class="sym sym-line-solid" style="--c:#22d3a8"></i>Obras del Plan Fluye (calle o coordenada publicada)</div>
+        <div><i class="sym sym-sq-solid" style="--c:#0891b2"></i>PTAR Norte y Oriente (Decreto 422)</div>
+        <div><i class="sym sym-sq-solid" style="--c:#1d4ed8"></i>Encharcamientos del Atlas 2014 y partes oficiales</div>
+      </section>
+      <section>
+        <b class="cat-b">Alertas de monitoreo satelital</b>
+        <div><i class="sym sym-circ-out" style="--c:#e11d2e"></i>Humedad nueva (Sentinel-2)</div>
+        <div><i class="sym sym-circ-out" style="--c:#d97706"></i>Humedad constante (Sentinel-2)</div>
+        <div><i class="sym sym-dia-out" style="--c:#7c3aed"></i>Hundimiento (Sentinel-1 InSAR)</div>
+      </section>
+      <section>
+        <b class="cat-c">Referencias pendientes de plano oficial</b>
+        <div><i class="sym sym-dia-dash" style="--c:#d4a63a"></i>Nodo VAH – Punto referencial de anteproyecto</div>
+        <div><i class="sym sym-sq-dash" style="--c:#a8a29e"></i>Colonia o predio de referencia (sin trazo de tubo)</div>
+      </section>
+    </div>
+    <div id="vm-filtros" role="group" aria-label="Filtro rápido de prioridad">
+      <button type="button" class="vm-chip on" data-filtro="todo" aria-pressed="true">Todo</button>
+      <button type="button" class="vm-chip" data-filtro="humedad-alta" aria-pressed="false">Humedad alta</button>
+      <button type="button" class="vm-chip" data-filtro="hn" aria-pressed="false">Hundimiento HN01/HN04</button>
+      <button type="button" class="vm-chip" data-filtro="humedad-nueva" aria-pressed="false">Humedad nueva</button>
     </div>
     <button type="button" id="vm-yo" aria-label="Mi ubicación">◎</button>
     <aside id="vm-menu" class="vm-glass">
@@ -85,7 +103,7 @@
       <label><input type="checkbox" id="cF" checked> <i class="sw" style="background:#e11d2e"></i> Humedad nueva</label>
       <label><input type="checkbox" id="cC" checked> <i class="sw" style="background:#f59e0b"></i> Humedad constante</label>
       <label><input type="checkbox" id="cE" checked> <i class="sw" style="background:#2563eb"></i> Encharcamientos</label>
-      <label><input type="checkbox" id="cN" checked> <i class="sw" style="background:#d4a63a"></i> Nodo VAH (ubicación de referencia)</label>
+      <label><input type="checkbox" id="cN" checked> <i class="sw" style="background:#d4a63a"></i> Nodo VAH (punto referencial de anteproyecto)</label>
       <label><input type="checkbox" id="cH"> <i class="sw" style="background:#7c3aed"></i> Hundimientos (radar Sentinel-1, 2022-2026)</label>
       <label><input type="checkbox" id="cP"> <i class="sw" style="background:#22d3a8"></i> Obras del Plan Fluye</label>
       <h3 style="margin-top:16px">Ir a coordenada</h3>
