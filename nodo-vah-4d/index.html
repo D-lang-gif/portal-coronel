@@ -70,6 +70,46 @@
       <span class="vm-fan-ico" aria-hidden="true"></span>
       <span class="vm-fan-txt">Vista subterránea</span>
     </button>
+    <button type="button" id="vm-plan-btn" class="vm-glass" aria-pressed="false">
+      <span class="vm-plan-ico" aria-hidden="true"></span>
+      <span class="vm-plan-txt">Modo planeación</span>
+    </button>
+    <aside id="vm-plan" class="vm-glass" hidden>
+      <header class="vm-plan-cab">
+        <b>Modo planeación de colectores</b>
+        <button type="button" id="vm-plan-cerrar" aria-label="Plegar el panel">×</button>
+      </header>
+      <p class="vm-plan-banner">Anteproyecto de planeación — requiere topografía de campo y plano oficial de SIDEAPA/CAED</p>
+      <p class="vm-plan-ayuda">Toque el mapa, de aguas arriba hacia aguas abajo, para trazar una <strong>ruta propuesta</strong>. Puede arrastrar los vértices, deshacer o borrar. El visor no dibuja tuberías existentes que no estén publicadas.</p>
+      <div class="vm-plan-ctrls">
+        <label>Gasto de diseño (L/s)
+          <input id="vm-plan-q" type="number" inputmode="decimal" min="0.1" step="0.5" value="24" />
+        </label>
+        <label>Material
+          <select id="vm-plan-mat">
+            <option value="pvc">PVC (n = 0.009)</option>
+            <option value="pead" selected>PEAD (n = 0.010)</option>
+            <option value="concreto">Concreto (n = 0.013)</option>
+          </select>
+        </label>
+        <label>n de Manning
+          <input id="vm-plan-n" type="number" inputmode="decimal" min="0.007" max="0.025" step="0.001" value="0.010" />
+        </label>
+      </div>
+      <p class="vm-plan-hint">Rango piloto de gasto: 19–29 L/s, editable. Tirante de diseño ≈ 75 %. Velocidad 0.30–5.0 m/s en plásticos (3.0–3.5 m/s en concreto, MAPAS Tabla 2.9). Diámetro mínimo de atarjea: 200 mm.</p>
+      <div class="vm-plan-acciones">
+        <button type="button" id="vm-plan-undo">Deshacer</button>
+        <button type="button" id="vm-plan-inv">Invertir sentido</button>
+        <button type="button" id="vm-plan-clear">Borrar ruta</button>
+        <button type="button" id="vm-plan-csv">CSV</button>
+        <button type="button" id="vm-plan-geo">GeoJSON</button>
+      </div>
+      <h4>Vértices</h4>
+      <ol id="vm-plan-verts" class="vm-plan-verts"></ol>
+      <h4>Perfil longitudinal</h4>
+      <canvas id="vm-plan-perfil" width="640" height="200" aria-label="Perfil del terreno y de la plantilla propuesta"></canvas>
+      <div id="vm-plan-cuerpo"></div>
+    </aside>
     <button type="button" id="vm-leyenda-btn" class="vm-glass" aria-expanded="false" aria-controls="vm-leyenda">Leyenda</button>
     <div id="vm-leyenda" class="vm-glass">
       <section>
@@ -88,6 +128,7 @@
         <b class="cat-c">Referencias pendientes de plano oficial</b>
         <div><i class="sym sym-dia-dash" style="--c:#d4a63a"></i>Nodo VAH – Punto referencial de anteproyecto</div>
         <div><i class="sym sym-sq-dash" style="--c:#a8a29e"></i>Colonia o predio de referencia (sin trazo de tubo)</div>
+        <div><i class="sym sym-line-dash" style="--c:#d4a63a"></i>Ruta propuesta de colector (anteproyecto)</div>
       </section>
     </div>
     <div id="vm-filtros" role="group" aria-label="Filtro rápido de prioridad">

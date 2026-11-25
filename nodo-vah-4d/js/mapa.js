@@ -3,6 +3,7 @@
    Encharcamientos: oficial Nova + prensa Crownteer. Hundimientos: 7 puntos HN (Nano / LiCSAR).
    El Nodo permanece visible. El visor 3D/4D no se elimina: se abre con «Ver Nodo VAH 3D/4D». */
 import { fusionarZonas, centroideLL, esNueva } from "./zonas.js";
+import { initPlaneacion } from "./planeacion.js";
 
 const DATA = "data/satelite/";
 const NODO = { lat: 25.583829, lon: -103.446190, label: "Nodo VAH – Punto referencial de anteproyecto" };
@@ -190,6 +191,11 @@ function construir(root) {
   sw("cF", F, true); sw("cC", C, true); sw("cE", E, true); sw("cH", H, false); sw("cN", N, true); sw("cP", P, false);
   prepararFantasma({ H, P });
   prepararFiltros({ F, C, E, H, N, P });
+  initPlaneacion({
+    map,
+    getReferencias: refsPlaneacion,
+    helpers: { esc, coordBlock, gm },
+  });
   root.addEventListener("click", (e) => {
     const btn = e.target.closest("[data-copy]");
     if (!btn || !root.contains(btn)) return;
@@ -747,6 +753,23 @@ function aplicarFiltro(name, Lyr) {
     const pts = hnRecs.filter((r) => r.id === "HN01" || r.id === "HN04").map((r) => r.ll).filter(Boolean);
     if (pts.length) map.fitBounds(L.latLngBounds(pts), { padding: [60, 60], maxZoom: 13.5 });
   }
+}
+
+
+function refsPlaneacion() {
+  const out = [{ id: "NODO-VAH", nombre: NODO.label, lat: NODO.lat, lon: NODO.lon, tipo: "nodo" }];
+  const data = (typeof window !== "undefined" && window.PLAN_FLUYE) || { puntos: [], obras: [] };
+  for (const p of data.puntos || []) {
+    if (p.lat == null || p.lon == null) continue;
+    out.push({ id: p.id, nombre: p.nombre, lat: +p.lat, lon: +p.lon, tipo: p.tipo || "plan-fluye" });
+  }
+  for (const w of data.obras || []) {
+    const lines = (w.ll || []).filter((g) => g && g.length >= 2);
+    if (!lines.length) continue;
+    const mid = midLL(lines[0]);
+    if (mid) out.push({ id: w.id, nombre: w.nombre, lat: mid.lat, lon: mid.lon, tipo: "obra-fluye" });
+  }
+  return out;
 }
 
 function midLL(line) {
