@@ -1,16 +1,16 @@
 {
  "version_motor": "1.0.0",
- "ultima_corrida": "2026-11-21T20:11:25+00:00",
+ "ultima_corrida": "2026-11-26T22:29:33+00:00",
  "tile": "MGRS-13RFJ",
- "escena_mas_reciente_usada": "2026-11-07",
+ "escena_mas_reciente_usada": "2026-11-22",
  "escenas_consultadas": 57,
  "escenas_secas_usadas": 35,
  "escenas_tras_lluvia": 17,
- "zonas_humedad": 25,
+ "zonas_humedad": 22,
  "encharcamientos": 6,
  "zonas_por_confianza": {
-  "alta": 4,
-  "media": 11,
+  "alta": 3,
+  "media": 9,
   "baja": 10
  },
  "zonas_retiradas_historico": 0,
